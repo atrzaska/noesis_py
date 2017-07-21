@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+find . -iname '*.pyc' -exec rm -rf {} \;
+find . -iname '.DS_Store' -exec rm -rf {} \;

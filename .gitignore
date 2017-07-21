@@ -1,2 +1,3 @@
-pip/
 *.pyc
+.DS_Store
+pip/
