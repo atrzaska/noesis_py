@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+python2 lib/fmt_MikuMikuDance_pmd.py
