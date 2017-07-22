@@ -1,4 +1,6 @@
 import struct
+import re
+from StringIO import StringIO
 
 SIZES = {
     'c': 1,
@@ -18,20 +20,15 @@ SIZES = {
 
 class NoeBitStream:
     def __init__(self, data):
+        if type(data) is str:
+            data = StringIO(data)
         self.data = data
 
     def readBytes(self, size):
         return self.data.read(size)
 
     def read(self, fmt):
-        size = int(fmt[0])
-        type = fmt[1:]
-        results = []
-
-        for i in range(size):
-            results.append(self.readAndUnpack(type))
-
-        return results
+        return self.readAndUnpack(fmt)
 
     def readByte(self):
         return self.readInt8()
@@ -64,34 +61,34 @@ class NoeBitStream:
         return self.readUInt64()
 
     def readFloat(self):
-        return self.readAndUnpack('f')
+        return self.readAndUnpack('1f')[0]
 
     def readDouble(self):
-        return self.readAndUnpack('d')
+        return self.readAndUnpack('1d')[0]
 
     def readInt8(self):
-        return self.readAndUnpack('b')
+        return self.readAndUnpack('1b')[0]
 
     def readUInt8(self):
-        return self.readAndUnpack('B')
+        return self.readAndUnpack('1B')[0]
 
     def readInt16(self):
-        return self.readAndUnpack('h')
+        return self.readAndUnpack('1h')[0]
 
     def readUInt16(self):
-        return self.readAndUnpack('H')
+        return self.readAndUnpack('1H')[0]
 
     def readInt32(self):
-        return self.readAndUnpack('i')
+        return self.readAndUnpack('1i')[0]
 
     def readUInt32(self):
-        return self.readAndUnpack('I')
+        return self.readAndUnpack('1I')[0]
 
     def readInt64(self):
-        return self.readAndUnpack('q')
+        return self.readAndUnpack('1q')[0]
 
     def readUInt64(self):
-        return self.readAndUnpack('Q')
+        return self.readAndUnpack('1Q')[0]
 
     def tell(self):
         return self.data.tell()
@@ -101,10 +98,23 @@ class NoeBitStream:
 
     def getSize(self):
         currentPositon = self.tell()
-        self.data.seek(0,2)
+        self.data.seek(0, 2)
         size = self.data.tell()
         self.data.seek(currentPositon)
         return size
 
-    def readAndUnpack(self, type):
-        return struct.unpack(type, self.data.read(SIZES[type]))[0]
+    def readAndUnpack(self, fmt):
+        matches = re.match("(\d+)(\w)", fmt)
+        length = int(matches.group(1))
+        type = matches.group(2)
+
+        if type == 'L':
+            type = 'I'
+        if type == 'l':
+            type = 'i'
+
+        typeSize = SIZES[type]
+        readLength = typeSize * length
+        fmt = "{length}{type}".format(**locals())
+
+        return struct.unpack(fmt, self.data.read(readLength))

@@ -1,9 +1,10 @@
 from Noesis import Noesis
-from fmt_MikuMikuDance_pmd import registerNoesisTypes
 
 RPGEODATA_FLOAT = 4
 RPGEODATA_USHORT = 2
-RPGEO_TRIANGLE = 3
+RPGEO_TRIANGLE = 'RPGEO_TRIANGLE' # TODO: check value
+RPGEO_TRIANGLE_STRIP = 'RPGEO_TRIANGLE_STRIP' # TODO: check value
+NOESISTEX_RGBA32 = 'NOESISTEX_RGBA32' # TODO: check value
 
 noesis = Noesis()
 
@@ -11,16 +12,10 @@ def register(name, fileType):
     return noesis.register(name, fileType)
 
 def setHandlerTypeCheck(handle, noepyCheckType):
-    noesis.setHandlerTypeCheck(handle, noepyCheckType)
-
+    return noesis.setHandlerTypeCheck(handle, noepyCheckType)
 
 def setHandlerLoadModel(handle, noepyLoadModel):
-    noesis.setHandlerLoadModel(handle, noepyLoadModel)
+    return noesis.setHandlerLoadModel(handle, noepyLoadModel)
 
 def noepyLoadModelRPG():
-    noesis.noepyLoadModelRPG()
-
-# registerNoesisTypes()
-# file = open('/Users/andrzej/Downloads/miku/model.pmd', 'rb')
-# noesis.plugins[0].noepyLoadModel(file, noesis.mdlList)
-# print(len(noesis.plugins))
+    return noesis.noepyLoadModelRPG()
