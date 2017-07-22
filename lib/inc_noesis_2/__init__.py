@@ -3,6 +3,7 @@ from NoeMaterial import NoeMaterial
 from NoeModelMaterials import NoeModelMaterials
 from NoeVec4 import NoeVec4
 from NoeTexture import NoeTexture
+from noesis import noesis
 
 NOESEEK_ABS = 0
 NOESEEK_CURRENT = 1 # TODO: verify name and value here

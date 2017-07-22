@@ -12,7 +12,7 @@ from OpenGL.GLU import *
 # IMPORT OBJECT LOADER
 from objloader import *
 
-class Application:
+class PyMmdApplication:
     def run(self, file):
         pygame.init()
         viewport = (1280,720)
