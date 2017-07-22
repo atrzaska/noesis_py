@@ -14,8 +14,8 @@ if __name__ == "__main__":
     for module in modules:
         module.registerNoesisTypes()
 
-    fo = open("/Users/andrzej/Downloads/model.pmd", "rb")
+    fo = open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.pmd", "rb")
     noesis.plugins[0].noepyLoadModel(fo, noesis.mdlList)
 
-    fo = open("/Users/andrzej/Downloads/model.mdl", "rb")
+    fo = open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.mdl", "rb")
     noesis.plugins[1].noepyLoadModel(fo, noesis.mdlList)
