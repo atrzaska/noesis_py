@@ -16,11 +16,17 @@ class Noesis:
     def setHandlerLoadModel(self, handle, noepyLoadModel):
         handle.noepyLoadModel = noepyLoadModel
 
+    def setHandlerWriteModel(self, handle, noepyWriteModel):
+        handle.noepyWriteModel = noepyWriteModel
+
     def setHandlerLoadRGBA(self, handle, txdLoadRGBA):
         handle.txdLoadRGBA = txdLoadRGBA
 
     def setHandlerWriteRGBA(self, handle, walWriteRGBA):
         handle.walWriteRGBA = walWriteRGBA
+
+    def setHandlerWriteAnim(self, handle, noepyWriteAnim):
+        handle.noepyWriteAnim = noepyWriteAnim
 
     def setHandlerExtractArc(self, handle, grpExtractArc):
         handle.grpExtractArc = grpExtractArc
@@ -29,14 +35,18 @@ class Noesis:
         # TODO: implement me
         pass
 
-    def noepyLoadModelRPG(self):
-        # TODO: implement me
-        pass
-
     def logPopup(self):
         # TODO: implement me
         pass
 
     def addOption(self, handle, option, description, flags):
+        # TODO: implement me
+        pass
+
+    def getMFFP(uint):
+        # TODO: implement me
+        pass
+
+    def getScenesPath(self):
         # TODO: implement me
         pass
