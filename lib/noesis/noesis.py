@@ -50,3 +50,7 @@ class Noesis:
     def getScenesPath(self):
         # TODO: implement me
         pass
+
+    def optWasInvoked(self, option):
+        # tODO: implement me
+        return true
