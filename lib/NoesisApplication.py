@@ -8,11 +8,11 @@ class NoesisApplication:
         for plugin in self.plugins():
             plugin.registerNoesisTypes()
 
-        fo = open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.pmd", "rb")
-        noesis.plugins[0].noepyLoadModel(fo, noesis.mdlList)
+        with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.pmd", "rb") as f:
+            noesis.plugins[20].noepyLoadModel(f, noesis.mdlList)
 
-        fo = open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.mdl", "rb")
-        noesis.plugins[1].noepyLoadModel(fo, noesis.mdlList)
+        with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.mdl", "rb") as f:
+            noesis.plugins[21].noepyLoadModel(f, noesis.mdlList)
 
     def plugins(self):
         files = glob.glob("lib/plugins/fmt_*.py")
