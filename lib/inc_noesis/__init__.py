@@ -3,6 +3,7 @@ from NoeMaterial import NoeMaterial
 from NoeModelMaterials import NoeModelMaterials
 from NoeVec4 import NoeVec4
 from NoeTexture import NoeTexture
+from NoeModule import NoeModule
 import noesis
 
 NOESEEK_ABS = 0

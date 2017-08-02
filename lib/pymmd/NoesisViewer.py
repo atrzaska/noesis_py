@@ -3,10 +3,11 @@ from pygame.locals import *
 from pygame.constants import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from objloader import *
+from NoesisLoader import *
 
-class PyMmdApplication:
-    def run(self, file):
+class NoesisViewer:
+    @classmethod
+    def run(self, rpg):
         pygame.init()
         viewport = (1280,720)
         srf = pygame.display.set_mode(viewport, OPENGL | DOUBLEBUF)
@@ -20,7 +21,7 @@ class PyMmdApplication:
         glEnable(GL_DEPTH_TEST)
         glShadeModel(GL_SMOOTH)
 
-        model = OBJ(file, swapyz=True)
+        model = NoesisLoader(rpg)
 
         clock = pygame.time.Clock()
         glMatrixMode(GL_PROJECTION)

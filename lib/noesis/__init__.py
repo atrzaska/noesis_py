@@ -48,23 +48,22 @@ RPGOPT_BIGENDIAN = 'RPGOPT_BIGENDIAN' # TODO: check value
 RPGOPT_SWAPHANDEDNESS = 'RPGOPT_SWAPHANDEDNESS' # TODO: check value
 RPGOPT_TANMATROTATE = 'RPGOPT_TANMATROTATE' # TODO: check value
 RPGOPT_TRIWINDBACKWARD = 'RPGOPT_TRIWINDBACKWARD' # TODO: check value
+g_flDegToRad = 'g_flDegToRad' # TODO: check value
+g_flRadToDeg = 'g_flRadToDeg' # TODO: check value
 
 noesis = Noesis()
 
 def addOption(handle, option, description, flags):
     return noesis.addOption(handle, option, description, flags)
 
-def allocBytes():
-    return noesis.allocBytes()
+def allocBytes(size):
+    return noesis.allocBytes(size)
 
-def doException():
-    return noesis.doException()
+def doException(error):
+    return noesis.doException(error)
 
-def freeModule():
-    return noesis.freeModule()
-
-def g_flRadToDeg():
-    return noesis.g_flRadToDeg()
+def freeModule(module):
+    return noesis.freeModule(module)
 
 def getCharSplineSet():
     return noesis.getCharSplineSet()

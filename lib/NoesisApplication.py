@@ -2,17 +2,19 @@ import glob
 from os.path import dirname, basename, isfile
 from noesis import noesis
 from importlib import import_module
+import rapi
 
 class NoesisApplication:
     def run(self):
         for plugin in self.plugins():
             plugin.registerNoesisTypes()
 
-        with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.pmd", "rb") as f:
-            noesis.plugins[20].noepyLoadModel(f, noesis.mdlList)
+        # with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.pmd", "rb") as f:
+        #     noesis.plugins[20].noepyLoadModel(f, noesis.models)
 
         with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.mdl", "rb") as f:
-            noesis.plugins[21].noepyLoadModel(f, noesis.mdlList)
+            noesis.plugins[22].noepyLoadModel(f, noesis.models)
+        rapi.rpgLog()
 
     def plugins(self):
         files = glob.glob("lib/plugins/fmt_*.py")

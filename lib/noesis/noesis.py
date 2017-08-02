@@ -3,26 +3,21 @@ from Handler import Handler
 class Noesis:
     def __init__(self):
         self.plugins = []
-        self.mdlList = []
+        self.models = []
+        self.modules = []
 
     def addOption(self, handle, option, description, flags):
         # TODO: implement me
         pass
 
-    def allocBytes(self):
-        # TODO: implement me
-        pass
+    def allocBytes(self, size):
+        return bytearray(size)
 
-    def doException(self):
-        # TODO: implement me
-        pass
+    def doException(self, error):
+        raise ValueError(error)
 
-    def freeModule(self):
-        # TODO: implement me
-        pass
-
-    def g_flRadToDeg(self):
-        # TODO: implement me
+    def freeModule(self, module):
+        # TODO: rek0ve module from modules
         pass
 
     def getCharSplineSet(self):
@@ -54,8 +49,9 @@ class Noesis:
         pass
 
     def instantiateModule(self):
-        # TODO: implement me
-        pass
+        module = NoeModule()
+        self.modules.append(module)
+        return module
 
     def isPreviewModuleRAPIValid(self):
         # TODO: implement me
