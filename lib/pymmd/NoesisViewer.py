@@ -1,4 +1,5 @@
 import pygame
+import sys
 from pygame.locals import *
 from pygame.constants import *
 from OpenGL.GL import *

@@ -85,6 +85,7 @@ class Noesis:
         # TODO: implement me
         return true
 
+    # TODO: fileType can be semicolon separated '.obj;.obc'
     def register(self, name, fileType):
         handler = Handler(name, fileType)
         self.plugins.append(handler)
