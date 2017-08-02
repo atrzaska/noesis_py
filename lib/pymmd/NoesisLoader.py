@@ -15,13 +15,6 @@ class NoesisLoader:
         glEnable(GL_TEXTURE_2D)
         glFrontFace(GL_CCW)
 
-        print({
-            'faceBuffers': len(rpg.faceBuffers),
-            'vertexBuffers': len(rpg.vertexBuffers),
-            'normalBuffers': len(rpg.normalBuffers),
-            'uvBuffers': len(rpg.normalBuffers)
-        })
-
         for i in range(len(rpg.faceBuffers)):
             vertexBufferLength = len(rpg.vertexBuffers)
             if vertexBufferLength == 1:

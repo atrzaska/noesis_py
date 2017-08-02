@@ -4,3 +4,6 @@ class Handler:
         self.format = format
         self.noepyCheckType = None
         self.noepyLoadModel = None
+
+    def __repr__(self):
+        return self.name
