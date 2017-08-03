@@ -3,14 +3,15 @@ import itertools
 from RapiModel import RapiModel
 from RapiContext import RapiContext
 from pymmd import NoesisViewer
+from FaceBuffer import FaceBuffer
 
 class Rpg:
     def __init__(self):
         self.vertexBuffers = []
         self.normalBuffers = []
         self.uvBuffers = []
-        self.materials = []
         self.faceBuffers = []
+        self.currentMaterial = None
 
     def rpgCreateContext(self):
         return RapiContext()
@@ -36,23 +37,18 @@ class Rpg:
         mapped = map(lambda x: struct.unpack('2f', x), mapped)
         self.uvBuffers.append(mapped)
 
-    def rpgSetMaterial(self, matName):
-        self.materials.append(matName)
+    def rpgSetMaterial(self, material):
+        self.currentMaterial = material
 
     def rpgCommitTriangles(self, buff, typeSize, numIdx, shape, unk1):
         fmt = "{numIdx}H".format(**locals()) # TODO: make format dynamic
         unpacked = struct.unpack(fmt, buff)
 
-        self.faceBuffers.append({
-            'buff': unpacked,
-            'typeSize': typeSize,
-            'numIdx': numIdx,
-            'shape': shape,
-            'unk1': unk1
-        })
+        faceBuffer = FaceBuffer(unpacked, typeSize, numIdx, shape, unk1, self.currentMaterial)
+        self.faceBuffers.append(faceBuffer)
 
     def splitBuffer(self, buff, structSize):
         return [buff[i:i + structSize] for i in range(0, len(buff), structSize)]
 
     def rpgLog(self):
-        NoesisViewer.run(self)
+        NoesisViewer(self).call()
