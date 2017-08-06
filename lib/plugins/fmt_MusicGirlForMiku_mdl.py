@@ -203,6 +203,8 @@ class PVRTCImage:
         self.dataOfs = 52
         return 1
 
+        print(self)
+
     def parseV3(self):
         if self.reader.getSize() < 68:
             return 0
@@ -240,9 +242,11 @@ class PVRTCImage:
         return 0
 
     def decode(self):
+
         self.reader.seek(self.dataOfs, NOESEEK_ABS)
         d = 4 if self.bpp == 2 else 2
-        r = rapi.imageDecodePVRTC(self.reader.readBytes((self.w*self.h) // d), self.w, self.h, -self.bpp)
+        encodedData = self.reader.readBytes((self.w*self.h) // d)
+        r = rapi.imageDecodePVRTC(encodedData, self.w, self.h, -self.bpp)
         if self.flip == 1:
             r = rapi.imageFlipRGBA32(r, self.w, self.h, 0, 1)
         return r

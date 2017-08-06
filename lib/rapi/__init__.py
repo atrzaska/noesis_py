@@ -1,4 +1,5 @@
 from Rpg import Rpg
+from ImageDecodePVRTC import ImageDecodePVRTC
 
 rpg = Rpg()
 
@@ -28,9 +29,8 @@ def rpgLog():
     return rpg.rpgLog()
 
 def imageDecodePVRTC(buff, width, height, bpp):
-    # TODO: implement me
-    pass
+    return ImageDecodePVRTC(buff, width, height, bpp).call()
 
 def imageFlipRGBA32(r, width, height, unk0, unk1):
     # TODO: implement me
-    pass
+    return r

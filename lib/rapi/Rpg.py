@@ -13,7 +13,7 @@ class Rpg:
         self.normalBuffers = []
         self.uvBuffers = []
         self.faceBuffers = []
-        self.materials = []
+        self.currentMaterial = None
 
     def currentContext(self):
         return self.contexts.last[-1]
@@ -47,35 +47,13 @@ class Rpg:
         self.uvBuffers.append(mapped)
 
     def rpgSetMaterial(self, material):
-        print('set material')
-        self.materials.append(material)
-
-    def currentMaterial(self):
-        material = self.materials[-1]
-        print(self.currentModel())
-        if self.currentModel() == None:
-            return None
-        materials = self.currentModel().materials.materials
-        currentMaterial = next(x for x in materials if x.name == material)
-        return currentMaterial
-
-    def currentTexture(self):
-        if self.currentMaterial() == None:
-            return None
-        return self.currentMaterial().texture
-
-    def currentModel(self):
-        if len(self.models) == 0:
-            return None
-        return self.models[-1]
+        self.currentMaterial = material
 
     def rpgCommitTriangles(self, buff, typeSize, numIdx, shape, unk1):
-        print('commit triangles')
         fmt = "{numIdx}H".format(**locals()) # TODO: make format dynamic
         unpacked = struct.unpack(fmt, buff)
 
-        texture = self.currentTexture()
-        faceBuffer = FaceInfo(unpacked, typeSize, numIdx, shape, unk1, texture)
+        faceBuffer = FaceInfo(unpacked, typeSize, numIdx, shape, unk1, self.currentMaterial)
         self.faceBuffers.append(faceBuffer)
 
     def splitBuffer(self, buff, structSize):

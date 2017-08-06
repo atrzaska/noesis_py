@@ -17,7 +17,7 @@ def registerNoesisTypes():
         toolHandle = noesis.registerTool("PVR to Linear", pvrToLinearToolMethod, "Converts PVR block order from Morton to linear.")
         noesis.setToolFlags(toolHandle, noesis.NTOOLFLAG_CONTEXTITEM)
         noesis.setToolVisibleCallback(toolHandle, pvrReorderContextVisible)
-    
+
     return 1
 
 
@@ -55,7 +55,7 @@ class PVRTCImage:
         self.reader.seek(4, NOESEEK_ABS)
         self.asz = self.reader.readInt()
         self.fmt = self.reader.readInt()
-        
+
         self.isPVR2 = False
         if self.fmt == 0 or self.fmt == 1:
             self.bpp = 2
@@ -72,7 +72,7 @@ class PVRTCImage:
         self.fmtTag = self.reader.readInt()
         self.colorSpace = self.reader.readInt()
         self.chanType = self.reader.readInt()
-        
+
         #self.reader.seek(24, NOESEEK_ABS)
         self.h = self.reader.readInt()
         self.w = self.reader.readInt()
@@ -80,7 +80,7 @@ class PVRTCImage:
         self.surfCount = self.reader.readInt()
         self.faceCount = self.reader.readInt()
         self.mipCount = self.reader.readInt()
-        
+
         #self.reader.seek(48, NOESEEK_ABS)
         self.metaLen = self.reader.readInt()
         if self.metaLen > 4:
@@ -95,7 +95,7 @@ class PVRTCImage:
                 if metaKey == 3: #logical orientation - todo, support flipping other axes
                     if metaKeyData[1] != 0:
                         self.flip = 1
-                
+
         self.dataOfs = 52+self.metaLen
         return 1
 
@@ -117,18 +117,20 @@ class PVRTCImage:
 
     def decode(self):
         self.reader.seek(self.dataOfs, NOESEEK_ABS)
+
         d = 4 if self.bpp == 2 else 2
         decodeFlags = noesis.PVRTC_DECODE_PVRTC2 if self.isPVR2 else 0
-        
+
         #not sure if this is correct, but v3 pvrtc2's produced by PvrTexTool seem to not be morton ordered
         if self.ver >= 3 and self.isPVR2:
             decodeFlags |= noesis.PVRTC_DECODE_LINEARORDER
-        
+
         #this seems to be PvrTexTool's decoding behavior, but it's wrong - verified on hardware with the SGX543
         #if self.bpp == 4 and self.isPVR2:
         #    decodeFlags |= noesis.PVRTC_DECODE_PVRTC2_NO_OR_WITH_0_ALPHA
-        
+
         r = rapi.imageDecodePVRTC(self.reader.readBytes((self.w*self.h) // d), self.w, self.h, self.bpp, decodeFlags)
+
         if self.flip == 1:
             r = rapi.imageFlipRGBA32(r, self.w, self.h, 0, 1)
         return r
@@ -182,10 +184,10 @@ def pvrReorderBlocks(reorderMethod):
             blocksH = pvr.h // blockH
             #possible todo - support individual mips/faces
             pvrImageData = reorderMethod(pvrImageData, blocksW, blocksH, 8, 2)
-            
+
             dstPathDefault = os.path.splitext(srcPath)[0] + "_reordered.pvr"
             dstPath = noesis.userPrompt(noesis.NOEUSERVAL_SAVEFILEPATH, "Save File", "Select destination for the reordered PVR file.", dstPathDefault, None)
-            if dstPath is not None:    
+            if dstPath is not None:
                 with open(dstPath, "wb") as fDst:
                     fDst.write(pvrData[:pvr.dataOfs])
                     fDst.write(pvrImageData)

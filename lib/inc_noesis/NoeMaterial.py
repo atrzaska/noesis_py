@@ -11,4 +11,4 @@ class NoeMaterial:
         self.texture = texture
 
     def __repr__(self):
-        return "<name: {self.name}>".format(**locals())
+        return "<NoeMaterial name: {self.name}>".format(**locals())

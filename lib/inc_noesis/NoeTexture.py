@@ -5,3 +5,6 @@ class NoeTexture:
         self.height = height
         self.data = data
         self.format = format
+
+    def __repr__(self):
+        return "<NoeTexture name: {self.name} width: {self.width} height: {self.height}>".format(**locals())
