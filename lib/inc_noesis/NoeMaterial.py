@@ -7,8 +7,8 @@ class NoeMaterial:
     def setDiffuseColor(self, color):
         self.color = color
 
-    def setTexture(self, name):
-        self.texture = name
+    def setTexture(self, texture):
+        self.texture = texture
 
     def __repr__(self):
         return "<name: {self.name}>".format(**locals())

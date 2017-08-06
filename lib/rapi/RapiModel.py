@@ -1,9 +1,12 @@
 class RapiModel:
-    def setModelMaterials(self, matList):
-        self.matList = matList
+    def setModelMaterials(self, materials):
+        self.materials = materials
 
-    def setBones(self, boneList):
-        self.boneList = boneList
+    def setBones(self, bones):
+        self.bones = bones
 
-    def setAnims(self, animList):
-        self.animList = animList
+    def setAnims(self, animations):
+        self.animations = animations
+
+    def currentMaterial(self):
+        return self.materials[-1]

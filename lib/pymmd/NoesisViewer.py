@@ -75,6 +75,3 @@ class NoesisViewer:
             glRotate(-rx, 0, 1, 0)
             glCallList(model.gl_list)
             pygame.display.flip()
-
-    def setCurrentTexture(self, texture):
-        self.noesisLoader.setCurrentTexture(texture)

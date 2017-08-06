@@ -1,6 +1,7 @@
 import os
 import pygame
 from OpenGL.GL import *
+import rapi
 
 SHAPE_TO_GL_OBJECT = {
     'RPGEO_TRIANGLE': GL_TRIANGLES,
@@ -13,6 +14,7 @@ class NoesisLoader:
         self.normalBuffers = rpg.normalBuffers
         self.uvBuffers = rpg.uvBuffers
         self.faceBuffers = rpg.faceBuffers
+        self.loadedTextures = {}
 
     def render(self):
         self.gl_list = glGenLists(1)
@@ -27,17 +29,19 @@ class NoesisLoader:
                 vertices = self.vertexBuffers[0]
                 normals = self.normalBuffers[0]
                 uvs = self.uvBuffers[0]
-                faces = self.faceBuffers[i]
+                faceInfo = self.faceBuffers[i]
             else:
                 vertices = self.vertexBuffers[i]
                 normals = self.normalBuffers[i]
                 uvs = self.uvBuffers[i]
-                faces = self.faceBuffers[i]
+                faceInfo = self.faceBuffers[i]
 
-            # glBindTexture(GL_TEXTURE_2D, self.loadedTextures[self.currentTexture])
+            texture = faceInfo.texture
+            if texture:
+                glBindTexture(GL_TEXTURE_2D, self.loadTexture(texture))
 
-            glBegin(SHAPE_TO_GL_OBJECT[faces.shape])
-            for face in faces.buff:
+            glBegin(SHAPE_TO_GL_OBJECT[faceInfo.shape])
+            for face in faceInfo.buff:
                 glNormal3fv(normals[face])
                 glTexCoord2fv(uvs[face])
                 glVertex3fv(vertices[face])
@@ -47,10 +51,14 @@ class NoesisLoader:
         glEndList()
         return self
 
-    def renderTexture(self, texture):
-        filename = directory + '/' + texture
-        directory = os.path.dirname(filename)
-        surf = pygame.image.load(directory + '/' + texture)
+    def loadTexture(self, texture):
+        if texture in self.loadedTextures:
+            return self.loadedTextures[texture]
+
+        directory = os.getcwd()
+        print(texture)
+        filename = directory + '/data/' + texture
+        surf = pygame.image.load(filename)
         image = pygame.image.tostring(surf, 'RGBA', 1)
         ix, iy = surf.get_rect().size
 

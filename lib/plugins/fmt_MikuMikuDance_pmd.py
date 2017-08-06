@@ -69,6 +69,12 @@ class MikuMikuDance_PMD(SanaeObject):
             toon_edge = self.inFile.readUByte()
             numIdx = self.inFile.readUInt()
             texName = self.read_name(20)
+            texNames = texName.split('*')
+            spa = ''
+
+            if len(texNames) > 1:
+                texName = texNames[0]
+                spa = texNames[1]
 
             matName = "material%d" %i
             material = NoeMaterial(matName, "")

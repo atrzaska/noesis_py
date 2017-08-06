@@ -1,4 +1,4 @@
 class NoeModelMaterials:
-    def __init__(self, textureList, materialList):
-        self.textureList = textureList
-        self.materialList = materialList
+    def __init__(self, textures, materials):
+        self.textures = textures
+        self.materials = materials
