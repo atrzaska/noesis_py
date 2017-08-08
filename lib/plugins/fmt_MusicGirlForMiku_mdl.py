@@ -92,6 +92,10 @@ class SanaeParser(object):
 
             texName = self.texList[texNum].name
             material = NoeMaterial("material[%d]" %i, texName)
+            # texName = self.texList[texNum].name
+            # matName = self.texList[texNum].name
+            # texName = matName + ".png"
+            # material = NoeMaterial(matName, texName)
             self.matList.append(material)
 
 
@@ -99,7 +103,7 @@ class SanaeParser(object):
 
         pvr = PVRTCImage(NoeBitStream(texData))
         pvr.parseImageInfo()
-        tex = NoeTexture("pvrtex", pvr.w, pvr.h, pvr.decode(), noesis.NOESISTEX_RGBA32)
+        tex = NoeTexture("pvrtex", pvr.w, pvr.h, '', noesis.NOESISTEX_RGBA32)
         tex.name = texName
         self.texList.append(tex)
 
@@ -110,11 +114,15 @@ class SanaeParser(object):
             curr = self.inFile.tell()
             self.inFile.seek(offset)
             texData = self.inFile.readBytes(size)
-            texName = "texture[%d]" %i
+            texName = "texture_%d.png" %i
             #tex = rapi.loadTexByHandler(texData, "pvr")
             #if tex:
                 #tex.name = texName
                 #self.texList.append(tex)
+
+            f = open('data/' + texName + '.pvr', 'wb')
+            f.write(texData)
+            f.close()
 
             self.load_texture(texData, texName)
             self.inFile.seek(curr)
