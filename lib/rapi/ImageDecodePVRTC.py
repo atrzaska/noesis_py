@@ -36,7 +36,6 @@ class ImageDecodePVRTC:
         image_width = width/4/2**(mip)
         image_height = height/4/2**(mip)
         # print(image_width, image_height)
-        print(len(pvrData))
         bit_stream = ConstBitStream(bytes=pvrData)
 
         img_a = PIL.Image.new('RGBA', (width/4, height/4))
@@ -118,7 +117,5 @@ class ImageDecodePVRTC:
                     texel_col = 3 - c + pixel*4
                     img_mod_data[texel_row, texel_col] = (0, 0, 0, int(float(value)/8*255))
 
-        img_a.save("/Users/andrzej/Desktop/{}.png".format(width))
         img_a = img_a.convert("RGBA").tobytes("raw", "RGBA")
         return img_a
-        # return { 'img_a': img_a, 'img_b': img_b, 'img_mod': img_mod }

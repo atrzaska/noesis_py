@@ -1,4 +1,8 @@
 class RapiContext:
-    def __initialize():
-        # TODO: unknown what this should do
-        pass
+    def __init__(self):
+        self.models = []
+        self.vertexBuffers = []
+        self.normalBuffers = []
+        self.uvBuffers = []
+        self.faceBuffers = []
+        self.currentMaterial = None

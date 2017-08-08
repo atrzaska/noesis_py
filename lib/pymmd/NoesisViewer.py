@@ -9,6 +9,7 @@ from NoesisLoader import *
 class NoesisViewer:
     def __init__(self, rpg):
         self.rpg = rpg
+        self.toon = True
 
     @classmethod
     def call(self, rpg):
@@ -21,11 +22,12 @@ class NoesisViewer:
         viewport = (1280,720)
         srf = pygame.display.set_mode(viewport, OPENGL | DOUBLEBUF)
 
-        glLightfv(GL_LIGHT0, GL_POSITION,  (-40, 200, 100, 0.0))
-        glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0))
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
-        glEnable(GL_LIGHT0)
-        glEnable(GL_LIGHTING)
+        if not self.toon:
+            glLightfv(GL_LIGHT0, GL_POSITION,  (-40, 200, 100, 0.0))
+            glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0))
+            glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
+            glEnable(GL_LIGHT0)
+            glEnable(GL_LIGHTING)
 
         glEnable(GL_COLOR_MATERIAL)
         glEnable(GL_DEPTH_TEST)

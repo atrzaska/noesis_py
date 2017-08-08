@@ -1,8 +1,8 @@
 class NoeMaterial:
-    def __init__(self, name, unk1):
+    def __init__(self, name, texture):
         self.name = name
-        self.unk1 = unk1
-        self.texture = None
+        self.texture = texture
+        self.color = None
 
     def setDiffuseColor(self, color):
         self.color = color
@@ -11,4 +11,4 @@ class NoeMaterial:
         self.texture = texture
 
     def __repr__(self):
-        return "<NoeMaterial name: {self.name}>".format(**locals())
+        return "<NoeMaterial name: {self.name} texture: {self.texture}>".format(**locals())
