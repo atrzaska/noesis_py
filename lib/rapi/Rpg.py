@@ -54,4 +54,4 @@ class Rpg:
         return [buff[i:i + structSize] for i in range(0, len(buff), structSize)]
 
     def rpgLog(self):
-        NoesisViewer(self.currentContext()).call()
+        NoesisViewer(self).call()

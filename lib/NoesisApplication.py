@@ -9,10 +9,13 @@ class NoesisApplication:
         for plugin in self.plugins():
             plugin.registerNoesisTypes()
 
-        # with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/snow_dt/model.pmd", "rb") as f:
+        # with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.pmd", "rb") as f:
         #     noesis.plugins[20].noepyLoadModel(f, noesis.models)
 
-        with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/model.mdl", "rb") as f:
+        with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/other/c001_decrypted.mdl", "rb") as f:
+            noesis.plugins[21].noepyLoadModel(f, noesis.models)
+
+        with open("/Users/andrzej/Documents/mmd/projects/pymmd/data/other/h001_decrypted.mdl", "rb") as f:
             noesis.plugins[21].noepyLoadModel(f, noesis.models)
 
         rapi.rpgLog()

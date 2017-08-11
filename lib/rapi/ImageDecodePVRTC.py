@@ -35,7 +35,6 @@ class ImageDecodePVRTC:
         height = self.height
         image_width = width/4/2**(mip)
         image_height = height/4/2**(mip)
-        # print(image_width, image_height)
         bit_stream = ConstBitStream(bytes=pvrData)
 
         img_a = PIL.Image.new('RGBA', (width/4, height/4))

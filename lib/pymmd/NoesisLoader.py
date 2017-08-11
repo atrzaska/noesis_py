@@ -101,14 +101,17 @@ class NoesisLoader:
         if texture.name in self.loadedTextures:
             return self.loadedTextures[texture.name]
 
-        ix = texture.width
-        iy = texture.height
-        image = texture.data
+        width = texture.width
+        height = texture.height
+        data = texture.data
 
+        return self.loadTextureFromData(texture.name, data, width, height)
+
+    def loadTextureFromData(self, name, data, width, height):
         textureId = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, textureId)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
-        self.loadedTextures[texture.name] = textureId
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data)
+        self.loadedTextures[name] = textureId
         return textureId
