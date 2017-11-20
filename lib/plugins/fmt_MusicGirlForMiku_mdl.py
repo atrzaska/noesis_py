@@ -90,12 +90,11 @@ class SanaeParser(object):
             self.inFile.read('6f')
             self.inFile.readUInt()
 
-            texName = self.texList[texNum].name
-            material = NoeMaterial("material[%d]" %i, texName)
             # texName = self.texList[texNum].name
-            # matName = self.texList[texNum].name
-            # texName = matName + ".png"
-            # material = NoeMaterial(matName, texName)
+            # material = NoeMaterial("material_%d" %i, texName)
+            matName = self.texList[texNum].name
+            texName = matName
+            material = NoeMaterial(matName, texName)
             self.matList.append(material)
 
 
@@ -103,7 +102,7 @@ class SanaeParser(object):
 
         pvr = PVRTCImage(NoeBitStream(texData))
         pvr.parseImageInfo()
-        tex = NoeTexture("pvrtex", pvr.w, pvr.h, '', noesis.NOESISTEX_RGBA32)
+        tex = NoeTexture("pvrtex", pvr.w/8, pvr.h/8, pvr.decode(), noesis.NOESISTEX_RGBA32)
         tex.name = texName
         self.texList.append(tex)
 
@@ -114,7 +113,7 @@ class SanaeParser(object):
             curr = self.inFile.tell()
             self.inFile.seek(offset)
             texData = self.inFile.readBytes(size)
-            texName = "texture_%d.png" %i
+            texName = "texture_%d" %i
             #tex = rapi.loadTexByHandler(texData, "pvr")
             #if tex:
                 #tex.name = texName
@@ -199,19 +198,22 @@ class PVRTCImage:
         self.reader.seek(4, NOESEEK_ABS)
         self.w = self.reader.readInt()
         self.h = self.reader.readInt()
-        self.fmt = self.reader.readInt()
+        self.mipMapCount = self.reader.readInt() + 1
         self.flags = self.reader.readInt()
         self.dataSize = self.reader.readInt()
         self.bpp = self.reader.readInt()
-        self.reader.seek(44, NOESEEK_ABS)
-        if self.reader.readInt() != 0x21525650: #"PVR!"
+        self.redMask = self.reader.readInt()
+        self.greenMask = self.reader.readInt()
+        self.blueMask = self.reader.readInt()
+        self.alphaMask = self.reader.readInt()
+        self.pvrIdentifier = self.reader.readUInt()
+        self.numSourfaces = self.reader.readInt() + 1
+        if self.pvrIdentifier != 0x21525650: #"PVR!"
             return 0
         if self.flags & 0x10000:
             self.flip = 1
         self.dataOfs = 52
         return 1
-
-        print(self)
 
     def parseV3(self):
         if self.reader.getSize() < 68:

@@ -15,7 +15,8 @@ class NoesisLoader:
         self.flipX = False
         self.flipY = False
         self.flipZ = False
-        self.flipV = True
+        self.flipU = False
+        self.flipV = False
         self.blending = True
 
     def render(self):
@@ -47,12 +48,12 @@ class NoesisLoader:
             noeMaterials = self.rpgContext.models[-1].materials
             materials = noeMaterials.materials
             material = next(x for x in materials if x.name == materialName)
-            texture = material.texture
-            # texture = noeMaterials.textures[0]
+            textures = noeMaterials.textures
+            textureName = material.texture
+            texture = next(x for x in textures if x.name == textureName)
 
             if texture != None:
-                glBindTexture(GL_TEXTURE_2D, self.loadMaterial(material))
-                # glBindTexture(GL_TEXTURE_2D, self.loadTexture(texture))
+                glBindTexture(GL_TEXTURE_2D, self.loadTexture(texture))
 
             glBegin(SHAPE_TO_GL_OBJECT[faceInfo.shape])
             for face in faceInfo.buff:
@@ -64,7 +65,7 @@ class NoesisLoader:
                 y = normal[1]
                 z = normal[2]
                 glNormal3fv([x, y, z])
-                u = uv[0]
+                u = 1 - uv[0] if self.flipU else uv[0]
                 v = 1 - uv[1] if self.flipV else uv[1]
                 glTexCoord2fv([u, v])
                 x = vertex[0] * -1 if self.flipX else vertex[0]

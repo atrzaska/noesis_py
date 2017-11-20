@@ -20,6 +20,9 @@ def decode_morton(i):
     y = compact(i >> 1)
     return x, y
 
+IMG_SCALE = 8
+MOD_SCALE = 2
+
 class ImageDecodePVRTC:
     def __init__(self, pvrData, width, height, bpp):
         self.pvrData = pvrData
@@ -35,24 +38,24 @@ class ImageDecodePVRTC:
         height = self.height
         image_width = width/4/2**(mip)
         image_height = height/4/2**(mip)
+
         bit_stream = ConstBitStream(bytes=pvrData)
 
-        img_a = PIL.Image.new('RGBA', (width/4, height/4))
+        img_a = PIL.Image.new('RGBA', (width / IMG_SCALE, height / IMG_SCALE))
         img_a_data = img_a.load()
-        img_b = PIL.Image.new('RGBA', (width/4, height/4))
+        img_b = PIL.Image.new('RGBA', (width / IMG_SCALE, height / IMG_SCALE))
         img_b_data = img_b.load()
-        img_mod = PIL.Image.new('RGBA', (width, height))
+        img_mod = PIL.Image.new('RGBA', (width / MOD_SCALE, height / MOD_SCALE))
         img_mod_data = img_mod.load()
-
 
         for i in xrange(image_width * image_height):
             pixel, row = decode_morton(i)
             modulation_data = bit_stream.read('bits:32')
+
             byte0 = bit_stream.read('bits:8')
             byte1 = bit_stream.read('bits:8')
             byte2 = bit_stream.read('bits:8')
             byte3 = bit_stream.read('bits:8')
-
             color_mode = byte3.read('bool')
 
             r = g = b = a = 255
@@ -117,4 +120,6 @@ class ImageDecodePVRTC:
                     img_mod_data[texel_row, texel_col] = (0, 0, 0, int(float(value)/8*255))
 
         img_a = img_a.convert("RGBA").tobytes("raw", "RGBA")
+        # img_b = img_b.convert("RGBA").tobytes("raw", "RGBA")
+        # img_mod = img_mod.convert("RGBA").tobytes("raw", "RGBA")
         return img_a
