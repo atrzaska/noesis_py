@@ -24,10 +24,6 @@ def rpgSetMaterial(matName):
 def rpgCommitTriangles(buff, type, numIdx, shape, unk1):
     return rpg.rpgCommitTriangles(buff, type, numIdx, shape, unk1)
 
-# TODO: remove this non official api
-def rpgLog():
-    return rpg.rpgLog()
-
 def imageDecodePVRTC(buff, width, height, bpp):
     return ImageDecodePVRTC(buff, width, height, bpp).call()
 

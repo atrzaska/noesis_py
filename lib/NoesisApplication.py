@@ -2,6 +2,7 @@ import glob
 from os.path import dirname, basename, isfile
 from noesis import noesis
 from importlib import import_module
+from NoesisViewer import NoesisViewer
 import rapi
 
 class NoesisApplication:
@@ -18,6 +19,7 @@ class NoesisApplication:
         # with open("./data/other/h001_decrypted.mdl", "rb") as f:
         #     noesis.plugins[21].noepyLoadModel(f, noesis.models)
 
+        NoesisViewer(rapi.rpg).call()
         rapi.rpgLog()
 
     def plugins(self):
@@ -25,3 +27,6 @@ class NoesisApplication:
         plugins = [ basename(f)[:-3] for f in files if isfile(f) and not f.endswith('__init__.py')]
         plugins = map(lambda x: "plugins." + x, plugins)
         return map(import_module, plugins)
+
+if __name__ == "__main__":
+    NoesisApplication().run()

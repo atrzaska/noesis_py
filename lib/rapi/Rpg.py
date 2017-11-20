@@ -2,7 +2,6 @@ import struct
 import itertools
 from RapiModel import RapiModel
 from RapiContext import RapiContext
-from pymmd import NoesisViewer
 from FaceInfo import FaceInfo
 
 class Rpg:
@@ -52,6 +51,3 @@ class Rpg:
 
     def splitBuffer(self, buff, structSize):
         return [buff[i:i + structSize] for i in range(0, len(buff), structSize)]
-
-    def rpgLog(self):
-        NoesisViewer(self).call()

@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-python2 lib/main.py
+python2 lib/NoesisApplication.py
