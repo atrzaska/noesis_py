@@ -4,23 +4,26 @@ from noesis import noesis
 from importlib import import_module
 from NoesisViewer import NoesisViewer
 import rapi
+import os
+import sys
 
 class NoesisApplication:
     def run(self):
         for plugin in self.plugins():
             plugin.registerNoesisTypes()
 
-        # with open("./data/model.pmd", "rb") as f:
-        #     noesis.plugins[20].noepyLoadModel(f, noesis.models)
+        file = sys.argv[1]
 
-        with open("./data/other/c001_decrypted.mdl", "rb") as f:
-            noesis.plugins[21].noepyLoadModel(f, noesis.models)
+        filename, file_extension = os.path.splitext(file)
 
-        # with open("./data/other/h001_decrypted.mdl", "rb") as f:
-        #     noesis.plugins[21].noepyLoadModel(f, noesis.models)
+        plugin = [x for x in noesis.plugins if x.format == file_extension]
 
-        NoesisViewer(rapi.rpg).call()
-        rapi.rpgLog()
+        if plugin:
+            with open("./data/other/c001_decrypted.mdl", "rb") as f:
+                plugin[0].noepyLoadModel(f, noesis.models)
+            NoesisViewer(rapi.rpg).call()
+        else:
+            print("File format not supported")
 
     def plugins(self):
         files = glob.glob("lib/plugins/fmt_*.py")
