@@ -30,3 +30,59 @@ def imageDecodePVRTC(buff, width, height, bpp):
 def imageFlipRGBA32(r, width, height, unk0, unk1):
     # TODO: implement me
     return r
+
+def getExtensionlessName(arg):
+    # TODO: needed for dreamy theater
+    pass
+
+def getLocalFileName(arg):
+    # TODO: needed for dreamy theater
+    pass
+
+def getLastCheckedName():
+    # TODO: needed for dreamy theater
+    pass
+
+def getDirForFilePath(path):
+    # TODO: needed for dreamy theater
+    pass
+
+def loadIntoByteArray(path):
+    # TODO: needed for dreamy theater
+    pass
+
+def rpgClearBufferBinds():
+    # TODO: needed for dreamy theater
+    pass
+
+def setPreviewOption(key, value):
+    # TODO: needed for dreamy theater
+    pass
+
+def rpgSetName(name):
+    # TODO: needed for dreamy theater
+    pass
+
+def rpgSetUVScaleBias(vec1, vec_2):
+    # TODO: needed for dreamy theater
+    pass
+
+def rpgSetBoneMap(boneMap):
+    # TODO: needed for dreamy theater
+    pass
+
+def imageDecodeDXT(buff, width, height, type):
+    # TODO: needed for dreamy theater
+    pass
+
+def rpgBindColorBufferOfs(buff, typeSize, structSize, structOffset, unk_4):
+    # TODO: needed for dreamy theater
+    pass
+
+def rpgBindBoneWeightBufferOfs(buff, typeSize, structSize, structOffset, unk_4):
+    # TODO: needed for dreamy theater
+    pass
+
+def rpgBindBoneIndexBufferOfs(boneBuff, typeSize, structSize, structOffset, unk_4):
+    # TODO: needed for dreamy theater
+    pass
