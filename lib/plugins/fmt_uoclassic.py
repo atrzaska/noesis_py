@@ -11,10 +11,10 @@ UO_NEW_MULTI_VER = True #set to false to load legacy multi files
 def registerNoesisTypes():
     handle = noesis.register("Ultima Online UOP Archive", ".uop")
     noesis.setHandlerExtractArc(handle, extractUOP)
-    
+
     handle = noesis.register("Ultima Online MUL Archive", ".mul")
     noesis.setHandlerExtractArc(handle, extractMUL)
-    
+
     handle = noesis.register("Ultima Online Anim", ".uo_anim")
     noesis.setHandlerTypeCheck(handle, uoAnimCheckType)
     noesis.setHandlerLoadRGBA(handle, uoAnimLoadRGBA)
@@ -38,7 +38,7 @@ def registerNoesisTypes():
     handle = noesis.register("Ultima Online Map", ".uo_map")
     noesis.setHandlerTypeCheck(handle, uoMapCheckType)
     noesis.setHandlerLoadRGBA(handle, uoMapLoadRGBA)
-    
+
     return 1
 
 class UOPEntry:
@@ -54,7 +54,7 @@ class UOPEntry:
         if val == 0:
             val = a.dataOfs - b.dataOfs
         return val
-    
+
 def parseUOPEntries(f, baseName, blockOfs, totalFileCount):
     uopEntries = []
     #this could work for maps, but we don't need it since we're able to derive the index from the hash.
@@ -79,7 +79,7 @@ def parseUOPEntries(f, baseName, blockOfs, totalFileCount):
                 f.seek(-4, os.SEEK_CUR)
 
             if readSize > 0:
-                explicitId = sortKey if useSortKey else rapi.callExtensionMethod("uo_id_for_hash", nameHash)                    
+                explicitId = sortKey if useSortKey else rapi.callExtensionMethod("uo_id_for_hash", nameHash)
                 uopEntry = UOPEntry(explicitId, nameHash, f.tell(), compType, readSize, decompSize)
                 uopEntries.append(uopEntry)
                 if len(uopEntries) >= totalFileCount:
@@ -98,12 +98,12 @@ def extractUOP(fileName, fileLen, justChecking):
             return 0
         if totalFileCount == 0:
             return 0
-            
+
         if justChecking:
             return 1
-            
+
         baseName = rapi.getExtensionlessName(rapi.getLocalFileName(fileName)).lower()
-        
+
         #the typical form used is:
         #hash = rapi.callExtensionMethod("uo_hash_war", "build/uop/########.*", 0xDEADBEEF)
         #however, many uop's use explicit names and/or different extensions. for our purposes we only care about trying to preserve id's.
@@ -116,15 +116,15 @@ def extractUOP(fileName, fileLen, justChecking):
         rapi.callExtensionMethod("uo_prime_hash", "build/" + baseName + "/", ".dat", 0, 131072, 8, 0xDEADBEEF)
         #explicit hashes can be associated with id's like this:
         #rapi.callExtensionMethod("uo_hash_for_id", "build/whatever/balls.bin", 0xDEADBEEF, 1337)
-        
-        uopEntries = parseUOPEntries(f, baseName, blockOfs, totalFileCount) 
+
+        uopEntries = parseUOPEntries(f, baseName, blockOfs, totalFileCount)
 
         if len(uopEntries) == 0:
             print("No exportable files found in UOP.")
             return 1
 
         uopEntries = sorted(uopEntries, key=noeCmpToKey(UOPEntry.Compare))
-        
+
         #create index and mul data bytearrays, then just export them as archive files (convenience)
         idxData = bytearray()
         idxDataNonExplicit = bytearray()
@@ -135,7 +135,7 @@ def extractUOP(fileName, fileLen, justChecking):
             if uopEntry.compType == 1:
                 dstData = rapi.decompInflate(srcData, uopEntry.decompSize)
             else:
-                dstData = srcData                    
+                dstData = srcData
             print("Writing data at", uopEntry.dataOfs, "-", "id:", uopEntry.explicitId, "size:", len(dstData), "hash:", uopEntry.nameHash)
             packedIdx = noePack("III", len(mulData), len(dstData), 0)
             if uopEntry.explicitId != 0xFFFFFFFF:
@@ -158,7 +158,7 @@ def extractUOP(fileName, fileLen, justChecking):
         else:
             rapi.exportArchiveFile(baseName + ".idx", idxData + idxDataNonExplicit)
             rapi.exportArchiveFile(baseName + ".mul", mulData)
-        
+
         return 1
 
     return 0
@@ -170,7 +170,7 @@ def findIDXForMUL(baseName):
     testName = baseName + "idx.mul"
     if os.path.exists(testName):
         return testName
-        
+
     path, name = os.path.split(baseName)
     if name.startswith("statics"):
         testName = path + "/" + name.replace("statics", "staidx") + ".mul"
@@ -184,9 +184,9 @@ def findIDXForMUL(baseName):
         testName = path + "/" + "gumpidx.mul"
         if os.path.exists(testName):
             return testName
-    
+
     return None
-    
+
 def mulPassthroughHandler(rawData, rawIndex, mulName, offsetInMul, sizeInMul, resvValue):
     #applies to any format that doesn't require export processing
     return rawData
@@ -199,16 +199,16 @@ def mulSoundHandler(rawData, rawIndex, mulName, offsetInMul, sizeInMul, resvValu
     #sample/bit rate of all sounds is fixed, so just plop it out with a RIFF WAVE header
     waveHeaderData = rapi.createPCMWaveHeader(len(rawData), 16, 22050, 1)
     return waveHeaderData + rawData
-    
+
 def extractMUL(fileName, fileLen, justChecking):
     baseName = rapi.getExtensionlessName(fileName).lower()
     idxName = findIDXForMUL(baseName)
     if idxName is None:
         return 0
-        
+
     if justChecking:
         return 1
-        
+
     supportedPrefixHandlers = (
         ("__raw__", ".uo_raw", mulPassthroughHandler), #must remain as first entry
         ("animationframe", ".uo_animframe", mulPassthroughHandler),
@@ -226,7 +226,7 @@ def extractMUL(fileName, fileLen, justChecking):
         if localName.startswith(handlerPrefix):
             useHandler = handler
             break
-        
+
     if useHandler is None:
         print("No resource handlers found, extracting as unknown/raw.")
         useHandler = supportedPrefixHandlers[0]
@@ -294,7 +294,7 @@ def uoAnimLoadRGBA(data, texList):
         height = bs.readShort()
         canvasHeight = max(canvasHeight, height + centerY)
     canvasHeight += maxYOffset
-    
+
     baseTexName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getLastCheckedName()))
     for frameOffset in frameOffsets:
         bs.seek(512 + frameOffset, NOESEEK_ABS)
@@ -302,7 +302,7 @@ def uoAnimLoadRGBA(data, texList):
         centerY = bs.readShort()
         width = bs.readShort()
         height = bs.readShort()
-        
+
         encodedDataOfs = bs.getOffset()
         encodedData = bs.getBuffer()[encodedDataOfs:]
         #decode the pixel data
@@ -310,13 +310,13 @@ def uoAnimLoadRGBA(data, texList):
         texName = baseTexName + "_frame" + repr(len(texList))
         tex = NoeTexture(texName, canvasWidth, canvasHeight, decodedData, noesis.NOESISTEX_RGBA32)
         texList.append(tex)
-    
+
     return 1
 
 def uoGumpCheckType(data):
     #unique extension will have to be enough for now
     return 1
-    
+
 def uoGumpLoadRGBA(data, texList):
     bs = NoeBitStream(data)
     height = bs.readUShort()
@@ -342,11 +342,11 @@ def uoTexCheckType(data):
     if len(data) != 0x2000 and len(data) != 0x8000:
         return 0
     return 1
-    
+
 def uoTexLoadRGBA(data, texList):
     width = 64 if len(data) == 0x2000 else 128
     height = width
-    
+
     rgbaData = rapi.imageDecodeRaw(data, width, height, "b5g5r5p1")
     tex = NoeTexture("uo_tex_tex", width, height, rgbaData, noesis.NOESISTEX_RGBA32)
     texList.append(tex)
@@ -355,10 +355,10 @@ def uoTexLoadRGBA(data, texList):
 def uoArtTileCheckType(data):
     #unique extension will have to be enough for now
     return 1
-    
+
 def uoArtTileLoadRGBADirect(data):
     bs = NoeBitStream(data)
-    
+
     rawFlag = bs.readUInt()
     #is this really correct? seems pretty flaky, since a raw might have first pixel non-black and second black.
     #seems like doc is wrong here, and should be using tile data to determine type instead.
@@ -376,11 +376,11 @@ def uoArtTileLoadRGBADirect(data):
         width = 44
         height = 44
         halfWidth = width // 2
-        
+
         startOfs = 1
         startIncr = 1
         imageData = [0] * width * height
-        
+
         y = 0
         while startOfs != 0:
             x = halfWidth - startOfs
@@ -397,9 +397,9 @@ def uoArtTileLoadRGBADirect(data):
         rgbaData = rapi.imageDecodeRaw(noePack("H" * width * height, *imageData), width, height, "b5g5r5a1")
         tex = NoeTexture("uo_art_raw_tex", width, height, rgbaData, noesis.NOESISTEX_RGBA32)
         return tex
-    
+
     return None
-    
+
 def uoArtTileLoadRGBA(data, texList):
     tex = uoArtTileLoadRGBADirect(data)
     if tex is not None:
@@ -410,7 +410,7 @@ def uoArtTileLoadRGBA(data, texList):
 def uoMultiTileCheckType(data):
     #unique extension will have to be enough for now
     return 1
-    
+
 def findMulRelativeToFile(fileName, mulName):
     localPath = rapi.getDirForFilePath(fileName)
     for attemptCount in range(1, 4):
@@ -418,7 +418,7 @@ def findMulRelativeToFile(fileName, mulName):
         if os.path.exists(testPath + mulName):
             return testPath
     return None
-    
+
 UO_OBJFL_BACKGROUND        = (1 << 0)
 UO_OBJFL_WEAPON            = (1 << 1)
 UO_OBJFL_TRANSPARENT    = (1 << 2)
@@ -507,9 +507,9 @@ def uoLoadTileData(basePath):
             unk4, unk5, val, height = noeUnpack("<HBBB", fTileData.read(5))
             itemName = noeStrFromBytes(fTileData.read(20))
             itemData = UOTileItem(flags, height, itemName)
-            tileData.append(itemData)            
+            tileData.append(itemData)
     return tileData
-    
+
 def uoMultiTileLoadRGBA(data, texList):
     loadStartTime = time.time()
 
@@ -519,12 +519,12 @@ def uoMultiTileLoadRGBA(data, texList):
         return 0
 
     bs = NoeBitStream(data)
-    
+
     loadTileStart = time.time()
     tileMulData = uoLoadTileData(rapi.getLastCheckedName())
     loadTileTime = time.time() - loadTileStart
-    
-    loadArtStart = time.time()    
+
+    loadArtStart = time.time()
     canvasWidth = 0
     canvasHeight = 0
     minX = 0
@@ -569,8 +569,8 @@ def uoMultiTileLoadRGBA(data, texList):
     if len(drawBlocks) == 0:
         return 0
 
-    blockBlitStart = time.time()    
-        
+    blockBlitStart = time.time()
+
     drawBlocks = sorted(drawBlocks, key=noeCmpToKey(UODrawBlock.Compare))
     ofsX = 0
     ofsY = 0
@@ -580,26 +580,26 @@ def uoMultiTileLoadRGBA(data, texList):
     if minY < 0:
         ofsY = -minY
         canvasHeight += ofsY
-        
+
     #draw the blocks into the canvas
     imageData = noePack("BBBB", 0, 0, 0, 0) * canvasWidth * canvasHeight
     for drawBlock in drawBlocks:
         tex = drawBlock.tex
         rapi.imageBlit32(imageData, canvasWidth, canvasHeight, ofsX + drawBlock.drawX, ofsY + drawBlock.drawY, tex.pixelData, tex.width, tex.height, 0, 0, 0, 0, noesis.BLITFLAG_ALPHABLEND)
-        
+
     blockBlitTime = time.time()    - blockBlitStart
-        
+
     tex = NoeTexture("uo_multi_tex", canvasWidth, canvasHeight, imageData, noesis.NOESISTEX_RGBA32)
     texList.append(tex)
 
     loadTotalTime = time.time() - loadStartTime
-    
+
     print("Load complete.")
     print("Tile:", loadTileTime)
     print("Art:", loadArtTime)
     print("Draw:", blockBlitTime)
     print("Total:", loadTotalTime)
-    
+
     return 1
 
 def uoMapCheckType(data):
@@ -625,8 +625,8 @@ def uoMapLoadRGBA(data, texList):
 
     dataOfs = 8 + idxSize
 
-    mapHeights = (512, 512, 200, 256, 181, 512)    
-    
+    mapHeights = (512, 512, 200, 256, 181, 512)
+
     mapNumberName = "0"
     baseName = rapi.getLocalFileName(mapFileName).lower()
     mapIndexExpr = re.search("\d", baseName)
@@ -643,13 +643,13 @@ def uoMapLoadRGBA(data, texList):
             #special case, preserve the x after the number
             copyCount = 2 if baseName[numOfs + 1] == 'x' else 1
             mapNumberName = baseName[numOfs:numOfs + copyCount]
-                
+
     mapHeight = mapHeights[mapIndex]
     mapWidth = dataSize // 196 // mapHeight
 
     staticIdxData = None
     staticMulData = None
-    
+
     #let's try to load the statics (optional)
     staticsIdxName = "staidx" + mapNumberName + ".mul"
     staticsMulName = "statics" + mapNumberName + ".mul"
@@ -657,13 +657,13 @@ def uoMapLoadRGBA(data, texList):
     if relPath is not None:
         staticIdxData = rapi.loadIntoByteArray(relPath + staticsIdxName)
         staticMulData = rapi.loadIntoByteArray(relPath + staticsMulName)
-    
+
     imageWidth = mapWidth * 8
     imageHeight = mapHeight * 8
     #this is broken out into a native extension, because it just takes too long to do in python despite its simplicity.
     #the 4 parameters before static data are to allow rendering a sub-region of the map, if desired.
     imageData = rapi.callExtensionMethod("uo_map_render_radar", data[dataOfs : dataOfs + dataSize], radarColors, mapWidth, mapHeight, 0, 0, mapWidth, mapHeight, staticIdxData, staticMulData)
-    
+
     rgbaData = rapi.imageDecodeRaw(imageData, imageWidth, imageHeight, "b5g5r5p1")
     tex = NoeTexture("uo_map_tex", imageWidth, imageHeight, rgbaData, noesis.NOESISTEX_RGBA32)
     texList.append(tex)

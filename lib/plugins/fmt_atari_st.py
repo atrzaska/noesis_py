@@ -12,7 +12,7 @@ def registerNoesisTypes():
     handle = noesis.register("NEOchrome Animation", ".ani")
     noesis.setHandlerTypeCheck(handle, neoAnimCheckType)
     noesis.setHandlerLoadRGBA(handle, neoAnimLoadRGBA)
-    
+
     handle = noesis.register("STX Disk Image", ".stx")
     noesis.setHandlerExtractArc(handle, stxExtractArc)
     noesis.addOption(handle, "-stxapplyfuzzy", "apply fuzzy mask to output.", 0)
@@ -21,7 +21,7 @@ def registerNoesisTypes():
 
     handle = noesis.register("MSA Disk Image", ".msa")
     noesis.setHandlerExtractArc(handle, msaExtractArc)
-    
+
     return 1
 
 NEOCHROME_MODE_LOW = 0 #320x200x16
@@ -36,28 +36,28 @@ NEOCHROME_ANIMSPEED_VALID = (1 << 15)
 NEOCHROME_ANIMSPEED_MASK = 255
 NEOCHROME_BLOCKWIDTH = 16
 NEOCHROME_PALETTE_FORMAT = "b3p1g3p1r3p5" #9-bit RGB 00000RRR0GGG0BBB
-    
+
 class NeochromeImage:
     def __init__(self, bs):
         self.bs = bs
-        
+
     def parseImageHeader(self):
         bs = self.bs
         if bs.getSize() < 128:
             return -1
-        
+
         self.flags = bs.readUShort()
         self.mode = bs.readUShort()
         if self.mode > NEOCHROME_MODE_HIGH:
             return -1
-            
+
         self.palette = rapi.swapEndianArray(bs.readBytes(16 * 2), 2)
         self.decodedPalette = rapi.imageDecodeRaw(self.palette, 16, 1, NEOCHROME_PALETTE_FORMAT)
         #if you want the first entry to be transparent:
         #self.decodedPalette[3] = 0
-            
+
         self.filename = bs.readBytes(12) #tends to be nothing but a bunch of ascii spaces in files in the wild
-        self.colorAnimLimits = bs.readUShort() #Bit 15 is set if animation data is valid. Bit 0-3 right/upper limit, bit 4-7 left/lower limit. 
+        self.colorAnimLimits = bs.readUShort() #Bit 15 is set if animation data is valid. Bit 0-3 right/upper limit, bit 4-7 left/lower limit.
         self.colorAnimSpeedDir = bs.readUShort() #Bit 15 is set if animation is on. Least significant byte should be interpreted as a signed byte and defines the number of vertical blanks between cycles. If it's negative, the number of vertical blanks is |x|-1 and the direction is backwards.
         self.colorAnimSteps = bs.readUShort() #Number of steps to display before moving on to the next picture when the image is part of a slide show.
         self.offsetX = bs.readUShort()
@@ -66,7 +66,7 @@ class NeochromeImage:
         self.height = bs.readUShort()
         bs.seek(33 * 2, NOESEEK_REL) #reserved
         self.dataOffset = bs.tell()
-        
+
         if (self.colorAnimLimits & NEOCHROME_ANIMLIMIT_VALID) and noesis.optWasInvoked("-neoanim"):
             self.enableAnim = True
             self.animLowerLimit = (self.colorAnimLimits & NEOCHROME_ANIMLIMIT_LOWERMASK) >> NEOCHROME_ANIMLIMIT_LOWERSHIFT
@@ -78,14 +78,14 @@ class NeochromeImage:
                 self.animSpeed = 6 #10fps at 60hz
         else:
             self.enableAnim = False
-            
+
         self.setPaletteShift(0)
-        
+
         return 0
-        
+
     def setPaletteShift(self, palShift):
         self.palShift = palShift
-        
+
     def getWidth(self):
         if self.flags == 0xBABE and self.width != 0:
             return self.width
@@ -100,28 +100,28 @@ class NeochromeImage:
             return 200
         else:
             return 400
-            
+
     def shiftedPaletteIndex(self, palIndex):
         if self.enableAnim:
             if palIndex >= self.animLowerLimit and palIndex <= self.animUpperLimit:
                 offsetIndex = (palIndex - self.animLowerLimit) + self.palShift
                 return self.animLowerLimit + (offsetIndex % self.animFrameCount)
-                
+
         return palIndex
-            
+
     def blockOffsetForPixelCoordinate(self, x, y):
         blockSize = self.getBlockSize()
         rowSize = self.getWidth() // NEOCHROME_BLOCKWIDTH * blockSize
         rowOffset = x // NEOCHROME_BLOCKWIDTH * blockSize
         return y * rowSize + rowOffset
-        
+
     def pixelCoordinateForBlockOffset(self, blockOffset):
         blockSize = self.getBlockSize()
         rowSize = self.getWidth() // NEOCHROME_BLOCKWIDTH * blockSize
         x = (blockOffset % rowSize) // blockSize * NEOCHROME_BLOCKWIDTH
         y = blockOffset // rowSize
         return x, y
-            
+
     def getBlockSize(self):
         if self.mode == NEOCHROME_MODE_HIGH:
             return 2
@@ -129,7 +129,7 @@ class NeochromeImage:
             return 4
         else:
             return 8
-            
+
     def rasterizeData(self):
         bs = self.bs
         w = self.getWidth()
@@ -165,9 +165,9 @@ class NeochromeImage:
                     palIndex = (w0 & (1 << bitIndex)) | ((w1 & (1 << bitIndex)) << 1) | ((w2 & (1 << bitIndex)) << 2) | ((w3 & (1 << bitIndex)) << 3)
                     palOffset = self.shiftedPaletteIndex(palIndex >> bitIndex) * 4
                     dst.writeBytes(self.decodedPalette[palOffset : palOffset + 4])
-                    
+
         return dst.getBuffer()
-            
+
 def neoCheckType(data):
     neo = NeochromeImage(NoeBitStream(data, NEOCHROME_ENDIAN))
     if neo.parseImageHeader() != 0:
@@ -178,7 +178,7 @@ def neoLoadRGBA(data, texList):
     neo = NeochromeImage(NoeBitStream(data, NEOCHROME_ENDIAN))
     if neo.parseImageHeader() != 0:
         return 0
-        
+
     imageData = neo.rasterizeData()
     if imageData is None:
         print("Unsupported image mode:", neo.mode)
@@ -186,7 +186,7 @@ def neoLoadRGBA(data, texList):
     noeTex = NoeTexture("neochrometex", neo.getWidth(), neo.getHeight(), imageData, noesis.NOESISTEX_RGBA32)
     noeTex.flags |= noesis.NTEXFLAG_FILTER_NEAREST | noesis.NTEXFLAG_WRAP_CLAMP
     texList.append(noeTex)
-    
+
     if neo.enableAnim:
         for offset in range(1, neo.animFrameCount - 1):
             #should probably expose texture frame data to python one of these days.
@@ -196,34 +196,34 @@ def neoLoadRGBA(data, texList):
             noeTex = NoeTexture("neochrometex%02i"%offset, neo.getWidth(), neo.getHeight(), imageData, noesis.NOESISTEX_RGBA32)
             noeTex.flags |= noesis.NTEXFLAG_FILTER_NEAREST | noesis.NTEXFLAG_WRAP_CLAMP
             texList.append(noeTex)
-    
+
     return 1
-    
+
 def neoWriteRGBA(data, width, height, bs):
     exportWidth = 320
     exportHeight = 200
-    
+
     if width != exportWidth or height != exportHeight:
         data = rapi.imageResample(data, width, height, exportWidth, exportHeight)
-    
+
     #encode and then decode in order to quantize colors into neo range - this will give us a more effective palettization
     data = rapi.imageEncodeRaw(data, exportWidth, exportHeight, NEOCHROME_PALETTE_FORMAT)
     data = rapi.imageDecodeRaw(data, exportWidth, exportHeight, NEOCHROME_PALETTE_FORMAT)
-    
+
     dataPal = rapi.imageGetPalette(data, exportWidth, exportHeight, 16, 0, 0)
     dataIdx = rapi.imageApplyPalette(data, exportWidth, exportHeight, dataPal, 16) #just leave as 8 bits, we'll encode into planar format
 
     neoPal = rapi.imageEncodeRaw(dataPal, 16, 1, NEOCHROME_PALETTE_FORMAT)
     neoPal = rapi.swapEndianArray(neoPal, 2)
-    
+
     bs.setEndian(NEOCHROME_ENDIAN)
-    
+
     bs.writeUShort(0)
     bs.writeUShort(NEOCHROME_MODE_LOW)
     bs.writeBytes(neoPal)
     bs.writeString("        .   ", 0)
     bs.writeBytes(bytes(80))
-    
+
     indexBs = NoeBitStream(dataIdx)
     blockCount = exportWidth * exportHeight // NEOCHROME_BLOCKWIDTH
     for blockIndex in range(0, blockCount):
@@ -247,19 +247,19 @@ def neoWriteRGBA(data, width, height, bs):
         bs.writeUShort(w1)
         bs.writeUShort(w2)
         bs.writeUShort(w3)
-                
+
     return 1
 
 class NeochromeAnim:
     def __init__(self, bs, pathName):
         self.bs = bs
         self.pathName = pathName
-        
+
     def parseImageHeader(self):
         bs = self.bs
         if bs.readUInt() != 0xBABEEBEA:
             return -1
-            
+
         self.palette = None
         self.widthInBytes = bs.readUShort()
         self.height = bs.readUShort()
@@ -293,12 +293,12 @@ class NeochromeAnim:
             neo = NeochromeImage(NoeBitStream(neoData, NEOCHROME_ENDIAN))
             if neo.parseImageHeader() == 0:
                 self.palette = neo.decodedPalette
-        
+
     def rasterizeData(self, frameIndex):
         bs = self.bs
         if self.mode != NEOCHROME_MODE_LOW: #if aiming to support other modes, just unify with .neo rasterizing
             return None
-            
+
         w = self.getWidth()
         h = self.getHeight()
         dst = NoeBitStream()
@@ -313,25 +313,25 @@ class NeochromeAnim:
                 palIndex = (w0 & (1 << bitIndex)) | ((w1 & (1 << bitIndex)) << 1) | ((w2 & (1 << bitIndex)) << 2) | ((w3 & (1 << bitIndex)) << 3)
                 if self.palette:
                     palOffset = (palIndex >> bitIndex) * 4
-                    dst.writeBytes(self.palette[palOffset : palOffset + 4])        
+                    dst.writeBytes(self.palette[palOffset : palOffset + 4])
                 else:
                     monoColor = (palIndex >> bitIndex) << 4
                     dst.writeBytes(noePack("BBBB", monoColor, monoColor, monoColor, 255))
         return dst.getBuffer()
-    
+
 def neoAnimCheckType(data):
     neoAnim = NeochromeAnim(NoeBitStream(data, NEOCHROME_ENDIAN), rapi.getLastCheckedName())
     if neoAnim.parseImageHeader() != 0:
         return 0
     return 1
-    
+
 def neoAnimLoadRGBA(data, texList):
     neoAnim = NeochromeAnim(NoeBitStream(data, NEOCHROME_ENDIAN), rapi.getLastCheckedName())
     if neoAnim.parseImageHeader() != 0:
         return 0
-        
+
     neoAnim.attemptPaletteLoad()
-        
+
     for frameIndex in range(0, neoAnim.frameCount):
         #should probably expose texture frame data to python one of these days.
         imageData = neoAnim.rasterizeData(frameIndex)
@@ -339,9 +339,9 @@ def neoAnimLoadRGBA(data, texList):
             noeTex = NoeTexture("neochromeani%02i"%frameIndex, neoAnim.getWidth(), neoAnim.getHeight(), imageData, noesis.NOESISTEX_RGBA32)
             noeTex.flags |= noesis.NTEXFLAG_FILTER_NEAREST | noesis.NTEXFLAG_WRAP_CLAMP
             texList.append(noeTex)
-        
+
     return 1
-    
+
 STX_TRACKBIT_PROTECTED = (1 << 0)
 STX_TRACKBIT_FILLGAPS = (1 << 6)
 STX_TRACKBIT_SYNCOFFSET = (1 << 7)
@@ -349,7 +349,7 @@ STX_TRACKBIT_SYNCOFFSET = (1 << 7)
 STX_FDCBIT_NOTFOUND = (1 << 4)
 STX_FDCBIT_CRCERROR = (1 << 3)
 STX_FDCBIT_FUZZYMASK = (1 << 7)
-    
+
 class STXSectorHeader:
     def __init__(self, bs, track, sectorsByTrack):
         self.track = track
@@ -365,7 +365,7 @@ class STXSectorHeader:
         self.flags = bs.readUByte()
         self.applyFuzzyMask = False
         sectorsByTrack.setdefault(self.trackNumber, []).append(self)
-        
+
     def readSectorData(self, bs, sectorsPerTrack):
         track = self.track
         data = None
@@ -387,14 +387,14 @@ class STXSectorHeader:
             else:
                 data = sectorData
         return data
-        
+
     def Compare(a, b):
         if a.trackNumber == b.trackNumber:
             if a.side == b.side:
                 return a.id - b.id
             return a.side - b.side
         return a.trackNumber - b.trackNumber
-    
+
 class STXTrack:
     def __init__(self, bs, uid, sectorsByTrack):
         self.headerOffset = bs.tell()
@@ -408,21 +408,21 @@ class STXTrack:
         self.trackImageType = bs.readUByte()
         self.sectorHeaders = []
         self.fuzzyOffset = 0
-        
+
         #we don't really care since sector offsets work out just fine without handling this data.
         #if (self.flags & (STX_TRACKBIT_FILLGAPS | STX_TRACKBIT_SYNCOFFSET)):
         #    print("Warning: STX_TRACKBIT_FILLGAPS / STX_TRACKBIT_SYNCOFFSET not implemented:", self.trackIndex, self.flags)
-        
+
         if (self.flags & STX_TRACKBIT_PROTECTED):
             for sectorIndex in range(0, self.sectorCount):
                 self.sectorHeaders.append(STXSectorHeader(bs, self, sectorsByTrack))
-                
+
         self.sectorHeaders = sorted(self.sectorHeaders, key=noeCmpToKey(STXSectorHeader.Compare))
-                
+
         self.maxSide = 0
         for sectorHeader in self.sectorHeaders:
             self.maxSide = max(self.maxSide, sectorHeader.side)
-                
+
         self.fuzzyMask = bs.readBytes(fuzzyMaskLength) if fuzzyMaskLength > 0 else None
         if self.fuzzyMask and noesis.optWasInvoked("-stxapplyfuzzy"):
             for sectorHeader in self.sectorHeaders:
@@ -430,15 +430,15 @@ class STXTrack:
                     sectorHeader.fuzzyOffset = self.fuzzyOffset
                     self.fuzzyOffset += sectorHeader.size
                     sectorHeader.applyFuzzyMask = True
-        
+
         self.dataOffset = bs.tell()
         self.headerSize = self.dataOffset - self.headerOffset
         bs.seek(self.headerOffset + self.trackLength, NOESEEK_ABS)
-            
+
     def readData(self, bs, sectorsPerTrack, sectorsByTrack):
         data = bytearray()
         expectedSectorSize = 512
-        
+
         if len(self.sectorHeaders) == 0:
             bs.seek(self.dataOffset, NOESEEK_ABS)
             data += bs.readBytes(self.sectorCount * expectedSectorSize)
@@ -448,7 +448,7 @@ class STXTrack:
             else:
                 return None
             allSectors = sorted(allSectors, key=noeCmpToKey(STXSectorHeader.Compare))
-            
+
             side = -1
             dataIndex = -1
             dataBySide = []
@@ -468,14 +468,14 @@ class STXTrack:
                         print("Padding sector data for track", self.trackIndex, "-", len(sideData), "to", expectedTrackSize)
                         sideData += bytearray(expectedTrackSize - len(sideData))
                 data += sideData
-                    
+
         return data
-        
+
     def Compare(a, b):
         if a.trackIndex == b.trackIndex:
             return a.maxSide - b.maxSide
-        return a.trackIndex - b.trackIndex        
-    
+        return a.trackIndex - b.trackIndex
+
 def stxExtractArc(fileName, fileLen, justChecking):
     if fileLen < 16:
         return 0
@@ -496,35 +496,35 @@ def stxExtractArc(fileName, fileLen, justChecking):
         bs.readUInt() #?
         if (16 + trackCount * 16) >= fileLen:
             return 0
-        
+
         if justChecking:
             return 1
-            
+
 
         sectorsByTrack = {}
-            
+
         tracks = []
         for trackIndex in range(0, trackCount):
             tracks.append(STXTrack(bs, trackIndex, sectorsByTrack))
-            
+
         sectorsPerTrack = 10
         #try to pull intended sectors per track out of the boot sector
         if len(tracks) > 0:
             bootSector = tracks[0].readData(bs, 1, sectorsByTrack)
             if bootSector:
                 sectorsPerTrack = noeUnpack("H", bootSector[0x18 : 0x1A])[0]
-            
+
         imageData = bytearray()
         for track in tracks:
             trackData = track.readData(bs, sectorsPerTrack, sectorsByTrack)
             if trackData:
                 print("Track data", track.trackIndex, "-", track.dataOffset, "-", len(trackData))
                 imageData += trackData
-            
+
         imageFilename = "diskimage.fat12"
         print("Writing", imageFilename)
         rapi.exportArchiveFile(imageFilename, imageData)
-            
+
     return 1
 
 def msaExtractArc(fileName, fileLen, justChecking):
@@ -541,10 +541,10 @@ def msaExtractArc(fileName, fileLen, justChecking):
         uncompressedTrackSize = sectorsPerTrack * 512
         if sectorsPerTrack == 0 or endTrack <= startTrack or sideCount > 2:
             return 0
-            
+
         if justChecking:
             return 1
-        
+
         imageData = bytearray()
         for trackIndex in range(startTrack * sideCount, endTrack * sideCount):
             trackSize = bs.readUShort()
@@ -563,9 +563,9 @@ def msaExtractArc(fileName, fileLen, justChecking):
                     else:
                         dbs.writeUByte(b)
                 imageData += dbs.getBuffer()
-        
+
         imageFilename = "diskimage.fat12"
         print("Writing", imageFilename)
         rapi.exportArchiveFile(imageFilename, imageData)
-        
+
         return 1

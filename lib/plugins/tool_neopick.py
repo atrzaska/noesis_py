@@ -32,7 +32,7 @@ def neoPickAttachNeoToNoeWnd(noeWnd, data):
         noeWnd.neoObject = neo
         flippedImage = rapi.imageFlipRGBA32(neo.rasterizeData(), neo.getWidth(), neo.getHeight(), 0, 1)
         noeWnd.neoDIB = bytes(rapi.imageEncodeRaw(flippedImage, neo.getWidth(), neo.getHeight(), "b8g8r8"))
-        
+
         bmi = noewin.BITMAPINFO()
         bmi.bmiHeader.biBitCount = 24
         bmi.bmiHeader.biWidth = neo.getWidth()
@@ -41,11 +41,11 @@ def neoPickAttachNeoToNoeWnd(noeWnd, data):
         bmi.bmiHeader.biSize = sizeof(noewin.BITMAPINFOHEADER)
         bmi.bmiHeader.biSizeImage = neo.getWidth() * neo.getHeight() * 3
         bmi.bmiHeader.biCompression = 0
-        
+
         noeWnd.neoBMI = bmi
         return True
     return False
-            
+
 def neoPickToolMethod(toolIndex):
     filePath = noesis.getSelectedFile()
     nameNoExt, ext = os.path.splitext(filePath)
@@ -53,7 +53,7 @@ def neoPickToolMethod(toolIndex):
 
     noeMod = noesis.instantiateModule()
     noesis.setModuleRAPI(noeMod)
-    
+
     with open(filePath, "rb") as f:
         data = f.read()
 
@@ -68,7 +68,7 @@ def neoPickToolMethod(toolIndex):
     noeWnd.imgCoordY = 0
     noeWnd.clipAddrs = set([])
     noeWnd.pickPath = neoPickPath
-    
+
     if neoPickAttachNeoToNoeWnd(noeWnd, data):
         noeWnd.originalData = data
         #offset a bit into the noesis window
@@ -79,7 +79,7 @@ def neoPickToolMethod(toolIndex):
             noeWnd.y = noeWindowRect[1] + windowMargin
         if noeWnd.createWindow():
             noeWnd.doModal()
-                        
+
     noesis.freeModule(noeMod)
 
     return 0
@@ -90,9 +90,9 @@ def neoPickWindowProc(hWnd, message, wParam, lParam):
         ps = noewin.PAINTSTRUCT()
         rect = noewin.RECT()
         hBlitDC = user32.BeginPaint(hWnd, byref(ps))
-        user32.GetClientRect(hWnd, byref(rect))    
+        user32.GetClientRect(hWnd, byref(rect))
         hDC = gdi32.CreateCompatibleDC(hBlitDC)
-        bpp = gdi32.GetDeviceCaps(hBlitDC, 12)    
+        bpp = gdi32.GetDeviceCaps(hBlitDC, 12)
         width = rect.right - rect.left
         height = rect.bottom - rect.top
         hBmp = gdi32.CreateBitmap(width, height, 1, bpp, 0)
@@ -102,16 +102,16 @@ def neoPickWindowProc(hWnd, message, wParam, lParam):
 
         hBc = gdi32.CreateSolidBrush(noewin.RGB(255, 0, 0))
         hBcHighlight = gdi32.CreateSolidBrush(noewin.RGB(255, 127, 0))
-            
+
         if noeWnd.neoDIB:
             bmi = noeWnd.neoBMI
             neo = noeWnd.neoObject
             gdi32.StretchDIBits(hDC, 0, 0, noeWnd.drawWidth, noeWnd.drawHeight, 0, 0, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight, cast(noeWnd.neoDIB, POINTER(c_ubyte * len(noeWnd.neoDIB))), byref(bmi), noewin.DIB_RGB_COLORS, noewin.SRCCOPY)
-            
+
             blockOffset = neo.blockOffsetForPixelCoordinate(noeWnd.imgCoordX, noeWnd.imgCoordY)
             blockX, blockY = neo.pixelCoordinateForBlockOffset(blockOffset)
             absAddr = neo.dataOffset + blockOffset + neo.getBlockSize()
-            
+
             toDrawWidth = noeWnd.drawWidth / neo.getWidth()
             toDrawHeight = noeWnd.drawHeight / neo.getHeight()
             drawX = min(max(int(blockX * toDrawWidth), 0), noeWnd.drawWidth - 1)
@@ -124,7 +124,7 @@ def neoPickWindowProc(hWnd, message, wParam, lParam):
                     dHX = min(max(int(hX * toDrawWidth), 0), noeWnd.drawWidth - 1)
                     dHY = min(max(int(hY * toDrawHeight), 0), noeWnd.drawHeight - 1)
                     gdi32.Rectangle(hDC, dHX, dHY, int(dHX + NEOCHROME_BLOCKWIDTH * toDrawWidth), int(dHY + 1 * toDrawHeight))
-            
+
             gdi32.SelectObject(hDC, hBc)
             gdi32.Rectangle(hDC, drawX, drawY, int(drawX + NEOCHROME_BLOCKWIDTH * toDrawWidth), int(drawY + 1 * toDrawHeight))
 
@@ -132,14 +132,14 @@ def neoPickWindowProc(hWnd, message, wParam, lParam):
             gdi32.SetBkMode(hDC, noewin.TRANSPARENT)
             clippedText = "(clipped)" if absAddr in noeWnd.clipAddrs else "(unclipped)"
             noewin.user32.DrawTextW(hDC, "%i, %i / %i "%(blockX, blockY, blockOffset) + clippedText, -1, byref(rect), noewin.DT_SINGLELINE | noewin.DT_CENTER)
-            
+
         gdi32.BitBlt(hBlitDC, 0, 0, width, height, hDC, 0, 0, 0x00CC0020)
         gdi32.DeleteDC(hDC)
         gdi32.DeleteObject(hBmp)
         gdi32.DeleteObject(hBc)
         gdi32.DeleteObject(hBcHighlight)
         user32.EndPaint(hWnd, byref(ps))
-                
+
         return 0
     elif message == noewin.WM_ERASEBKGND:
         return 0
@@ -191,5 +191,5 @@ def neoPickWindowProc(hWnd, message, wParam, lParam):
             noeWnd = noewin.getNoeWndForHWnd(hWnd)
             noeWnd.showClipped = False
             user32.InvalidateRect(noeWnd.hWnd, 0, False)
-    
+
     return noewin.defaultWindowProc(hWnd, message, wParam, lParam)

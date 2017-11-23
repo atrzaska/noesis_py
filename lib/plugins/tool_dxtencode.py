@@ -13,7 +13,7 @@ def registerNoesisTypes():
     handle = noesis.registerTool("Encode DXT", dxtEncodeToolMethod, "Encode DXT for image.")
     noesis.setToolFlags(handle, noesis.NTOOLFLAG_CONTEXTITEM)
     noesis.setToolVisibleCallback(handle, dxtEncodeContextVisible)
-    
+
     return 1
 
 def dxtEncodeContextVisible(toolIndex, selectedFile):
@@ -54,14 +54,13 @@ def dxtEncodeToolMethod(toolIndex):
             dxtData += dxtMip #append the dxt-encoded mip to the dxt data
             lastMipW = mipW
             lastMipH = mipH
-    
+
     ddsData = rapi.imageGetDDSFromDXT(dxtData, srcTex.width, srcTex.height, mipCount, DXT_FOURCC_FORMAT)
 
     noesis.freeModule(noeMod)
 
     with open(dstName, "wb") as f:
         f.write(ddsData)
-    
+
     noesis.openFile(dstName)
     return 0
-    

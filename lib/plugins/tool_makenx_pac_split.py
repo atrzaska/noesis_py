@@ -24,18 +24,18 @@ def spTagForStr(str):
         r |= (ord(c)<<shift)
         shift += 8
     return r
-    
+
 def spToolMethod(toolIndex):
     fileName = noesis.getSelectedFile()
-    
+
     noeMod = noesis.instantiateModule()
     noesis.setModuleRAPI(noeMod)
 
     data = rapi.loadIntoByteArray(fileName)
     bs = NoeBitStream(data)
-    
+
     nameBase = rapi.getExtensionlessName(fileName) + "_"
-    
+
     try:
         noesis.logPopup()
         writtenFiles = 0
@@ -63,7 +63,7 @@ def spToolMethod(toolIndex):
                 elif tag in supportedTags:
                     dataSize = bs.readUInt()
             bs.seek(dataSize, NOESEEK_REL)
-                
+
             if doneParsing is True or tag == splitTag:
                 if bsOut.getSize() > 0:
                     writeName = nameBase + "%04i"%writtenFiles + dumpExt
@@ -72,12 +72,12 @@ def spToolMethod(toolIndex):
                         print("Writing", writeName)
                         f.write(bsOut.getBuffer())
                         bsOut = NoeBitStream()
-                    
+
             if dataSize > 0:
                 bsOut.writeBytes(data[curOfs:bs.tell()])
     except:
         print("Parsing exception. Aborting.")
         pass
-        
+
     noesis.freeModule(noeMod)
     return 0

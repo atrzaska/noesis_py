@@ -33,7 +33,7 @@ class ASTCImage:
             return -1
         self.dataOffset = bs.tell()
         return 0
-        
+
     def decode(self):
         bs = self.reader
         remainingBuffer = bs.getBuffer()[self.dataOffset:]
@@ -41,7 +41,7 @@ class ASTCImage:
         if ASTC_FLIP:
             data = rapi.imageFlipRGBA32(data, self.imageWidth, self.imageHeight, 0, 1)
         return data
-    
+
 def astcCheckType(data):
     astc = ASTCImage(NoeBitStream(data))
     if astc.parseImageInfo() != 0:

@@ -25,7 +25,7 @@ def registerNoesisTypes():
     handle = noesis.register("Gamebryo KF", ".kf")
     noesis.setHandlerTypeCheck(handle, nifCheckType)
     noesis.setHandlerLoadModel(handle, kfLoadModel)
-    
+
     return 1
 
 
@@ -41,7 +41,7 @@ def nifStrFromBytes(data):
         str = "not_an_ascii_string"
     return str
 
-    
+
 def nifNoeDataTypeForNifDataType(nifType):
     if nifType > 56:
         #seems to represent packed normal types, noesis can decode these, but I'm too lazy to support it
@@ -142,7 +142,7 @@ class NifTexMap:
     def __init__(self, nif, bs):
         #each texture map in a texturingproperty references a source texture
         self.sourceTexLinkID = nif.loadLinkID(bs)
-        
+
         if nif.fileVer < nifVersion(20, 1, 0, 2):
             unusedClamp = bs.readUInt()
             unusedFilter = bs.readUInt()
@@ -204,11 +204,11 @@ class NifSkinPartition:
         self.numBones = bs.readUShort()
         self.numStrips = bs.readUShort()
         self.weightsPerVert = bs.readUShort()
-        
+
         self.skinBonesList = []
         for i in range(0, self.numBones):
             self.skinBonesList.append(bs.readUShort())
-        
+
         hasVertMap = bs.readUByte() > 0
         self.vertMap = None
         if hasVertMap is True:
@@ -218,7 +218,7 @@ class NifSkinPartition:
         hasWeights = bs.readUByte() > 0
         if hasWeights is True:
             self.weightData = bs.readBytes(self.numVerts*self.weightsPerVert*4)
-            
+
         if self.numStrips > 0:
             stripLengthData = bs.readBytes(self.numStrips*2)
             self.stripLengths = rapi.dataToIntList(stripLengthData, self.numStrips, noesis.RPGEODATA_USHORT, NOE_LITTLEENDIAN if nif.isLittleEndian else NOE_BIGENDIAN)
@@ -227,11 +227,11 @@ class NifSkinPartition:
                 self.triListLen += self.stripLengths[i]
         else:
             self.triListLen = self.numTris*3
-            
+
         hasTriList = bs.readUByte() > 0
         if hasTriList is True:
             self.triListData = bs.readBytes(self.triListLen*2)
-        
+
         hasBonePalette = bs.readUByte() > 0
         if hasBonePalette is True:
             self.bonePalData = bs.readBytes(self.numVerts*self.weightsPerVert)
@@ -251,7 +251,7 @@ class NifObject:
         self.matrix = None
         self.childLinks = []
         self.parentIndex = -1
-        
+
     def loadGenericString(self, bs):
         str = ""
         #read from stream directly or by using a stringtable index depending on the file version
@@ -271,14 +271,14 @@ class NifObject:
         #print("base load", bs.tell(), "size", self.nifSize)
         if self.nif.fileVer < nifVersion(10, 1, 0, 114):
             self.uniqueID = bs.readUInt()
-    
+
     def loadObjectNET(self, bs):
         #base object stream
         self.loadObject(bs)
         self.name = self.loadGenericString(bs)
         self.extraDataIDs = self.nif.loadLinkIDs(bs)
         self.nif.loadLinkID(bs)
-        
+
     def loadAVObject(self, bs):
         #oriented object stream
         self.loadObjectNET(bs)
@@ -299,15 +299,15 @@ class NifObject:
             self.nif.loadLinkID(bs) #collision node id, unused
         #treat all oriented objects as bones
         self.isBone = True
-        
+
     def loadNode(self, bs):
         #standard node stream
         self.loadAVObject(bs)
-        
+
         self.childLinks = self.nif.loadLinkIDs(bs)
         if self.nif.nifHack != NIF_HACK_FO4:
             self.nif.loadLinkIDs(bs)
-    
+
     def loadExtraData(self, bs):
         #extra data stream
         self.loadObject(bs)
@@ -317,7 +317,7 @@ class NifObject:
         #extra data stream + string
         self.loadExtraData(bs)
         self.stringExtraData = self.loadGenericString(bs)
-        
+
     def loadBinaryExtraData(self, bs):
         #extra data stream + binary
         self.loadExtraData(bs)
@@ -344,11 +344,11 @@ class NifObject:
         #extra data stream + rgba
         self.loadExtraData(bs)
         self.colorExtraData = (bs.readFloat(), bs.readFloat(), bs.readFloat(), bs.readFloat())
-        
+
     def loadProperty(self, bs):
         #base property
         self.loadObjectNET(bs)
-        
+
     def loadMaterialProperty(self, bs):
         #material properties
         self.loadProperty(bs)
@@ -378,7 +378,7 @@ class NifObject:
             self.texPropFlags = 0
         else:
             self.texPropFlags = bs.readUShort()
-            
+
         #run through the list of associated texture(s)
         texListSize = bs.readUInt()
         if texListSize > NIF_MAX_SANE_TEX_LIST_SIZE:
@@ -400,7 +400,7 @@ class NifObject:
             else:
                 tex = None
             self.texList.append(tex)
-            
+
         shaderMapListSize = bs.readUInt()
         if shaderMapListSize > NIF_MAX_SANE_TEX_LIST_SIZE:
             noesis.doException("Unreasonable shader map list size: " + repr(shaderMapListSize))
@@ -432,13 +432,13 @@ class NifObject:
             stencilPassZFail = bs.readUInt()
             stencilPass = bs.readUInt()
             self.cullMode = bs.readUInt()
-            
+
     def loadAlphaProperty(self, bs):
         #alpha properties
         self.loadProperty(bs)
         self.alphaFlags = bs.readUShort()
         self.alphaRef = bs.readUByte()
-            
+
     def loadBSLightingShaderProperty(self, bs):
         #bethesda lighting/shading properties
         self.bsShaderType = bs.readUInt()
@@ -464,7 +464,7 @@ class NifObject:
             self.skinColor = (bs.readFloat(), bs.readFloat(), bs.readFloat())
         elif self.bsShaderType == 6:
             self.hairColor = (bs.readFloat(), bs.readFloat(), bs.readFloat())
-            
+
     def loadBSShaderTextureSet(self, bs):
         #bethesda texture set
         self.loadObject(bs)
@@ -491,10 +491,10 @@ class NifObject:
             self.materialExtraData.append(bs.readUInt())
             self.materialNames.append(matName)
         #print("mats:", self.materialNames, self.materialExtraData)
-    
+
         self.materialIndex = bs.readUInt()
         self.materialNeedsUpdate = bs.readUByte() > 0
-    
+
     def loadMesh(self, bs):
         #mesh properties
         self.loadRenderable(bs)
@@ -525,7 +525,7 @@ class NifObject:
             activeMaterial = bs.readUInt()
             if self.nif.fileVer >= nifVersion(20, 2, 0, 7):
                 unused = bs.readUByte()
-                
+
             if self.nif.nifHack == NIF_HACK_SKYRIM or self.nif.nifHack == NIF_HACK_FO4:
                 l1 = self.nif.loadLinkID(bs)
                 if l1 != NIF_INVALID_LINK_ID:
@@ -538,7 +538,7 @@ class NifObject:
             if hasShader is True:
                 shaderName = self.loadGenericString(bs)
                 unused = bs.readUInt()
-                
+
         self.nif.nifTriGeom.append(self)
 
     def loadBSTriShape(self, bs):
@@ -552,7 +552,7 @@ class NifObject:
         self.skinInstID = self.nif.loadLinkID(bs)
         self.lightingPropID = self.nif.loadLinkID(bs)
         self.alphaPropID = self.nif.loadLinkID(bs)
-        
+
         #add the lighting and alpha properties into the main properties list
         if self.lightingPropID != NIF_INVALID_LINK_ID:
             self.nodePropertyIDs.append(self.lightingPropID)
@@ -575,7 +575,7 @@ class NifObject:
         #or vertSizeFromFlags, but we don't respect bad gpu buffer size.
         #programs producing bad sizes should be fixed for console compatibility.
         self.vertSize = vertDataSize // self.numVerts
-        
+
         self.vertData = bs.readBytes(vertDataSize)
         self.triData = bs.readBytes(indexDataSize)
 
@@ -607,42 +607,42 @@ class NifObject:
             vertOfs += 16
         else:
             vertOfs += 8
-            
+
         if self.vertFlags & 0x0020000000:
             self.uvOffset = vertOfs
             vertOfs += 4
-            
+
         if self.vertFlags & 0x0080000000:
             self.normalOffset = vertOfs
             vertOfs += 4
-        
+
         if self.vertFlags & 0x0000000040:
             self.tangentOffset = vertOfs
             vertOfs += 4
-            
+
         if self.vertFlags & 0x0200000000:
             self.colorOffset = vertOfs
             vertOfs += 4
-            
+
         if self.skinInstID != NIF_INVALID_LINK_ID:
             self.blendIdxOffset = self.vertSize - 4
             self.blendWgtOffset = self.blendIdxOffset - 8
             #still a few of these (looks to be primarily triggered by 0x1000000000), but none in between components we're using.
             #if vertOfs != self.blendWgtOffset:
             #    print("WARNING:", vertOfs, "!=", self.blendIdxOffset, "- unhandled vertFlags:", self.vertFlags)
-        
+
         self.nif.bsTriShapes.append(self)
-        
+
     def loadBSSubIndexTriShape(self, bs):
         if self.nif.nifHack != NIF_HACK_FO4:
-            return    
+            return
         self.loadBSTriShape(bs)
         bs.readUInt() #unknown, numTris?
         #followed by some more values and link id's, perhaps dismemberment-related
-        
+
     def loadBSSkinInstance(self, bs):
         if self.nif.nifHack != NIF_HACK_FO4:
-            return    
+            return
         bs.readUInt() #unknown, always 0?
         self.boneDataID = self.nif.loadLinkID(bs)
         self.numBones = bs.readUInt()
@@ -669,7 +669,7 @@ class NifObject:
             v3 = NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) )
             bs.readFloat()
             self.invBindTransforms.append(NoeMat43( (v0, v1, v2, v3) ))
-        
+
     def loadTriBasedGeomData(self, bs):
         #geometry data
         self.loadObject(bs)
@@ -685,27 +685,27 @@ class NifObject:
         self.geomTangents = None
         self.geomColors = None
         self.geomUVSets = None
-        
+
         geomHasPos = bs.readUByte() > 0
         if geomHasPos is True:
             self.geomPositions = bs.readBytes(self.geomNumVerts*12)
-            
+
         self.geomDataFlags = bs.readUShort()
-        
+
         if self.nif.nifHack == NIF_HACK_SKYRIM or self.nif.nifHack == NIF_HACK_FO4:
             bs.readUInt()
             #bs.readUInt()
-        
+
         geomHasNrm = bs.readUByte() > 0
         if geomHasNrm is True:
             self.geomNormals = bs.readBytes(self.geomNumVerts*12)
             if self.geomDataFlags & 0xF000:
                 self.geomBinormals = bs.readBytes(self.geomNumVerts*12)
                 self.geomTangents = bs.readBytes(self.geomNumVerts*12)
-        
+
         center = NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) )
         rad = bs.readFloat()
-        
+
         geomHasColors = bs.readUByte() > 0
         if geomHasColors is True:
             self.geomColors = bs.readBytes(self.geomNumVerts*16) #float rgba
@@ -716,11 +716,11 @@ class NifObject:
             for i in range(0, numGeomUVSets):
                 geomUVData = bs.readBytes(self.geomNumVerts*8)
                 self.geomUVSets.append(geomUVData)
-                
+
         unused = bs.readUShort()
         if self.nif.fileVer >= nifVersion(10, 3, 0, 7):
             self.geomExtraDataID = self.nif.loadLinkID(bs)
-            
+
         self.geomNumTriangles = bs.readUShort()
 
     def loadTriShapeData(self, bs):
@@ -746,15 +746,15 @@ class NifObject:
             if geomHasStripList is True:
                 geomStripListDataCount = self.geomNumTriangles + self.geomNumStrips*2
                 self.geomStripListData = bs.readBytes(geomStripListDataCount*2)
-        
+
     def loadSourceTexture(self, bs):
         #source texture data, references pixel data object
         self.loadObjectNET(bs)
-        
+
         self.externalTex = bs.readUByte() > 0
         self.texFileName = self.loadGenericString(bs)
         self.pixLinkID = self.nif.loadLinkID(bs)
-            
+
         self.pixelLayout = bs.readUInt()
         self.mipMapped = bs.readUInt()
         self.alphaFormat = bs.readUInt()
@@ -767,7 +767,7 @@ class NifObject:
         #noeTexIndex will be set later if this object is referencing usable pixel data
         self.noeTexIndex = -1
         self.nif.nifTextures.append(self)
-    
+
     def loadSourceCubeMap(self, bs):
         #source texture data for cubemap
         if self.nif.fileVer >= nifVersion(10, 3, 0, 6):
@@ -775,7 +775,7 @@ class NifObject:
         else:
             #previous gamebryo versions stored multiple pixel link id's per cubemap
             self.loadObjectNET(bs)
-            
+
             self.externalTex = bs.readUByte() > 0
             self.cubeTexFileNames = []
             for i in range(0, 6):
@@ -791,11 +791,11 @@ class NifObject:
             self.mipMapped = bs.readUInt()
             self.alphaFormat = bs.readUInt()
             self.texStatic = bs.readUByte() > 0
-            
+
             self.noeTexIndex = -1
             self.nif.nifTextures.append(self)
-        
-            
+
+
     def loadPixelDataGeneric(self, bs, persVersion):
         #raw pixel data object
         self.loadObject(bs)
@@ -807,7 +807,7 @@ class NifObject:
         self.height = 0
         if self.nif.nifHack == NIF_HACK_SPLATTERHOUSE:
             unused = bs.readUInt()
-            
+
         tempMipInfo = []
         for i in range(0, self.mipLevels):
             mipW = bs.readUInt()
@@ -818,23 +818,23 @@ class NifObject:
                 self.height = mipH
             tempMipInfo.append((mipW, mipH, bs.readUInt()))
         self.mipsTotalSize = bs.readUInt()
-        
+
         #pre-determine mip sizes as well now that we've read all the data we need to figure them out
         self.mipInfo = []
         for i in range(0, self.mipLevels):
             mipW, mipH, mipOfs = tempMipInfo[i]
             mipSize = tempMipInfo[i+1][2]-mipOfs if i < self.mipLevels-1 else self.mipsTotalSize-mipOfs
             self.mipInfo.append((mipW, mipH, mipOfs, mipSize))
-        
+
         if persVersion:
             if self.nif.fileVer >= nifVersion(20, 2, 0, 6):
                 unused = bs.readUInt()
-                
+
         if self.nif.fileVer >= nifVersion(10, 3, 0, 6):
             self.numFaces = bs.readUInt()
         else:
             self.numFaces = 1
-            
+
         if persVersion:
             if self.nif.fileVer < nifVersion(30, 1, 0, 1):
                 self.platform = bs.readUInt()
@@ -858,7 +858,7 @@ class NifObject:
 
     def loadPersistentSrcTextureRendererData(self, bs):
         self.loadPixelDataGeneric(bs, True)
-    
+
     def loadMeshModifier(self, bs):
         #base mesh modifier
         self.loadObject(bs)
@@ -868,7 +868,7 @@ class NifObject:
         syncCount = bs.readUInt()
         for i in range(0, syncCount):
             bs.readUShort()
-    
+
     def loadSkinningMeshModifier(self, bs):
         #skinned mesh modifier
         self.loadMeshModifier(bs)
@@ -882,7 +882,7 @@ class NifObject:
         for i in range(0, self.numBones):
             boneLinkID = self.nif.loadLinkID(bs)
             self.boneLinkIDs.append(boneLinkID)
-            
+
         self.skinToBoneMats = []
         for i in range(0, self.numBones):
             mat = NoeMat43( ( NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) ), NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) ), NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) ), NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) ) ) )
@@ -894,7 +894,7 @@ class NifObject:
             for i in range(0, self.numBones):
                 center = NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) )
                 rad = bs.readFloat()
-                
+
     def loadSkinInstance(self, bs):
         #skin instance
         self.loadObject(bs)
@@ -925,10 +925,10 @@ class NifObject:
             skinToBoneScale = bs.readFloat()
             nifScaleMatrix(skinToBoneMat, skinToBoneScale)
             self.skinToBoneMats.append(skinToBoneMat)
-            
+
             boneCenter = NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) )
             boneRad = bs.readFloat()
-            
+
             numBoneVerts = bs.readUShort()
             self.skinBoneVertOfsAndLen.append( (curWeightOfs, numBoneVerts) )
             curWeightOfs += numBoneVerts
@@ -965,7 +965,7 @@ class NifObject:
             #sub-mesh regions in the form of base index (offset = base index * elem stride), and count
             #number of regions should == number of submeshes in the mesh referencing the stream, for every stream referenced by the mesh
             self.streamRegions.append( (bs.readUInt(), bs.readUInt()) )
-            
+
         numElements = bs.readUInt()
         self.streamElems = []
         self.elemStride = 0
@@ -975,7 +975,7 @@ class NifObject:
             self.elemStride += elem.count*elem.size
             #print("elem count:", elem.count, "size:", elem.size, "data type:", elem.dataType)
             self.streamElems.append(elem)
-        
+
         #print(self.typeName, "numelems:", len(self.streamElems), "size:", self.streamSize, "regions:", len(self.streamRegions), "stride:", self.elemStride, "data ofs:", bs.tell())
         self.streamData = bs.readBytes(self.streamSize)
         self.streamable = bs.readUByte() > 0
@@ -990,7 +990,7 @@ class NifObject:
         self.timeContHiKeyTime = bs.readFloat()
         self.timeContTargetID = self.nif.loadLinkID(bs)
         #print("timecontroller nextid:", self.nif.objects[self.timeContNextID].name if self.timeContNextID != NIF_INVALID_LINK_ID else "none", "targetid:", self.nif.objects[self.timeContTargetID].name)
-        
+
     def loadTransformController(self, bs):
         self.loadTimeController(bs)
         self.transformInterpolatorID = bs.readUInt()
@@ -1030,7 +1030,7 @@ class NifObject:
         self.evalRotate = NoeQuat( (bs.readFloat(), bs.readFloat(), bs.readFloat(), w) )
         self.evalScale = bs.readFloat()
         self.evalConstData = True
-        
+
     def loadTransformData(self, bs):
         if self.nif.fileVer >= nifVersion(20, 5, 0, 2):
             self.loadObject(bs)
@@ -1101,7 +1101,7 @@ class NifObject:
                         bezierIn = NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) )
                         bezierOut = NoeVec3( (bs.readFloat(), bs.readFloat(), bs.readFloat()) )
                     self.trnKeys.append(NoeKeyFramedValue(keyTime, keyVal))
-                
+
             numKeys = bs.readUInt()
             if numKeys > 0:
                 sclKeyType = bs.readUInt()
@@ -1122,11 +1122,11 @@ class NifObject:
                         bezierIn = bs.readFloat()
                         bezierOut = bs.readFloat()
                     self.sclKeys.append(NoeKeyFramedValue(keyTime, keyVal))
-            
+
     #======================================================================
     #Utility methods
     #======================================================================
-    
+
     #get stream and element objects for a mesh
     def getStreamAndElement(self, elementName, preferredIndex = -1):
         for streamRef in self.streamRefs:
@@ -1141,17 +1141,17 @@ class NifObject:
                             elem = dataStream.streamElems[i]
                             return streamRef, elem, dataStream
         return None, None, None
-    
+
 
 nifObjectLoaderDict = {
     "NiNode" : NifObject.loadNode,
     "NiStringExtraData" : NifObject.loadStringExtraData,
     "NiBinaryExtraData" : NifObject.loadBinaryExtraData,
-    "NiIntegerExtraData" : NifObject.loadIntegerExtraData, 
+    "NiIntegerExtraData" : NifObject.loadIntegerExtraData,
     "BSXFlags" : NifObject.loadIntegerExtraData,
-    "NiFloatExtraData" : NifObject.loadFloatExtraData, 
-    "NiBooleanExtraData" : NifObject.loadBooleanExtraData, 
-    "NiColorExtraData" : NifObject.loadColorExtraData, 
+    "NiFloatExtraData" : NifObject.loadFloatExtraData,
+    "NiBooleanExtraData" : NifObject.loadBooleanExtraData,
+    "NiColorExtraData" : NifObject.loadColorExtraData,
     "NiMaterialProperty" : NifObject.loadMaterialProperty,
     "NiVertexColorProperty" : NifObject.loadVertexColorProperty,
     "NiShadeProperty" : NifObject.loadShadeProperty,
@@ -1195,7 +1195,7 @@ class NifFile:
         self.nifSequences = []
         self.bsTriShapes = []
         self.nifHack = NIF_HACK_NONE
-        
+
     def loadHeader(self):
         bs = self.bs
         self.isNDSNIF = False
@@ -1233,30 +1233,30 @@ class NifFile:
                 self.isLittleEndian = bs.readUByte() > 0
             else:
                 self.isLittleEndian = True
-            
+
             if self.fileVer >= nifVersion(10, 0, 1, 8):
                 self.userVersion = bs.readUInt()
             else:
                 self.userVersion = 0
-            
+
         self.numObjects = bs.readInt()
         if self.numObjects <= 0:
             return 0
-        
+
         if self.userVersion == nifVersion(0, 0, 0, 12) and self.fileVer == nifVersion(20, 2, 0, 7):
             self.userVersion2 = bs.readUInt()
         else:
             self.userVersion2 = 0
-        
+
         self.objects = []
         for i in range(0, self.numObjects):
             self.objects.append(NifObject(self, i))
 
         if self.isLittleEndian is not True:
             bs.setEndian(NOE_BIGENDIAN)
-            
+
         return 1
-        
+
     def loadMetaData(self):
         bs = self.bs
         metaDataSize = bs.readUInt()
@@ -1265,7 +1265,7 @@ class NifFile:
         else:
             self.metaData = bs.readBytes(metaDataSize)
         return 1
-    
+
     def tryParsingTypes(self, bs):
         self.numTypes = bs.readUShort()
         if self.numTypes <= 0:
@@ -1283,9 +1283,9 @@ class NifFile:
     def loadTypeNames(self):
         bs = self.bs
         typesOfs = bs.tell()
-        
+
         noVersionHacks = noesis.optWasInvoked("-nifnoversionhacks")
-        
+
         try:
             typeNameList = self.tryParsingTypes(bs)
         except:
@@ -1345,7 +1345,7 @@ class NifFile:
             typeIndex = bs.readUShort()
             if self.fileVer >= nifVersion(20, 2, 0, 5):
                 typeIndex &= ~32768
-                
+
             if typeIndex > self.numTypes:
                 print("ERROR: Typeindex out of bounds:", typeIndex, "versus", self.numTypes)
                 return 0
@@ -1400,7 +1400,7 @@ class NifFile:
             #if object sizes are available, explicitly seek to next
             if object.nifSize > 0:
                 bs.seek(object.streamOffset+object.nifSize)
-        
+
         #after all objects have been loaded, loop through and set parents based on child lists
         for object in self.objects:
             for childID in object.childLinks:
@@ -1418,7 +1418,7 @@ class NifFile:
     def loadLinkID(self, bs):
         linkID = bs.readUInt()
         return linkID
-    
+
     def loadLinkIDs(self, bs):
         numLinkIDs = bs.readUInt()
         if numLinkIDs == NIF_INVALID_LINK_ID_COUNT:
@@ -1434,14 +1434,14 @@ class NifFile:
     def loadAll(self):
         if self.loadHeader() == 0:
             return 0
-            
+
         print("NIF version:", ((self.fileVer>>24) & 255), ((self.fileVer>>16) & 255), ((self.fileVer>>8) & 255), (self.fileVer & 255))
         print("User version:", ((self.userVersion>>24) & 255), ((self.userVersion>>16) & 255), ((self.userVersion>>8) & 255), (self.userVersion & 255))
 
         if self.fileVer >= nifVersion(20, 9, 0, 1):
             if self.loadMetaData() == 0:
                 return 0
-            
+
         if self.fileVer >= nifVersion(5, 0, 0, 1):
             if self.loadTypeNames() == 0:
                 return 0
@@ -1449,7 +1449,7 @@ class NifFile:
         if self.fileVer >= nifVersion(20, 2, 0, 5):
             if self.loadObjectSizes() == 0:
                 return 0
-                
+
         if self.fileVer >= nifVersion(20, 1, 0, 1):
             if self.loadStringTable() == 0:
                 return 0
@@ -1457,12 +1457,12 @@ class NifFile:
         if self.fileVer >= nifVersion(5, 0, 0, 6):
             if self.loadObjectGroups() == 0:
                 return 0
-        
+
         if self.loadObjects() == 0:
             return 0
 
         return 1
-    
+
     def createNoeMatFromProperties(self, noeMatList, noeTexList, mesh):
         matPropObj = None
         texPropObj = None
@@ -1506,7 +1506,7 @@ class NifFile:
                 if len(bsTexSet.texNames) >= 5:
                     noeMat.setTexture(bsTexSet.texNames[0])
                     noeMat.setNormalTexture(bsTexSet.texNames[1])
-                    
+
                     if self.nifHack == NIF_HACK_FO4:
                         if noesis.optWasInvoked("-nifpbrtest") and len(bsTexSet.texNames) >= 7 and rapi.getExtensionlessName(bsTexSet.texNames[7]).lower().endswith("_s"):
                             #for now, assume everything is metal (with metalness in red channel)
@@ -1524,7 +1524,7 @@ class NifFile:
                         #FO4 makes extensive use of NiAlphaProperty, so disable default blending if alpha blend and alpha test bits are unset
                         if alphaPropObj is None or (alphaPropObj.alphaFlags & (1 | 512)) == 0:
                             noeMat.setDefaultBlend(0)
-                        
+
                     if noesis.optWasInvoked("-nifforceenv"):
                         envTex = noesis.optGetArg("-nifforceenv")
                         noeMat.setEnvTexture(envTex)
@@ -1574,12 +1574,12 @@ class NifFile:
                 else:
                     #set the name to reference external textures if necessary
                     noeMat.setSpecularTexture(tex3Source.texFileName)
-                
+
         if noFaceCull is True:
             noeMat.setFlags(noesis.NMATFLAG_TWOSIDED)
 
         return noeMat
-    
+
     def rpgBindWeightsForStaticNode(self, geomNode, noeBones, bindCorrectionBones, numVerts):
         didSetBindTransform = False
         #ensure that there's no map set
@@ -1600,7 +1600,7 @@ class NifFile:
         rapi.rpgBindBoneIndexBuffer(idxData, noesis.RPGEODATA_INT, 4, 1)
         rapi.rpgBindBoneWeightBuffer(valData, noesis.RPGEODATA_FLOAT, 4, 1)
         return didSetBindTransform
-    
+
     def rpgCommitTriangleGeometry(self, noeBones, bindCorrectionBones, noeMatList, noeTexList):
         noStaticWeights = noesis.optWasInvoked("-nifnostaticweights")
         useVertColors = noesis.optWasInvoked("-nifusevcolors")
@@ -1615,11 +1615,11 @@ class NifFile:
             if triData.geomPositions is None:
                 #nothing to do without at least some position data
                 continue
-                
+
             #clear bound data
             rapi.rpgClearBufferBinds()
-            rapi.rpgSetBoneMap(None)    
-                
+            rapi.rpgSetBoneMap(None)
+
             rapi.rpgBindPositionBuffer(triData.geomPositions, noesis.RPGEODATA_FLOAT, 12)
             if triData.geomNormals is not None:
                 rapi.rpgBindNormalBuffer(triData.geomNormals, noesis.RPGEODATA_FLOAT, 12)
@@ -1635,7 +1635,7 @@ class NifFile:
 
             rapi.rpgSetMaterial(noeMat.name)
             rapi.rpgSetName(geom.name)
-            
+
             vertBoneIndices = None
             vertBoneWeights = None
             weightsPerVertex = 0
@@ -1674,16 +1674,16 @@ class NifFile:
                                     vertWeightCounts[vertIndex] += 1
                                     if vertWeightCounts[vertIndex] > weightsPerVertex:
                                         noesis.doException("Ended up with more weights for a vertex than expected: " + repr(weightsPerVertex) + " versus " + repr(vertWeightCounts[vertIndex]))
-                                    
+
                                 noeBone = noeBones[noeBoneIndex] if noeBoneIndex >= 0 else None
                                 if bindCorrectionBones is not None and noeBone is not None:
                                     #(reference in bone list by index because rapi.multiplyBones has copied the bones off)
                                     bindCorrectionBones[noeBone.index].setMatrix(skinData.skinToBoneMats[i] * noeBone.getMatrix())
                                     needSkinTransform = True
-                            #generate the bytearrays to feed to noesis for the indices and weights                                
+                            #generate the bytearrays to feed to noesis for the indices and weights
                             vertBoneIndices = noePack("%ii"%weightsPerVertex*numVerts, *vertIndices)
-                            vertBoneWeights = noePack("%if"%weightsPerVertex*numVerts, *vertWeights)                                
-                    
+                            vertBoneWeights = noePack("%if"%weightsPerVertex*numVerts, *vertWeights)
+
             if weightsPerVertex > 0:
                 rapi.rpgBindBoneIndexBuffer(vertBoneIndices, noesis.RPGEODATA_UINT, weightsPerVertex*4, weightsPerVertex)
                 rapi.rpgBindBoneWeightBuffer(vertBoneWeights, noesis.RPGEODATA_FLOAT, weightsPerVertex*4, weightsPerVertex)
@@ -1691,7 +1691,7 @@ class NifFile:
             elif noStaticWeights == 0:
                 #if there's no weighting, skin this thing to its own node
                 needSkinTransform = self.rpgBindWeightsForStaticNode(geom, noeBones, bindCorrectionBones, len(triData.geomPositions))
-                
+
             numPreCommitVerts = rapi.rpgGetVertexCount()
 
             numStrips = noeSafeGet(triData, "geomNumStrips")
@@ -1704,14 +1704,14 @@ class NifFile:
                 for i in range(0, numStrips):
                     stripLen = triData.geomStripLens[i]
                     stripData = triData.geomStripListData[currentStripOfs:currentStripOfs+stripLen*2]
-                    rapi.rpgCommitTriangles(stripData, noesis.RPGEODATA_USHORT, stripLen, noesis.RPGEO_TRIANGLE_STRIP, 1)                    
+                    rapi.rpgCommitTriangles(stripData, noesis.RPGEODATA_USHORT, stripLen, noesis.RPGEO_TRIANGLE_STRIP, 1)
                     currentStripOfs += stripLen*2
             else:
                 #lists
                 if triData.geomNumTriIndices <= 0 or triData.geomTriListData is None:
                     #nothing to draw
                     continue
-                rapi.rpgCommitTriangles(triData.geomTriListData, noesis.RPGEODATA_USHORT, triData.geomNumTriIndices, noesis.RPGEO_TRIANGLE, 1)                    
+                rapi.rpgCommitTriangles(triData.geomTriListData, noesis.RPGEODATA_USHORT, triData.geomNumTriIndices, noesis.RPGEO_TRIANGLE, 1)
 
             #skin verts into bone space as needed.
             if needSkinTransform is True and not noesis.optWasInvoked("-nifnotransform"):
@@ -1724,7 +1724,7 @@ class NifFile:
     def rpgCommitMeshes(self, noeBones, bindCorrectionBones, noeMatList, noeTexList):
         noStaticWeights = noesis.optWasInvoked("-nifnostaticweights")
         useVertColors = noesis.optWasInvoked("-nifusevcolors")
-        
+
         #run through and draw the meshes
         for mesh in self.nifMeshes:
             #if "collision" in mesh.name:
@@ -1785,7 +1785,7 @@ class NifFile:
                     break
 
             preferTexCoord = -1
-                    
+
             #create the material
             noeMat = self.createNoeMatFromProperties(noeMatList, noeTexList, mesh)
 
@@ -1805,14 +1805,14 @@ class NifFile:
             widxStreamRef, widxElem, widxStream = mesh.getStreamAndElement("BLENDINDICES")
             wvalStreamRef, wvalElem, wvalStream = mesh.getStreamAndElement("BLENDWEIGHT")
             bonePalStreamRef, bonePalElem, bonePalStream = mesh.getStreamAndElement("BONE_PALETTE")
-        
+
             numPreCommitVerts = rapi.rpgGetVertexCount()
-    
+
             for i in range(0, mesh.numSubMeshes):
                 #clear bound data
                 rapi.rpgClearBufferBinds()
-                rapi.rpgSetBoneMap(None)    
-            
+                rapi.rpgSetBoneMap(None)
+
                 #set bone map if applicable
                 if bonePalStreamRef is not None:
                     bonePalDataType = nifNoeDataTypeForNifDataType(bonePalElem.dataType)
@@ -1830,7 +1830,7 @@ class NifFile:
                 elif len(skinBoneIDToNoeBoneIDMap) > 0:
                     #if there was no bone palette, we still need to map the blend indices directly to the noesis skeleton
                     rapi.rpgSetBoneMap(skinBoneIDToNoeBoneIDMap)
-        
+
                 #bind mandatory position stream
                 posRegion = posStream.streamRegions[posStreamRef.submeshRegionMap[i]]
                 rapi.rpgBindPositionBufferOfs(posStream.streamData, posDataType, posStream.elemStride, posRegion[0]*posStream.elemStride+posElem.offset)
@@ -1910,7 +1910,7 @@ class NifFile:
                 idxOfs = idxRegion[0]*indexStream.elemStride
                 idxEnd = idxOfs + idxRegion[1]*indexStream.elemStride
                 rapi.rpgCommitTriangles(indexStream.streamData[idxOfs:idxEnd], indexDataType, idxRegion[1], primType, 1)
-                
+
             #skin verts into bone space as needed.
             if needSkinTransform is True and not noesis.optWasInvoked("-nifnotransform"):
                 numVertsToSkin = rapi.rpgGetVertexCount()-numPreCommitVerts
@@ -1922,22 +1922,22 @@ class NifFile:
     def rpgCommitBsShapes(self, noeBones, bindCorrectionBones, noeMatList, noeTexList):
         noStaticWeights = noesis.optWasInvoked("-nifnostaticweights")
         useVertColors = noesis.optWasInvoked("-nifusevcolors")
-    
+
         #run through and draw the meshes
         for triShape in self.bsTriShapes:
             rapi.rpgClearBufferBinds()
             rapi.rpgSetBoneMap(None)
-            
+
             skinInst = None if triShape.skinInstID == NIF_INVALID_LINK_ID else self.objects[triShape.skinInstID]
             isSkinned = skinInst is not None and triShape.blendWgtOffset >= 0 and triShape.blendIdxOffset >= 0
-            
+
             #create the material
             noeMat = self.createNoeMatFromProperties(noeMatList, noeTexList, triShape)
 
             rapi.rpgSetMaterial(noeMat.name)
             rapi.rpgSetName(triShape.name)
-            
-            rapi.rpgBindPositionBufferOfs(triShape.vertData, triShape.posType, triShape.vertSize, triShape.posOffset)    
+
+            rapi.rpgBindPositionBufferOfs(triShape.vertData, triShape.posType, triShape.vertSize, triShape.posOffset)
 
             if triShape.uvOffset >= 0:
                 rapi.rpgBindUV1BufferOfs(triShape.vertData, triShape.uvType, triShape.vertSize, triShape.uvOffset)
@@ -1952,14 +1952,14 @@ class NifFile:
 
             if triShape.colorOffset >= 0 and useVertColors > 0:
                 rapi.rpgBindColorBufferOfs(triData.geomColors, triShape.colorType, triShape.vertSize, triShape.colorOffset, 4)
-                
+
             if isSkinned:
                 rapi.rpgBindBoneIndexBufferOfs(triShape.vertData, triShape.blendIdxType, triShape.vertSize, triShape.blendIdxOffset, 4)
                 rapi.rpgBindBoneWeightBufferOfs(triShape.vertData, triShape.blendWgtType, triShape.vertSize, triShape.blendWgtOffset, 4)
 
             needSkinTransform = False
             numPreCommitVerts = rapi.rpgGetVertexCount()
-                
+
             if isSkinned:
                 #construct a bonemap from the referenced skin instance
                 boneMap = []
@@ -1977,12 +1977,12 @@ class NifFile:
                             boneIndex = boneMap[i]
                             noeBone = noeBones[boneIndex]
                             bindCorrectionBones[boneIndex].setMatrix(boneData.invBindTransforms[i] * noeBone.getMatrix())
-                        needSkinTransform = True                            
+                        needSkinTransform = True
             elif noStaticWeights == 0:
                 #if there's no weighting, skin this thing to its own node
                 needSkinTransform = self.rpgBindWeightsForStaticNode(triShape, noeBones, bindCorrectionBones, triShape.numVerts)
-    
-            rapi.rpgCommitTriangles(triShape.triData, noesis.RPGEODATA_USHORT, triShape.numTris * 3, noesis.RPGEO_TRIANGLE, 1)            
+
+            rapi.rpgCommitTriangles(triShape.triData, noesis.RPGEODATA_USHORT, triShape.numTris * 3, noesis.RPGEO_TRIANGLE, 1)
 
             #skin verts into bone space as needed.
             if needSkinTransform is True and not noesis.optWasInvoked("-nifnotransform"):
@@ -1991,7 +1991,7 @@ class NifFile:
                 #reset matrices
                 for bindCorrectionBone in bindCorrectionBones:
                     bindCorrectionBone.setMatrix(NoeMat43())
-    
+
     def mapObjectsFromSkeletonNif(self, skelNif):
         skelNifBoneObjects = {}
         for object in skelNif.objects:
@@ -2002,7 +2002,7 @@ class NifFile:
             object = self.objects[i]
             if object.isBone is True:
                 nifBoneObjectIndicesByName[object.name] = i
-                
+
         for object in self.objects:
             if object.isBone is True:
                 if object.name in skelNifBoneObjects:
@@ -2016,7 +2016,7 @@ class NifFile:
                             object.matrix = skelObject.matrix
                             object.scale = skelObject.scale
                             object.parentIndex = nifBoneObjectIndicesByName[skelParentObject.name]
-                            
+
 
 def nifConstructModelFromNif(nif):
     noeMatList = []
@@ -2034,9 +2034,9 @@ def nifConstructModelFromNif(nif):
             continue
         pixelFormat = pixelFormatObj.format
         imageData = pixObject.imageData
-        
+
         pixelImageInfo = [pixObject.numFaces, pixObject.mipLevels, pixObject.mipsTotalSize, pixObject.mipInfo]
-        
+
         if pixelFormat == NIFTEX_RGB:
             noeFmt = noesis.NOESISTEX_RGBA32
             imageData = noeProcessImage(imageData, pixelImageInfo, rapi.imageDecodeRaw, "r8g8b8")
@@ -2066,7 +2066,7 @@ def nifConstructModelFromNif(nif):
                 #which don't take into account necessary platform-specific padding. so, sadly,
                 #we'll have to skip the mips.
                 pixelImageInfo[1] = 1
-            
+
             if pixelFormatObj.tiling == 1:
                 #360 untile
                 if noeFmt == noesis.NOESISTEX_RGBA32:
@@ -2083,7 +2083,7 @@ def nifConstructModelFromNif(nif):
                     #possible todo - support untiling dxt blocks with multiple mips/faces
                     pixelImageInfo[0] = 1
                     pixelImageInfo[1] = 1
-                    
+
             #name isn't guaranteed to be unique, so make a unique name instead
             texName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getLastCheckedName())) + "_niftex_" + repr(len(noeTexList)) #texObject.texFileName
             noeTex = NoeTexture(texName, pixObject.width, pixObject.height, imageData, noeFmt)
@@ -2108,7 +2108,7 @@ def nifConstructModelFromNif(nif):
             skelNif = NifFile(NoeBitStream(skelData))
             if skelNif.loadAll() != 0:
                 nif.mapObjectsFromSkeletonNif(skelNif)
-            
+
     #find bone objects
     boneObjects = []
     for object in nif.objects:
@@ -2137,7 +2137,7 @@ def nifConstructModelFromNif(nif):
     ctx = rapi.rpgCreateContext()
     if nif.isLittleEndian is not True:
         rapi.rpgSetOption(noesis.RPGOPT_BIGENDIAN, 1)
-    
+
     bindCorrectionBones = None
     if noeBones is not None:
         #build a list of bones that will be used to transform the geometry into bone space
@@ -2145,13 +2145,13 @@ def nifConstructModelFromNif(nif):
         for bone in noeBones:
             newBone = NoeBone(bone.index, bone.name, NoeMat43(), None, bone.parentIndex)
             bindCorrectionBones.append(newBone)
-    
+
     #commit triangle geometry
     nif.rpgCommitTriangleGeometry(noeBones, bindCorrectionBones, noeMatList, noeTexList)
-    
+
     #commit meshes
     nif.rpgCommitMeshes(noeBones, bindCorrectionBones, noeMatList, noeTexList)
-    
+
     #commit bs shapes
     nif.rpgCommitBsShapes(noeBones, bindCorrectionBones, noeMatList, noeTexList)
 
@@ -2191,7 +2191,7 @@ def nifConstructModelFromNif(nif):
         else:
             rapi.setPreviewOption("setAngOfs", "0 270 0")
         rapi.setPreviewOption("autoLoadNonDiffuse", "1")
-        
+
     return mdl
 
 
@@ -2236,7 +2236,7 @@ def kfLoadModel(data, mdlList):
     else:
         seqNif = nif
         objNif = otherNif
-        
+
         kfAnims = []
         sampleRate = 30.0
         for seq in seqNif.nifSequences:

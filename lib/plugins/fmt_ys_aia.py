@@ -41,7 +41,7 @@ class AIAFile:
         self.numImages = bs.readUInt()
         if self.numPalettes <= 0 or self.numImages <= 0:
             return 0
-            
+
         self.numRegions = bs.readUInt()
         self.width = bs.readUShort()
         self.height = bs.readUShort()
@@ -59,10 +59,10 @@ class AIAFile:
         self.regionList = []
         for i in range(0, self.numRegions):
             self.regionList.append(AIARegion(bs))
-            
+
         self.palettesOfs = bs.tell()
         self.imagesOfs = self.palettesOfs + self.numPalettes*256*4
-        
+
         return 1
 
 
@@ -80,16 +80,16 @@ def aiaLoadRGBA(data, texList):
     bs = NoeBitStream(data)
     if aiaFile.parseHeader(bs) != 1:
         return 0
-    
+
     bs.seek(aiaFile.imagesOfs)
     encodedData = bs.readBytes(aiaFile.imageDataSize)
-    
+
     for region in aiaFile.regionList:
         regionWidth = region.rect[2] - region.rect[0]
         regionHeight = region.rect[3] - region.rect[1]
         if regionWidth <= 0 or regionHeight <= 0:
             continue
-            
+
         if regionWidth > aiaFile.width or regionHeight > aiaFile.height:
             noesis.doException("Region size should be less than main texture size")
 
@@ -98,17 +98,16 @@ def aiaLoadRGBA(data, texList):
         pal = bs.readBytes(256*4)
         #convert from bgr to rgb, don't use alpha (masking is done as part of encoded pixel data)
         pal = rapi.imageDecodeRaw(pal, 256, 1, "b8g8r8p8")
-            
+
         #decode the pixel data
         decodedData = rapi.callExtensionMethod("ys_aia_decode", encodedData[region.imageOfs:], pal, regionWidth, regionHeight)
 
         #create texture from aia size and blit the region to it
         imageData = noePack("BBBB", 0, 0, 0, 0)*aiaFile.width*aiaFile.height
         rapi.imageBlit32(imageData, aiaFile.width, aiaFile.height, region.rect[0], region.rect[1], decodedData, regionWidth, regionHeight, 0, 0)
-    
+
         texName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getLastCheckedName())) + "_frame" + repr(len(texList))
         tex = NoeTexture(texName, aiaFile.width, aiaFile.height, imageData, noesis.NOESISTEX_RGBA32)
         texList.append(tex)
-        
-    return 1
 
+    return 1

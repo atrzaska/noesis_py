@@ -14,11 +14,11 @@ def bmlExportEntry(f, entryName, entryOffset, entryCompDataSize, entryDecompData
     else:
         decompData = rapi.decompPRS(compData, entryDecompDataSize)
         rapi.exportArchiveFile(entryName, decompData)
-    
+
 def bmlExtractArc(fileName, fileLen, justChecking):
     if fileLen < 64:
         return 0
-        
+
     with open(fileName, "rb") as f:
         f.seek(4, NOESEEK_ABS)
         fileCount, version = noeUnpack("<II", f.read(8))
@@ -31,7 +31,7 @@ def bmlExtractArc(fileName, fileLen, justChecking):
         headerSize = 64 + 64 * fileCount
         if headerSize >= fileLen:
             return 0
-            
+
         if justChecking:
             return 1
 
@@ -39,9 +39,9 @@ def bmlExtractArc(fileName, fileLen, justChecking):
         currentFileOffset = alignedHeaderSize
         f.seek(64, NOESEEK_ABS)
         bs = NoeBitStream(f.read(64 * fileCount))
-        
+
         alignmentMinusOne = 31 if verMinor >= 1 else 2047
-    
+
         for fileIndex in range(0, fileCount):
             entryName = bs.readBytes(32).decode("ASCII").rstrip("\0")
             entryOffset = currentFileOffset
@@ -51,18 +51,18 @@ def bmlExtractArc(fileName, fileLen, justChecking):
 
             entryPvmCompSize = bs.readUInt()
             entryPvmDecompSize = bs.readUInt()
-            
+
             bs.seek(12, NOESEEK_REL)
             currentFileOffset = (currentFileOffset + entryCompDataSize + alignmentMinusOne) & ~alignmentMinusOne
-    
+
             if entryPvmCompSize != 0:
                 pvmOffset = currentFileOffset
                 currentFileOffset = (currentFileOffset + entryPvmCompSize + alignmentMinusOne) & ~alignmentMinusOne
                 pvmName = rapi.getExtensionlessName(entryName) + ".pvm"
                 bmlExportEntry(f, pvmName, pvmOffset, entryPvmCompSize, entryPvmDecompSize)
-    
+
             bmlExportEntry(f, entryName, entryOffset, entryCompDataSize, entryDecompDataSize)
-            
+
         return 1
-        
+
     return 0

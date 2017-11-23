@@ -11,7 +11,7 @@ def tmValidateInput(inVal):
     elif len(inVal) > 32:
         return "The string you've entered is too long."
     return None
-    
+
 def tmExportFile():
     saveDefault = noesis.getSelectedDirectory() + "\\textmodel.fbx"
     savePath = noesis.userPrompt(noesis.NOEUSERVAL_SAVEFILEPATH, "Save Model", "Select destination for text model.", saveDefault, None)
@@ -22,16 +22,16 @@ def tmExportFile():
         return None
     return savePath
 
-def tmMakeTextures():        
+def tmMakeTextures():
     texList = []
-    
+
     #make a simple solid-color diffuse
     texWidth = 4
     texHeight = 4
     clr = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255), 255)
     texData = bytearray(clr*texWidth*texHeight)
     texList.append(NoeTexture("textmodel_d.dds", texWidth, texHeight, texData))
-    
+
     #make some random bumps
     texWidth = 256
     texHeight = 256
@@ -45,7 +45,7 @@ def tmMakeTextures():
     #double the height scale to make the the contrast more subtle
     texData = rapi.imageNormalMapFromHeightMap(texData, texWidth, texHeight, 2.0, 1.0)
     texList.append(NoeTexture("textmodel_n.dds", texWidth, texHeight, texData))
-    
+
     envTexPath = noesis.getScenesPath() + "sample_texa.png"
     tex1 = rapi.loadExternalTex(envTexPath)
     envTexPath = noesis.getScenesPath() + "sample_puppy.png"
@@ -62,17 +62,17 @@ def tmMakeTextures():
         cubeTex = NoeTexture("textmodel_env.dds", tex1.width, tex1.height, cubeData)
         cubeTex.setFlags(noesis.NTEXFLAG_CUBEMAP)
         texList.append(cubeTex)
-        
+
     return texList
 
 def tmToolMethod(toolIndex):
     text = noesis.userPrompt(noesis.NOEUSERVAL_STRING, "Enter Text", "Enter a string to generate a text model.", "Some text.", tmValidateInput)
     if text is None:
         return 0
-        
+
     noeMod = noesis.instantiateModule()
     noesis.setModuleRAPI(noeMod)
-    
+
     ctx = rapi.rpgCreateContext()
     rapi.rpgSetName("textmodel")
     rapi.rpgSetMaterial("textmodel")
@@ -106,14 +106,14 @@ def tmToolMethod(toolIndex):
 
     mdl = rapi.rpgConstructModel()
     mdl.setModelMaterials(NoeModelMaterials(texList, matList))
-    
+
     rapi.toolSetGData([mdl])
     saveName = tmExportFile()
-    
+
     rapi.toolFreeGData()
     noesis.freeModule(noeMod)
-    
+
     if saveName is not None:
         noesis.openFile(saveName)
-    
+
     return 0

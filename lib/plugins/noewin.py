@@ -791,7 +791,7 @@ def getNoeWndForHWnd(hWnd):
     if hWnd in liveWindows:
         return liveWindows[hWnd]
     return None
-    
+
 def getNoesisWindowRect():
     hNoesisWnd = noesis.getWindowHandle()
     if hNoesisWnd:
@@ -819,7 +819,7 @@ class NMHDR(Structure):
                 ("idFrom", c_uint),
                 ("code", c_uint)]
 LPNMHDR = POINTER(NMHDR)
-                                
+
 class PAINTSTRUCT(Structure):
     _fields_ = [('hdc', c_int),
                 ('fErase', c_int),
@@ -843,7 +843,7 @@ class BITMAPINFOHEADER(Structure):
 
 class BITMAPINFO(Structure):
     _fields_ = [("bmiHeader", BITMAPINFOHEADER)]
-                
+
 def destroyAllWindows():
     global liveWindows
     for hWnd in liveWindows.keys():
@@ -859,7 +859,7 @@ def defaultWindowProc(hWnd, message, wParam, lParam):
             del liveWindows[hWnd]
         else:
             #somehow untracked, so just kill it
-            user32.DestroyWindow(hWnd)    
+            user32.DestroyWindow(hWnd)
         return 0
     elif message == WM_COMMAND:
         if noeWnd:
@@ -881,14 +881,14 @@ def defaultWindowProc(hWnd, message, wParam, lParam):
                 if userControl.notifyMethod(noeWnd, userControl.controlId, nmhdr.code):
                     return 0
     """
-    
+
     r = user32.DefWindowProcW(hWnd, message, wParam, lParam)
     if noeWnd:
         for cb in noeWnd.userCallbacks:
             if cb.message == message:
                 cb.method(noeWnd, cb.controlIndex, message, wParam, lParam)
     return r
-    
+
 def defaultCheckBoxCommandMethod(noeWnd, controlId, wParam, lParam):
     checkBox = noeWnd.getControlById(controlId)
     checkBox.setChecked(BST_CHECKED if checkBox.isChecked() == 0 else BST_UNCHECKED)
@@ -902,7 +902,7 @@ class NoeUserControlBase:
         self.width = width
         self.height = height
         self.commandMethod = commandMethod
-    
+
 class NoeUserStatic(NoeUserControlBase):
     def __init__(self, noeParentWnd, text, controlId, x, y, width, height):
         super().__init__(noeParentWnd, controlId, x, y, width, height, None)
@@ -928,7 +928,7 @@ class NoeUserCheckBox(NoeUserControlBase):
         return user32.SendMessageW(self.hWnd, BM_GETCHECK, 0, 0)
     def setChecked(self, checkValue):
         user32.SendMessageW(self.hWnd, BM_SETCHECK, checkValue, 0)
-        
+
 class NoeUserEditBox(NoeUserControlBase):
     def __init__(self, noeParentWnd, text, controlId, x, y, width, height, isMultiLine, commandMethod):
         super().__init__(noeParentWnd, controlId, x, y, width, height, commandMethod)
@@ -958,7 +958,7 @@ class NoeUserComboBox(NoeUserControlBase):
     def selectString(self, text):
         user32.SendMessageW(self.hWnd, CB_SELECTSTRING, -1, text)
     def resetContent(self):
-        return user32.SendMessageW(self.hWnd, CB_RESETCONTENT, 0, 0)    
+        return user32.SendMessageW(self.hWnd, CB_RESETCONTENT, 0, 0)
     def getStringIndex(self, text):
         return user32.SendMessageW(self.hWnd, CB_FINDSTRING, -1, text)
     def getSelectionIndex(self):
@@ -972,7 +972,7 @@ class NoeUserComboBox(NoeUserControlBase):
         return textBuffer.value
     def getStringCount(self):
         return user32.SendMessageW(self.hWnd, CB_GETCOUNT, 0, 0)
-        
+
 class NoeUserListBox(NoeUserControlBase):
     def __init__(self, noeParentWnd, controlId, x, y, width, height, style, commandMethod):
         super().__init__(noeParentWnd, controlId, x, y, width, height, commandMethod)
@@ -989,7 +989,7 @@ class NoeUserListBox(NoeUserControlBase):
     def selectString(self, text):
         user32.SendMessageW(self.hWnd, LB_SELECTSTRING, -1, text)
     def resetContent(self):
-        return user32.SendMessageW(self.hWnd, LB_RESETCONTENT, 0, 0)    
+        return user32.SendMessageW(self.hWnd, LB_RESETCONTENT, 0, 0)
     def getStringIndex(self, text):
         return user32.SendMessageW(self.hWnd, LB_FINDSTRING, -1, text)
     def getSelectionIndex(self):
@@ -1056,16 +1056,16 @@ class NoeUserScrollBar(NoeUserControlBase):
                     movement = -largeAmount
                 elif scrollType == SB_PAGERIGHT:
                     movement = largeAmount
-                
+
                 if movement != 0:
                     scroll.setScrollValue(oldValue + movement)
-                    
+
             if scroll.scrollUpdateMethod:
                 scroll.scrollUpdateMethod(noeWnd, scroll.controlId, oldValue, scroll.getScrollValue(), scrollType)
             return True
-            
+
         return False
-    
+
 class NoeUserControlCallback:
     def __init__(self, controlIndex, message, method):
         self.controlIndex = controlIndex
@@ -1090,7 +1090,7 @@ class NoeUserWindow:
         self.currentControlId = 100
         self.userControls = []
         self.userCallbacks = []
-        
+
     def resetContent(self):
         for userControl in self.userControls:
             if userControl.hWnd:
@@ -1098,12 +1098,12 @@ class NoeUserWindow:
         self.currentControlId = 100
         self.userControls = []
         self.userCallbacks = []
-        
+
     def doModal(self):
         if self.hParentWnd:
             self.enableParentOnDestruction = True
             user32.EnableWindow(self.hParentWnd, 0)
-            
+
         while self.hWnd:
             msg = MSG()
             pMsg = pointer(msg)
@@ -1116,13 +1116,13 @@ class NoeUserWindow:
         if self.hWnd in liveWindows:
             del liveWindows[self.hWnd]
         self.freeResources()
-        
+
     def freeResources(self):
         if self.enableParentOnDestruction and self.hParentWnd:
             user32.EnableWindow(self.hParentWnd, 1)
         self.enableParentOnDestruction = False
         self.hParentWnd = None
-        
+
         for userControl in self.userControls:
             if userControl.hWnd:
                 user32.DestroyWindow(userControl.hWnd)
@@ -1134,7 +1134,7 @@ class NoeUserWindow:
             gdi32.DeleteObject(self.hFont)
             self.hFont = None
 
-    def createWindow(self):         
+    def createWindow(self):
         windowClass = WNDCLASSEX()
         windowClass.cbSize = sizeof(WNDCLASSEX)
         windowClass.style = CS_HREDRAW | CS_VREDRAW
@@ -1175,7 +1175,7 @@ class NoeUserWindow:
         self.hParentWnd = hParentWnd
         liveWindows[hWnd] = self
         return True
-        
+
     def setFont(self, fontName, size):
         if self.hWnd:
             hFont = gdi32.CreateFontW(    -size, #height
@@ -1194,7 +1194,7 @@ class NoeUserWindow:
                                         fontName )
             if hFont:
                 if self.hFont:
-                    gdi32.DeleteObject(self.hFont)        
+                    gdi32.DeleteObject(self.hFont)
                 self.hFont = hFont
                 user32.SendMessageW(self.hWnd, WM_SETFONT, hFont, 1)
 
@@ -1204,19 +1204,19 @@ class NoeUserWindow:
 
     def getControlByIndex(self, controlIndex):
         return self.userControls[controlIndex]
-        
+
     def getControlById(self, controlId):
         for userControl in self.userControls:
             if userControl.controlId == controlId:
                 return userControl
         return None
-        
+
     def enableControlByIndex(self, controlIndex, enabled = True):
         user32.EnableWindow(self.userControls[controlIndex].hWnd, enabled)
-                
+
     def setupChildWindow(self, hChildWnd):
         if self.hFont:
-            user32.SendMessageW(hChildWnd, WM_SETFONT, self.hFont, 1)            
+            user32.SendMessageW(hChildWnd, WM_SETFONT, self.hFont, 1)
 
     def addControl(self, newControl):
         self.setupChildWindow(newControl.hWnd)
@@ -1229,7 +1229,7 @@ class NoeUserWindow:
             newStatic = NoeUserStatic(self, text, self.currentControlId, x, y, width, height)
             return self.addControl(newStatic)
         return -1
-        
+
     def createButton(self, name, x, y, width, height, commandMethod, defaultButton = False):
         if self.hWnd:
             newButton = NoeUserButton(self, name, self.currentControlId, x, y, width, height, commandMethod, defaultButton)
@@ -1241,7 +1241,7 @@ class NoeUserWindow:
             newCheckBox = NoeUserCheckBox(self, name, self.currentControlId, x, y, width, height, commandMethod)
             return self.addControl(newCheckBox)
         return -1
-        
+
     def createEditBox(self, x, y, width, height, text = "", commandMethod = None, isMultiLine = True):
         if self.hWnd:
             newEditBox = NoeUserEditBox(self, text, self.currentControlId, x, y, width, height, isMultiLine, commandMethod)
@@ -1267,6 +1267,6 @@ class NoeUserWindow:
             if registerCallback:
                 msgType = WM_HSCROLL if isHorizontal else WM_VSCROLL
                 self.addUserControlMessageCallback(scrollIndex, msgType, NoeUserScrollBar.DefaultScrollCallback)
-            
+
             return scrollIndex
         return -1

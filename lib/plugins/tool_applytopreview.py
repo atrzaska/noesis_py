@@ -13,7 +13,7 @@ def apContextVisible(toolIndex, selectedFile):
         noesis.isPreviewModuleRAPIValid() <= 0):
         return 0
     return 1
-    
+
 def apToolMethod(toolIndex):
     fileName = noesis.getSelectedFile()
     if fileName is None or os.path.exists(fileName) is not True:
@@ -26,5 +26,5 @@ def apToolMethod(toolIndex):
     except:
         noesis.messagePrompt("The selected file could not be applied to the preview scene.")
         return 0
-        
+
     return 0

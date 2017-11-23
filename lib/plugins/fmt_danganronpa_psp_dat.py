@@ -8,9 +8,9 @@ def registerNoesisTypes():
 
     handle = noesis.register("Danganronpa PSP PAK Archive", ".pak")
     noesis.setHandlerExtractArc(handle, pakExtractArc)
-    
+
     return 1
-    
+
 #these constants may change depending on game distribution/sku.
 #more foolproof thing to do here is probably to checksum some code that references the table, found that code, then dig
 #the correct offset out of the given instruction to get at the elf section offset containing the offsets we want.
@@ -32,10 +32,10 @@ def datExtractArc(fileName, fileLen, justChecking):
                 fileCount = noeUnpack("<i", datFile.read(4))[0]
                 if fileCount <= 0:
                     noesis.doException("Unexpected file count.")
-                    
+
                 if justChecking: #it's valid
                     return 1
-                    
+
                 ebootData = ebootFile.read()
                 elfDec = NoeBitStream(rapi.callExtensionMethod("decrypt_eboot", ebootData))
                 elfDec.seek(56, NOESEEK_ABS)
@@ -57,7 +57,7 @@ def datExtractArc(fileName, fileLen, justChecking):
                         firstFileCount = noeUnpack("<i", firstDatFile.read(4))[0]
                         baseOfs = firstFileCount * 12 + UMDIMAGE2_DAT_FTOFS_FROM_END_OF_FIRST
                         print("Base offset for second image entries:", ftOfs + baseOfs)
-                        
+
                 elfDec.seek(ftOfs + baseOfs, NOESEEK_ABS)
                 fileEntries = []
                 print("Parsing offset", ftOfs + baseOfs, "for", fileCount, "file entries...")
@@ -67,7 +67,7 @@ def datExtractArc(fileName, fileLen, justChecking):
                     entryOfs = elfDec.readUInt()
                     entrySize = elfDec.readUInt()
                     fileEntries.append((entryNameOfs, entryOfs, entrySize))
-                    
+
                 extractedCount = 0
                 for entryNameOfs, entryOfs, entrySize in fileEntries:
                     if entrySize > 0:
@@ -83,7 +83,7 @@ def datExtractArc(fileName, fileLen, justChecking):
                         print("Writing", entryNameStr, "at offset", entryOfs, "and size", entrySize, "-", extractedCount, "/", fileCount)
                         datFile.seek(entryOfs, NOESEEK_ABS)
                         rapi.exportArchiveFile(entryNameStr, datFile.read(entrySize))
-                    
+
                 return 1
     except:
         return 0
@@ -105,10 +105,10 @@ def pakExtractArc(fileName, fileLen, justChecking):
                 fileOffset = fileOffsets[fileOffsetIndex]
                 if fileOffsetIndex < 0 or fileOffsetIndex >= fileLen:
                     return 0
-                    
+
             if justChecking:
                 return 1
-                
+
             for fileOffsetIndex in range(0, fileCount):
                 fileOffset = fileOffsets[fileOffsetIndex]
                 nextFileOffset = fileOffsets[fileOffsetIndex + 1] if fileOffsetIndex < (fileCount - 1) else fileLen
@@ -124,7 +124,7 @@ def pakExtractArc(fileName, fileLen, justChecking):
                 fileName = "%04i"%fileOffsetIndex + fileExt
                 print("Writing", fileName)
                 rapi.exportArchiveFile(fileName, fileData)
-                
+
             return 1
     except:
         return 0

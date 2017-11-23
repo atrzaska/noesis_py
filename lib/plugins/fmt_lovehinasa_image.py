@@ -13,7 +13,7 @@ class HinaImage:
         self.width = width
         self.height = height
         self.format = format
-    
+
 def hinaGetImages(bs):
     imageList = []
     bs.seek(0)
@@ -34,7 +34,7 @@ def hinaGetImages(bs):
             continue
         imageList.append(HinaImage(bs.getOffset(), expectedImageSize, width, height, fmt))
     return imageList
-    
+
 def hinaCheckRGBA(data):
     #quick reject if data layout doesn't match
     bs = NoeBitStream(data)
@@ -51,7 +51,7 @@ def hinaCheckRGBA(data):
     if len(hinaImages) == 0:
         return 0
     return 1
-    
+
 def hinaLoadRGBA(data, texList):
     bs = NoeBitStream(data)
     hinaImages = hinaGetImages(bs)
