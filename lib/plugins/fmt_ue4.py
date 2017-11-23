@@ -15,7 +15,7 @@ import os
 def registerNoesisTypes():
     handle = noesis.register("UE4 Archive", ".pak")
     noesis.setHandlerExtractArc(handle, ue4ExtractArc)
-    
+
     handle = noesis.register("UE4 Asset", ".uasset")
     noesis.setHandlerTypeCheck(handle, ue4CheckType)
     noesis.setHandlerLoadModel(handle, ue4LoadModel)
@@ -28,15 +28,15 @@ def registerNoesisTypes():
     noesis.addOption(handle, "-ue4datapath", "scan <arg> recursively for export data.", noesis.OPTFLAG_WANTARG)
 
     return 1
-        
+
 
 UE4_GAMEHACK_NONE = 0
 UE4_GAMEHACK_T7 = 1
-        
+
 class UE4Asset:
     def __init__(self, bs):
         self.bs = bs
-        
+
     def parse(self):
         try:
             bs = self.bs
@@ -55,11 +55,11 @@ class UE4Asset:
             self.verB = bs.readInt()
             self.verLic = bs.readInt()
             self.versionList = ue4ReadList(self, UE4VersionType)
-            
+
             self.gameHack = UE4_GAMEHACK_NONE
             if noesis.optWasInvoked("-ue4gamehack"):
                 self.gameHack = int(noesis.optGetArg("-ue4gamehack"))
-                
+
             if self.gameHack == UE4_GAMEHACK_T7:
                 self.serialVersion = 508
             elif noesis.optWasInvoked("-ue4serialver"):
@@ -83,7 +83,7 @@ class UE4Asset:
 
             self.namesCount = bs.readInt()
             self.namesOffset = bs.readInt()
-            
+
             if self.serialVersion >= 459:
                 self.gatherableTextDataCount = bs.readInt()
                 self.gatherableTextDataOffset = bs.readInt()
@@ -103,22 +103,22 @@ class UE4Asset:
             self.thumbnailTableOffset = bs.readInt()
 
             self.guid = UE4Guid(self)
-            
+
             self.generations = ue4ReadList(self, UE4GenerationInfo)
             if self.serialVersion >= 336:
                 self.engineVersion = UE4EngineVersion(self)
             if self.serialVersion >= 444:
                 self.compatVersion = UE4EngineVersion(self)
-            
+
             self.compressionFlags = bs.readInt()
             self.compressionChunks = ue4ReadList(self, UE4CompressedChunk)
-            
+
             self.pkgSource = bs.readInt()
             self.cookPackages = ue4ReadList(self, UE4String)
-            
+
             if self.serialVersion < 508:
                 bs.readInt() #numTextureAllocations
-            
+
             if self.serialVersion >= 112:
                 self.assetRegistryOffset = bs.readInt()
             if self.serialVersion >= 212:
@@ -127,15 +127,15 @@ class UE4Asset:
                 self.bulkDataOffset = 0
         except:
             return -1
-        
+
         return 0
-        
+
     def getName(self, index):
         if index >= 0 and index < len(self.names):
             name, flags = self.names[index]
             return name
         return None
-        
+
     def getImportExportName(self, index):
         if index < 0:
             index = -index
@@ -145,13 +145,13 @@ class UE4Asset:
             if index > 0 and index <= len(self.exports):
                 return repr(self.exports[index - 1].objectName)
         return "None"
-        
+
     def getVersionByGuid(self, guid):
         for version in self.versionList:
             if version.key == guid:
                 return version.version
         return -1
-        
+
     def getRenderingObjectVersion(self):
         guid = UE4Guid.fromValue(0x12F88B9F, 0x88754AFC, 0xA67CD90C, 0x383ABD29)
         ver = self.getVersionByGuid(guid)
@@ -183,7 +183,7 @@ class UE4Asset:
             elif self.serialVersion <= 510:
                 return 14
             return 15
-            
+
     def getSkeletalMeshVersion(self):
         guid = UE4Guid.fromValue(0xD78A4A00, 0xE8584697, 0xBAA819B5, 0x487D46B4)
         ver = self.getVersionByGuid(guid)
@@ -205,14 +205,14 @@ class UE4Asset:
             if self.serialVersion < 504:
                 return 0
             return 1
-                        
+
     def getExportableObjectByName(self, exportName):
         for object in self.serializedObjects:
             export = noeSafeGet(object, "exportEntry")
             if export and repr(export.objectName) == exportName:
                 return object
         return None
-                        
+
     def loadTables(self):
         bs = self.bs
         self.names = []
@@ -249,19 +249,19 @@ class UE4Asset:
                 self.serializedObjects.append(newObject)
         for object in self.serializedObjects:
             object.postLoad()
-                    
+
     def transferTextures(self, noeTextures):
         if len(self.textures) > 0:
             for uTexture in self.textures:
                 if uTexture.texture:
                     uTexture.noeTextureIndex = len(noeTextures)
-                    noeTextures.append(uTexture.texture)    
+                    noeTextures.append(uTexture.texture)
 
-                    
+
 #=================================================================
 # UObject implementations
 #=================================================================
-        
+
 class UE4Object:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -301,22 +301,22 @@ class UE4StaticMesh(UE4Object):
         elif not isCooked:
             print("Uncooked StaticMesh is unimplemented.")
             return
-        
+
         self.refSkeleton = None
-        
+
         self.bodySetupRef = UE4ObjectRef(asset)
         if asset.gameHack != UE4_GAMEHACK_T7:
             self.navCollisionRef = UE4ObjectRef(asset)
-        
+
         #if not stripFlags.isEditorDataStripped():
         #    UE4String(asset)
         #    bs.readUInt()
-            
+
         self.lightingGuid = UE4Guid(asset)
         self.sockets = ue4ReadList(asset, UE4ObjectRef)
 
         self.lods = ue4ReadList(asset, UE4StaticModelLOD)
-        
+
         if asset.serialVersion >= 394:
             stripVolumeData = False
             if asset.serialVersion >= 416:
@@ -329,10 +329,10 @@ class UE4StaticMesh(UE4Object):
 
         self.bounds = UE4BoxSphereBounds(asset)
         bs.readInt() #LODsShareStaticLighting
-        
+
         if asset.serialVersion < 508:
             bs.readInt() #simplygon flag
-            
+
         renderVer = asset.getRenderingObjectVersion()
         if renderVer < 10:
             #streaming texture factors
@@ -345,13 +345,13 @@ class UE4StaticMesh(UE4Object):
             bs.readFloat()
             bs.readFloat()
             bs.readFloat()
-        
+
         maxLods = 8 if asset.serialVersion >= 482 else 4
         for lodIndex in range(0, maxLods):
             bs.readFloat()
-            
+
         self.materials = []
-        
+
         hasStaticMaterials = False
         if asset.serialVersion >= 508:
             hasSpeedTreeData = bs.readInt() != 0
@@ -361,7 +361,7 @@ class UE4StaticMesh(UE4Object):
                 if asset.getEditorObjectVersion() >= 8:
                     self.materials = ue4ReadList(asset, UE4StaticMaterial)
                     hasStaticMaterials = len(self.materials) > 0
-                    
+
         if not hasStaticMaterials:
             #if necessary, yank them out of properties
             if len(self.materials) == 0:
@@ -370,9 +370,9 @@ class UE4StaticMesh(UE4Object):
                     matInstNameList = materialArrayProp.readProperty()
                     for matName in matInstNameList:
                         self.materials.append(UE4LegacyMaterial(asset, matName))
-        
+
         asset.meshes.append(self)
-            
+
 class UE4SkeletalMesh(UE4Object):
     def __init__(self, asset):
         super().__init__(asset)
@@ -384,9 +384,9 @@ class UE4SkeletalMesh(UE4Object):
         self.materials = ue4ReadList(asset, UE4SkeletalMaterial)
         self.refSkeleton = UE4RefSkeleton(asset)
         self.lods = ue4ReadList(asset, UE4SkeletalModelLOD, self)
-        
+
         self.asset.meshes.append(self)
-            
+
 class UE4Texture(UE4Object):
     def __init__(self, asset):
         super().__init__(asset)
@@ -395,18 +395,18 @@ class UE4Texture(UE4Object):
         stripFlags = UE4StripFlags(self.asset)
         if not stripFlags.isEditorDataStripped():
             self.sourceArt = UE4ByteBulkData(self.asset)
-            
+
         self.texture = None
         self.noeTextureIndex = -1
         self.asset.textures.append(self)
-        
+
 class UE4Texture2D(UE4Texture):
     def __init__(self, asset):
         super().__init__(asset)
     def load(self, export):
         super().load(export)
         bs = self.asset.bs
-        
+
         UE4StripFlags(self.asset)
         isCooked = bs.readInt() != 0
         if isCooked:
@@ -440,7 +440,7 @@ class UE4Texture2D(UE4Texture):
                 pixelFormat = repr(UE4Name(self.asset))
         else:
             print("Warning: Uncooked texture data unimplemented.")
-        
+
 #currently, this is used generically for all material instance objects. we only care about digging props out.
 class UE4MaterialInstance(UE4Object):
     def __init__(self, asset):
@@ -452,14 +452,14 @@ class UE4MaterialInstance(UE4Object):
         parentTag = self.findPropertyTagByName("Parent")
         if parentTag:
             self.parentInstance = parentTag.readProperty()
-            
+
         self.albedoTex = None
         self.normalTex = None
         self.roughnessTex = None
         self.compositeTex = None
         self.compositeType = None
         self.metalnessTex = None
-            
+
         paramVals = self.findPropertyTagByName("TextureParameterValues")
         if paramVals:
             listsOfParamProps = paramVals.readProperty()
@@ -468,7 +468,7 @@ class UE4MaterialInstance(UE4Object):
                 valueProp = ue4FindPropertyTagLinear("ParameterValue", propList)
                 if nameProp and valueProp:
                     ue4SetTextureOverride(self, nameProp.readProperty(), valueProp.readProperty())
-                    
+
     def loadDependencies(self, loadedDeps):
         if self.parentInstance:
             self.parentObject = ue4ImportDependency(self.parentInstance, loadedDeps)
@@ -481,7 +481,7 @@ class UE4MaterialInstance(UE4Object):
         self.roughnessObject = ue4ImportDependency(self.roughnessTex, loadedDeps)
         self.compositeObject = ue4ImportDependency(self.compositeTex, loadedDeps)
         self.metalnessObject = ue4ImportDependency(self.metalnessTex, loadedDeps)
-        
+
     def getAlbedo(self):
         if self.albedoTex:
             return self.albedoTex
@@ -518,7 +518,7 @@ class UE4MaterialInstance(UE4Object):
         if self.parentObject:
             return self.parentObject.getMetalness()
         return ""
-                
+
 class UE4Material(UE4Object):
     def __init__(self, asset):
         super().__init__(asset)
@@ -537,14 +537,14 @@ class UE4Material(UE4Object):
         #normalProp = self.findPropertyTagByName("Normal")
         #roughnessProp = self.findPropertyTagByName("Roughness")
         #metalnessProp = self.findPropertyTagByName("Metallic")
-        
+
     def loadDependencies(self, loadedDeps):
         self.albedoObject = ue4ImportDependency(self.albedoTex, loadedDeps)
         self.normalObject = ue4ImportDependency(self.normalTex, loadedDeps)
         self.roughnessObject = ue4ImportDependency(self.roughnessTex, loadedDeps)
         self.compositeObject = ue4ImportDependency(self.compositeTex, loadedDeps)
         self.metalnessObject = ue4ImportDependency(self.metalnessTex, loadedDeps)
-        
+
     def getAlbedo(self):
         return self.albedoTex if self.albedoTex else ""
     def getNormal(self):
@@ -557,7 +557,7 @@ class UE4Material(UE4Object):
         return self.compositeType if self.compositeType else ""
     def getMetalness(self):
         return self.metalnessTex if self.metalnessTex else ""
-        
+
 class UE4MaterialExpressionTexture(UE4Object):
     def __init__(self, asset):
         super().__init__(asset)
@@ -588,7 +588,7 @@ class UE4StaticMaterial:
         self.materialSlotName = UE4Name(asset)
         if asset.getRenderingObjectVersion() >= 10:
             self.uvChannelInfo = UE4MeshUVChannelInfo(asset)
-            
+
 class UE4SkeletalMaterial:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -604,12 +604,12 @@ class UE4SkeletalMaterial:
                 self.recomputeTangent = bs.readInt() != 0
         if asset.getRenderingObjectVersion() >= 10:
             self.uvChannelInfo = UE4MeshUVChannelInfo(asset)
-            
+
 class UE4LegacyMaterial:
     def __init__(self, asset, materialName):
         ue4BaseObjectSetup(self, asset)
         self.materialName = materialName
-    
+
 class UE4MeshUVChannelInfo:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -618,7 +618,7 @@ class UE4MeshUVChannelInfo:
         self.overrideDensities = bs.readInt() != 0
         for channelIndex in range(0, 4):
             bs.readFloat() #uv densities
-        
+
 class UE4RefSkeleton:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -630,7 +630,7 @@ class UE4RefSkeleton:
         if asset.serialVersion < 312 and len(self.boneInfo) > 0:
             #how revolting, maybe an actorx exporter remnant
             self.boneInfo[0].parentIndex = -1
-        
+
 class UE4MeshBoneInfo:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -644,10 +644,10 @@ class UE4SkeletalMeshSection:
     def __init__(self, asset, objectOwner):
         ue4BaseObjectSetup(self, asset, objectOwner)
         bs = asset.bs
-        
+
         stripFlags = UE4StripFlags(asset)
         self.materialIndex = bs.readShort()
-        
+
         #the majority of this is unnecessary, but we have to parse to completion as these things are back-to-back in storage
         skelMeshVer = asset.getSkeletalMeshVersion()
         if skelMeshVer < 1:
@@ -659,7 +659,7 @@ class UE4SkeletalMeshSection:
         else:
             self.firstIndex = bs.readInt()
             self.triangleCount = bs.readInt()
-        
+
         self.triangleSorting = bs.readByte()
         if asset.serialVersion >= 254:
             self.disabled = bs.readInt() != 0
@@ -668,12 +668,12 @@ class UE4SkeletalMeshSection:
                 bs.readByte() #enableClothLOD
         else:
             self.disabled = False
-            
+
         if asset.getRecomputeTangentVersion() > 0:
             self.recomputeTangent = bs.readInt() != 0
         if asset.getEditorObjectVersion() >= 8 and asset.gameHack != UE4_GAMEHACK_T7:
             self.castShadow = bs.readInt() != 0
-            
+
         if skelMeshVer >= 1:
             if not stripFlags.isRenderDataStripped():
                 self.baseVertexIndex = bs.readInt()
@@ -681,7 +681,7 @@ class UE4SkeletalMeshSection:
                 if skelMeshVer < 2:
                     ue4ReadList(asset, UE4RigidVertex)
                 ue4ReadList(asset, UE4SoftVertex)
-            
+
             self.boneMap = ue4ReadList(asset, UE4RawType.typeShort)
             if skelMeshVer >= 4:
                 self.vertCount = bs.readInt()
@@ -689,7 +689,7 @@ class UE4SkeletalMeshSection:
                 bs.readInt() #numRigidVerts
                 bs.readInt() #numSoftVerts
             self.maxBoneInfluences = bs.readInt()
-            
+
             #cloth stuff, don't care
             clothSize = len(ue4ReadList(asset, UE4ApexClothPhysToRenderVertData))
             if clothSize > 0:
@@ -700,7 +700,7 @@ class UE4SkeletalMeshSection:
                 bs.readInt()
             else:
                 UE4ClothingSectionData(asset)
-            
+
 class UE4StaticMeshSection:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -712,7 +712,7 @@ class UE4StaticMeshSection:
         self.maxVertIndex = bs.readInt()
         self.enableCollision = bs.readInt() != 0
         self.castShadow = bs.readInt() != 0
-            
+
 class UE4VertexPositions:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -721,7 +721,7 @@ class UE4VertexPositions:
         self.count = bs.readInt()
         arrayStride, arrayCount, arrayData = ue4ReadBulkArray(asset)
         self.data = arrayData
-        
+
 class UE4VertexColors:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -750,7 +750,7 @@ class UE4VertexColorsLegacy:
             self.count = arrayCount
         else:
             self.data = None
-            
+
 class UE4VertexInterleaved:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -768,7 +768,7 @@ class UE4VertexInterleaved:
         self.normTanOffset = 0
         self.uvsOffset = 16 if self.fullPrecisionTangent else 8
         self.uvSetSize = 8 if self.fullPrecisionUV else 4
-            
+
 class UE4SkeletalMeshVertexBuffer:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -782,7 +782,7 @@ class UE4SkeletalMeshVertexBuffer:
             self.extraBoneWeights = bs.readInt() != 0
         self.meshExtent = UE4Vector(asset)
         self.meshOrigin = UE4Vector(asset)
-        
+
         skelMeshVer = asset.getSkeletalMeshVersion()
         #position should really come first here, and for that matter be packed next to the weights. but, you know, ue4.
         self.normTanOffset = 0
@@ -799,7 +799,7 @@ class UE4SkeletalMeshVertexBuffer:
         #we don't serialize each vert
         arrayStride, arrayCount, arrayData = ue4ReadBulkArray(asset)
         self.data = arrayData
-            
+
 class UE4RawIndices:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -821,7 +821,7 @@ class UE4MultiSizeIndices:
         arrayStride, arrayCount, arrayData = ue4ReadBulkArray(asset)
         self.indexCount = (arrayStride * arrayCount) // self.indexSize
         self.data = arrayData
-        
+
 class UE4SkeletalModelLOD:
     def __init__(self, asset, objectOwner):
         ue4BaseObjectSetup(self, asset, objectOwner)
@@ -829,7 +829,7 @@ class UE4SkeletalModelLOD:
         stripFlags = UE4StripFlags(asset)
         if not stripFlags.isEditorDataStripped():
             noesis.doException("Unstripped SkeletalModelLOD editor data is not supported.")
-        
+
         self.hasCloth = False
         self.chunks = []
         self.sections = ue4ReadList(asset, UE4SkeletalMeshSection, self)
@@ -848,7 +848,7 @@ class UE4SkeletalModelLOD:
             #self.meshToImportVertexMap = ue4ReadList(asset, UE4RawType.typeInt)
             ue4ReadListAsRawData(asset, 4) #don't need this, so don't waste time serializing each element
             self.maxImportVertex = bs.readInt()
-            
+
         if stripFlags.isRenderDataStripped():
             self.uvSetCount = 0
             self.vertSkinnable = None
@@ -863,7 +863,7 @@ class UE4SkeletalModelLOD:
                 if not weightStripFlags.isRenderDataStripped():
                     self.weightsPerVert = 8 if self.extraBoneWeights else 4
                     self.weightData = bs.readBytes(4 * self.weightsPerVert)
-                    
+
             vertexColorProp = objectOwner.findPropertyTagByName("bHasVertexColors")
             if vertexColorProp and noeSafeGet(vertexColorProp, "boolValue") is True:
                 if skelMeshVer < 7: #bsn - may not be accurate, legacy present in some v510
@@ -876,7 +876,7 @@ class UE4SkeletalModelLOD:
                 clothStripFlags = UE4StripFlags(asset)
                 if not stripFlags.isRenderDataStripped():
                     ue4ReadBulkArray(asset)
-        
+
 class UE4StaticModelLOD:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -891,7 +891,7 @@ class UE4StaticModelLOD:
             self.vertPositions = UE4VertexPositions(asset)
             self.vertInterleaved = UE4VertexInterleaved(asset)
             self.vertColors = UE4VertexColors(asset)
-            
+
             self.indices = UE4RawIndices(asset)
             #so many turds
             if asset.serialVersion >= 489:
@@ -899,15 +899,15 @@ class UE4StaticModelLOD:
             UE4RawIndices(asset) #depth-only indices
             if asset.serialVersion >= 489:
                 UE4RawIndices(asset) #reversed depth-only indices
-                
+
             if asset.serialVersion >= 368 and asset.serialVersion < 394:
-                UE4DistanceFieldVolumeData(self.asset)        
-                
+                UE4DistanceFieldVolumeData(self.asset)
+
             if not stripFlags.isEditorDataStripped():
                 UE4RawIndices(asset) #wireframe index buffer
             if (stripFlags.classStripFlags & 1) == 0:
                 UE4RawIndices(asset) #adjacency index buffer
-        
+
 class UE4Texture2DMip:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -918,7 +918,7 @@ class UE4Texture2DMip:
         self.height = bs.readInt()
         if not isCooked:
             UE4String(asset)
-            
+
 class UE4PropertyTag:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -938,14 +938,14 @@ class UE4PropertyTag:
                 self.enumName = repr(UE4Name(asset))
             elif self.propType == "ArrayProperty":
                 self.innerTypeName = repr(UE4Name(asset))
-                
+
             if asset.serialVersion >= 509:
                 if self.propType == "SetProperty":
                     self.innerTypeName = repr(UE4Name(asset))
                 elif self.propType == "MapProperty_UE4":
                     self.innerTypeName = repr(UE4Name(asset))
                     self.valueTypeName = repr(UE4Name(asset))
-                    
+
             if asset.serialVersion >= 503:
                 if bs.readUByte() > 0:
                     UE4Guid(asset)
@@ -956,7 +956,7 @@ class UE4PropertyTag:
         bs = asset.bs
         prevOffset = bs.tell()
         bs.seek(self.dataOffset, NOESEEK_ABS)
-        
+
         #limited support, only implementing what i need as i need it
         r = None
         if self.propType == "NameProperty":
@@ -978,7 +978,7 @@ class UE4PropertyTag:
                 if asset.serialVersion >= 500:
                     innerTag = UE4PropertyTag(asset)
                     bs.seek(innerTag.dataOffset, NOESEEK_ABS)
-            
+
                 for dataIndex in range(0, dataCount):
                     entryTag = UE4PropertyTag(asset)
                     tagList = []
@@ -991,10 +991,10 @@ class UE4PropertyTag:
                     objectRef = bs.readInt()
                     objectName = asset.getImportExportName(objectRef)
                     r.append(objectName)
-            
+
         bs.seek(prevOffset, NOESEEK_ABS)
         return r
-            
+
 class UE4ByteBulkData:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1011,7 +1011,7 @@ class UE4ByteBulkData:
             return None #in a separate file, not currently supported
         bs = self.asset.bs
         prevOffset = bs.tell()
-        
+
         #print("bulk read:", self.dataFlags, self.dataSize, self.endOfHeader, self.dataOffset, self.asset.bulkDataOffset)
         data = None
         if self.dataFlags & 1: #elsewhere in file
@@ -1021,7 +1021,7 @@ class UE4ByteBulkData:
         data = bs.readBytes(self.dataSize)
         bs.seek(prevOffset, NOESEEK_ABS)
         return data
-        
+
 class UE4DistanceFieldVolumeData:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1045,7 +1045,7 @@ class UE4ApexClothPhysToRenderVertData:
         self.simMeshVertInidices = (bs.readShort(), bs.readShort(), bs.readShort(), bs.readShort())
         bs.readInt() #pad
         bs.readInt() #pad
-        
+
 class UE4ClothingSectionData:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1078,7 +1078,7 @@ class UE4SkelMeshChunk:
             ue4ReadList(asset, UE4Vector)
             bs.readShort()
             bs.readShort()
-        
+
 class UE4RigidVertex:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1108,7 +1108,7 @@ class UE4SoftVertex:
             self.boneIndices.append(bs.readUByte())
         for weightIndex in range(0, weightsPerVert):
             self.boneWeights.append(bs.readUByte())
-        
+
 class UE4Box:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1116,7 +1116,7 @@ class UE4Box:
         self.mins = UE4Vector(asset)
         self.maxs = UE4Vector(asset)
         self.isValid = bs.readByte() != 0
-        
+
 class UE4BoxSphereBounds:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1124,7 +1124,7 @@ class UE4BoxSphereBounds:
         self.origin = UE4Vector(asset)
         self.extent = UE4Vector(asset)
         self.radius = bs.readFloat()
-        
+
 class UE4Vector:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1132,7 +1132,7 @@ class UE4Vector:
         self.v = (bs.readFloat(), bs.readFloat(), bs.readFloat())
     def __repr__(self):
         return repr(self.v)
-        
+
 class UE4Vector4:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1140,7 +1140,7 @@ class UE4Vector4:
         self.v = (bs.readFloat(), bs.readFloat(), bs.readFloat(), bs.readFloat())
     def __repr__(self):
         return repr(self.v)
-        
+
 class UE4IntVector:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1156,7 +1156,7 @@ class UE4Quat:
         self.q = (bs.readFloat(), bs.readFloat(), bs.readFloat(), bs.readFloat())
     def __repr__(self):
         return repr(self.q)
-        
+
 class UE4Transform:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1175,19 +1175,19 @@ class UE4Transform:
         noeMat[2] *= s[2]
         noeMat[3] = t
         return noeMat
-    
+
 class UE4UVFloat:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
         bs = asset.bs
         self.uv = (bs.readFloat(), bs.readFloat())
-    
+
 class UE4PackedNormal:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
         bs = asset.bs
         self.data = bs.readUInt()
-    
+
 class UE4Color:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1196,7 +1196,7 @@ class UE4Color:
         bs.g = bs.readUByte()
         bs.b = bs.readUByte()
         bs.a = bs.readUByte()
-        
+
 class UE4StripFlags:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1207,7 +1207,7 @@ class UE4StripFlags:
         return (self.globalStripFlags & 1) != 0
     def isRenderDataStripped(self):
         return (self.globalStripFlags & 2) != 0
-        
+
 class UE4VersionType:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1224,13 +1224,13 @@ class UE4EngineVersion:
         self.verPatch = bs.readUShort()
         self.clNumber = bs.readUInt()
         self.branch = ue4ReadString(asset)
-                
+
 class UE4ObjectRef:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
         bs = asset.bs
         self.refIndex = bs.readInt()
-        
+
 class UE4Guid:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1252,14 +1252,14 @@ class UE4Guid:
         return self.A == other.A and self.B == other.B and self.C == other.C and self.D == other.D
     def __ne__(self, other):
         return self.A != other.A or self.B != other.B or self.C != other.C or self.D != other.D
-        
+
 class UE4GenerationInfo:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
         bs = asset.bs
         self.exportCount = bs.readInt()
         self.nameCount = bs.readInt()
-        
+
 class UE4CompressedChunk:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1268,14 +1268,14 @@ class UE4CompressedChunk:
         self.decompSize = bs.readInt()
         self.compOffset = bs.readInt()
         self.compSize = bs.readInt()
-        
+
 class UE4String:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
         self.data = ue4ReadString(asset)
     def __repr__(self):
         return self.data
-        
+
 class UE4Name:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1287,7 +1287,7 @@ class UE4Name:
             self.data = "None"
     def __repr__(self):
         return self.data
-        
+
 class UE4ImportObject:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1296,7 +1296,7 @@ class UE4ImportObject:
         self.className = UE4Name(asset)
         self.packageIndex = bs.readInt()
         self.objectName = UE4Name(asset)
-        
+
 class UE4ExportObject:
     def __init__(self, asset):
         ue4BaseObjectSetup(self, asset)
@@ -1315,14 +1315,14 @@ class UE4ExportObject:
         else:
             self.serialSize = bs.readInt()
             self.serialOffset = bs.readInt()
-            
+
         bs.readInt() #forced export
         bs.readInt() #not for client
         bs.readInt() #not for server
-        
+
         self.guid = UE4Guid(asset)
         self.packageFlags = bs.readInt()
-        
+
         bs.readInt() #not for editor
         self.isAsset = bs.readInt() != 0
         if asset.serialVersion >= 507:
@@ -1349,12 +1349,12 @@ class UE4RawType:
         bs = asset.bs
         data = bs.readShort()
         return classObject(asset, data)
-        
+
 class UE4ImportableObject:
     def __init__(self, export, fullPath):
         self.export = export
         self.filePath = fullPath
-        
+
 
 #=================================================================
 # Utility implementations
@@ -1386,7 +1386,7 @@ def ue4ReadListAsRawData(asset, elemSize):
     bs = asset.bs
     count = bs.readUInt()
     return bs.readBytes(elemSize * count)
-    
+
 def ue4ReadPairList(asset, firstType, secondType):
     bs = asset.bs
     count = bs.readUInt()
@@ -1394,26 +1394,26 @@ def ue4ReadPairList(asset, firstType, secondType):
     for index in range(0, count):
         list.append((firstType(asset), secondType(asset)))
     return list
-    
+
 def ue4ReadBulkArray(asset):
     bs = asset.bs
     stride = bs.readInt()
     count = bs.readInt()
     data = bs.readBytes(stride * count)
     return stride, count, data
-    
+
 def ue4ReadString(asset):
     bs = asset.bs
     stringLength = bs.readInt()
     if stringLength >= 0:
         return noeStrFromBytes(bs.readBytes(stringLength), "UTF-8")
     else:
-        return noeStrFromBytes(bs.readBytes(-stringLength * 2), "UTF-16")    
-        
+        return noeStrFromBytes(bs.readBytes(-stringLength * 2), "UTF-16")
+
 def ue4BaseObjectSetup(object, asset, objectOwner = None):
     object.asset = asset
     object.objectOwner = None
-        
+
 def ue4FindPropertyTagLinear(name, propList):
     for prop in propList:
         if prop.name == name:
@@ -1511,7 +1511,7 @@ def ue4ImportDependency(objectName, loadedDeps):
 def ue4ScanAssetData(scanDataPath):
     global ue4LastScanPath
     global ue4AssetDatabase
-    
+
     ue4LastScanPath = scanDataPath
     ue4AssetDatabase = {}
     if not ue4LastScanPath:
@@ -1530,39 +1530,39 @@ def ue4ScanAssetData(scanDataPath):
                         for export in asset.exports:
                             className = asset.getImportExportName(export.classIndex)
                             ue4AssetDatabase[repr(export.objectName)] = UE4ImportableObject(export, fullPath)
-        
-        
+
+
 #=================================================================
 # Noesis implementations
 #=================================================================
-        
+
 def ue4CheckType(data):
     asset = UE4Asset(NoeBitStream(data))
     if asset.parse() != 0:
         return 0
     return 1
-    
+
 def ue4LoadModel(data, mdlList):
     asset = UE4Asset(NoeBitStream(data))
     if asset.parse() != 0:
         return 0
-        
+
     print("UE4 version info:", asset.version, asset.serialVersion, asset.verA, asset.verB, asset.verLic)
 
     asset.loadTables()
-    
+
     scanDataPath = None
     if noesis.optWasInvoked("-ue4datapath"):
         scanDataPath = noesis.optGetArg("-ue4datapath")
     global ue4LastScanPath
     if scanDataPath != ue4LastScanPath:
         ue4ScanAssetData(scanDataPath)
-    
+
     asset.loadAssetData()
 
     noeTextures = []
     noeMaterials = []
-    
+
     loadedDeps = {}
     #let's check the database for material dependencies
     for mesh in asset.meshes:
@@ -1578,7 +1578,7 @@ def ue4LoadModel(data, mdlList):
                     if not foundMaterial:
                         noeMat = NoeMaterial(materialName, "")
                         noeMat.setMetal(0.0, 0.0)
-                    
+
                         materialObject = ue4ImportDependency(materialName, loadedDeps)
                         albedoTex = ""
                         normalTex = ""
@@ -1625,7 +1625,7 @@ def ue4LoadModel(data, mdlList):
                                 noeMat.flags |= noesis.NMATFLAG_PBR_METAL | noesis.NMATFLAG_PBR_ROUGHNESS_NRMALPHA
                                 noeMat.setMetal(0.0, 0.0)
                                 noeMat.setRoughness(1.0, 0.0)
-                                
+
                             noeMat.setSpecularTexture(roughnessTex)
                             noeMat.flags |= noesis.NMATFLAG_PBR_METAL | noesis.NMATFLAG_PBR_SPEC_IR_RG
                         noeMat.setEnvTexture(noesis.getScenesPath() + "sample_pbr_e4.dds")
@@ -1638,7 +1638,7 @@ def ue4LoadModel(data, mdlList):
         depAsset.transferTextures(noeTextures)
 
     mdlMats = NoeModelMaterials(noeTextures, noeMaterials) if len(noeTextures) > 0 or len(noeMaterials) > 0 else None
-    
+
     for meshIndex in range(0, len(asset.meshes)):
         ctx = rapi.rpgCreateContext()
         rapi.rpgSetOption(noesis.RPGOPT_TRIWINDBACKWARD, 1)
@@ -1649,7 +1649,7 @@ def ue4LoadModel(data, mdlList):
         if len(mesh.lods) == 0:
             continue
         lod = mesh.lods[0] #for now, just always pick the first lod.
-        
+
         if mesh.exportEntry:
             rapi.rpgSetName(repr(mesh.exportEntry.objectName))
 
@@ -1685,43 +1685,43 @@ def ue4LoadModel(data, mdlList):
                     rapi.rpgBindUV1BufferOfs(ilv.interleavedData, uvFormat, ilv.stride, ilv.uvsOffset)
                     if ilv.uvSetCount > 1:
                         rapi.rpgBindUV2BufferOfs(ilv.interleavedData, uvFormat, ilv.stride, ilv.uvsOffset + ilv.uvSetSize)
-            
+
         indexType = noesis.RPGEODATA_USHORT if lod.indices.indexSize == 2 else noesis.RPGEODATA_INT
-        
+
         if len(lod.sections) > 0:
             for sectionIndex in range(0, len(lod.sections)):
                 section = lod.sections[sectionIndex]
-            
+
                 if len(lod.chunks) == len(lod.sections): #if chunks are still around, pull the bonemap out of the corresponding chunk
                     boneMap = lod.chunks[sectionIndex].boneMap
                 else: #otherwise assume it's part of the section data
                     boneMap = noeSafeGet(section, "boneMap")
-            
+
                 if boneMap:
                     translatedBoneMap = []
                     for boneMapData in boneMap:
                         translatedBoneMap.append(int(boneMapData.data))
                     rapi.rpgSetBoneMap(translatedBoneMap)
-            
+
                 if section.materialIndex >= 0 and section.materialIndex < len(mesh.materials) and not noesis.optWasInvoked("-ue4defaultmtl"):
                     materialName = mesh.materials[section.materialIndex].materialName
                 else:
                     materialName = "ue4_material_%03i"%section.materialIndex
-                    
+
                 if not noesis.optWasInvoked("-ue4nosecname"):
                     if mesh.exportEntry:
                         rapi.rpgSetName(repr(mesh.exportEntry.objectName) + "_section%03i"%sectionIndex)
                     else:
                         rapi.rpgSetName("mesh%03i_section%03i"%(meshIndex, sectionIndex))
-                    
+
                 rapi.rpgSetMaterial(materialName)
                 rapi.rpgCommitTriangles(lod.indices.data[section.firstIndex * lod.indices.indexSize:], indexType, section.triangleCount * 3, noesis.RPGEO_TRIANGLE, 1)
                 rapi.rpgSetBoneMap(None)
         else:
             rapi.rpgCommitTriangles(lod.indices.data, indexType, lod.indices.indexCount, noesis.RPGEO_TRIANGLE, 1)
-        
+
         rapi.rpgClearBufferBinds()
-        
+
         mdl = rapi.rpgConstructModel()
         if mdl:
             if mesh.refSkeleton:
@@ -1746,15 +1746,15 @@ def ue4LoadModel(data, mdlList):
         #associate shared textures + materials with all models
         for mdl in mdlList:
             mdl.setModelMaterials(mdlMats)
-        
+
     if len(mdlList) != 0:
         rapi.setPreviewOption("setAngOfs", "0 90 0")
         rapi.setPreviewOption("autoLoadNonDiffuse", "1")
     else:
         print("Found nothing of interest in the package.")
-        
+
     return 1
-        
+
 
 #=================================================================
 # Archive handling
@@ -1766,7 +1766,7 @@ def ue4FileReadString(f, endian):
         return noeStrFromBytes(f.read(stringLength), "UTF-8")
     else:
         return noeStrFromBytes(f.read(-stringLength * 2), "UTF-16")
-        
+
 class UE4ArcEntry:
     def __init__(self, name, offset, compSize, decompSize, compType, encrypted, chunkList, chunkSize, entryOffset, entrySize):
         self.name = name
@@ -1779,13 +1779,13 @@ class UE4ArcEntry:
         self.chunkSize = chunkSize
         self.entryOffset = entryOffset
         self.entrySize = entrySize
-        
+
 def ue4DecryptData(data, key):
     if key is None or len(data) == 0:
         return data
     data = rapi.decryptAES(data, key)
     return data
-        
+
 #see if the file in question is a valid pak file
 def ue4ExtractArc(fileName, fileLen, justChecking):
     if fileLen <= 44:
@@ -1799,22 +1799,22 @@ def ue4ExtractArc(fileName, fileLen, justChecking):
                 endian = ">"
             elif id != 0x5A6F12E1:
                 return 0
-                
+
             ver, entriesOffset, entriesSize = noeUnpack(endian + "IQI", f.read(4 + 8 + 4))
-            if ver != 3 or entriesOffset <= 0 or entriesSize <= 0:
+            if ver < 3 or entriesOffset <= 0 or entriesSize <= 0:
                 return 0
         except:
             return 0
 
         if justChecking: #it's valid
             return 1
-        
+
         f.seek(entriesOffset, os.SEEK_SET)
         basePath = ue4FileReadString(f, endian)
         entryCount = noeUnpack(endian + "I", f.read(4))[0]
-        
+
         print("Extracting", entryCount, "files.")
-        
+
         anyEncryption = False
         entries = []
         for entryIndex in range(0, entryCount):
@@ -1833,14 +1833,14 @@ def ue4ExtractArc(fileName, fileLen, justChecking):
             if encrypted > 0:
                 anyEncryption = True
             entries.append(UE4ArcEntry(name, offset, compSize, decompSize, compType, encrypted, chunkList, chunkSize, entryOffset, entrySize))
-    
+
         if anyEncryption:
             decryptKey = noesis.userPrompt(noesis.NOEUSERVAL_STRING, "Enter Key", "Some entries in this archive are encrypted. Please enter a decryption key.", "", None)
             if decryptKey is None:
                 print("Warning: No key provided. Proceeding to extract data without decryption. Results may be invalid.")
             else:
                 decryptKey = noePaddedByteArray(bytearray(decryptKey, "ASCII"), 32)
-    
+
         for entry in entries:
             print("Writing", entry.name)
             if len(entry.chunkList) > 0:
@@ -1850,7 +1850,7 @@ def ue4ExtractArc(fileName, fileLen, justChecking):
                     chunkReadSize = nextChunkOffset - chunkOffset
                     if entry.encrypted > 0: #needs to be padded out to aes block size
                         chunkReadSize = (chunkReadSize + 15) & ~15
-                        
+
                     chunkData = f.read(chunkReadSize)
                     if entry.encrypted > 0:
                         chunkData = ue4DecryptData(chunkData, decryptKey)
@@ -1862,7 +1862,7 @@ def ue4ExtractArc(fileName, fileLen, justChecking):
                 readSize = entry.compSize
                 if entry.encrypted > 0: #needs to be padded out to aes block size
                     readSize = (readSize + 15) & ~15
-                
+
                 data = f.read(readSize)
                 if entry.encrypted > 0:
                     data = ue4DecryptData(data, decryptKey)
@@ -1873,5 +1873,5 @@ def ue4ExtractArc(fileName, fileLen, justChecking):
                 #encryption or compression might've resulted on padding off the end, so be lazy and just truncate at the end before writing.
                 data = data[:entry.decompSize]
             rapi.exportArchiveFile(entry.name, data)
-            
+
     return 1

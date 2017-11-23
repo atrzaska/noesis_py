@@ -117,7 +117,6 @@ class PVRTCImage:
 
     def decode(self):
         self.reader.seek(self.dataOfs, NOESEEK_ABS)
-
         d = 4 if self.bpp == 2 else 2
         decodeFlags = noesis.PVRTC_DECODE_PVRTC2 if self.isPVR2 else 0
 
@@ -130,7 +129,6 @@ class PVRTCImage:
         #    decodeFlags |= noesis.PVRTC_DECODE_PVRTC2_NO_OR_WITH_0_ALPHA
 
         r = rapi.imageDecodePVRTC(self.reader.readBytes((self.w*self.h) // d), self.w, self.h, self.bpp, decodeFlags)
-
         if self.flip == 1:
             r = rapi.imageFlipRGBA32(r, self.w, self.h, 0, 1)
         return r

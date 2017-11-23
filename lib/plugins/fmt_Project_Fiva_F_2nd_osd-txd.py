@@ -13,9 +13,10 @@ def registerNoesisTypes():
     handle = noesis.register("Project Diva F 2nd Texture", ".txd")
     noesis.setHandlerTypeCheck(handle, txdCheckType)
     noesis.setHandlerLoadRGBA(handle, txdLoadRGBA)
-    noesis.logPopup()
+    #noesis.logPopup()
 
     return 1
+
 
 def osdCheckType(data):
     td = NoeBitStream(data)
@@ -34,14 +35,15 @@ class osdModel:
         self.matDict  = {}
         self.boneList = []
         self.boneMap  = []
+        self.boneDict  = {}
         self.offsetList = []
         self.meshOffsets = []
         self.loadAll(bs)
 
     def loadAll(self, bs):
-        baseName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getInputName()))
-        if( rapi.checkFileExists( rapi.getDirForFilePath( rapi.getInputName() ) + baseName + ".txd" ) ):
-            texData = rapi.loadIntoByteArray( rapi.getDirForFilePath( rapi.getInputName() ) + baseName + ".txd" )
+        baseName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getLastCheckedName()))
+        if( rapi.checkFileExists( rapi.getDirForFilePath( rapi.getLastCheckedName() ) + baseName + ".txd" ) ):
+            texData = rapi.loadIntoByteArray( rapi.getDirForFilePath( rapi.getLastCheckedName() ) + baseName + ".txd" )
             txdLoadRGBA(texData, self.texList)
         while not bs.checkEOF():
             self.load_CHNK(bs)
@@ -101,6 +103,22 @@ class osdModel:
                     #print(self.texList[texIndex].name)
                     if b == 0:
                         material.setTexture(self.texList[texIndex].name)
+                    elif b == 1:
+                        secondPassMat = NoeMaterial(material.name + "_ambient", self.texList[texIndex].name)
+                        secondPassMat.setFlags(noesis.NMATFLAG_TWOSIDED, 1)
+                        secondPassMat.setBlendMode("GL_ZERO", "GL_SRC_COLOR")
+                        secondPassMat.setDiffuseColor( (0.8, 0.8, 0.8, 1.0) )
+                        #material.setNextPass(secondPassMat)
+                    elif b == 3:
+                        material.setSpecularTexture(self.texList[texIndex].name)
+                    elif b == 4:
+                        pass
+                        #toon curve
+                    elif b == 5:
+                        pass
+                        #material.setEnvTexture(self.texList[texIndex].name)
+                    else:
+                        print([str(b), self.texList[texIndex].name])
             self.matList.append(material)
 
         self.MeshInfo = []
@@ -110,11 +128,18 @@ class osdModel:
             polyName = bs.readBytes(0x40).decode("ASCII").rstrip("\0")
             #print(polyName)
             faceInfo = []
+            boneMap = []
             for b in range(0, polyInfo[5]):
+                tmp = []
                 bs.seek(info[0] + polyInfo[6] + (b * 0x70), NOESEEK_ABS)
                 faceInfo.append(bs.read(">" + "5f16i5f2i"))
-            #print(faceInfo[0][5])
-            self.MeshInfo.append([polyName, polyInfo, faceInfo])
+                bs.seek(info[0] + faceInfo[b][9], NOESEEK_ABS)
+                for c in range(0, faceInfo[b][8]):
+                    b1 = bs.read(">H")
+                    tmp.append(b1[0]); tmp.append(b1[0]); tmp.append(b1[0])
+                boneMap.append(tmp)
+            self.MeshInfo.append([polyName, polyInfo, faceInfo, boneMap])
+
         bs.seek(info[0] + omdlHeader[9], NOESEEK_ABS)
         for a in range(0, omdlHeader[8]):
             bs.seek(0x430, NOESEEK_REL)
@@ -126,6 +151,107 @@ class osdModel:
         #print("OSKN")
         osknHeader = bs.read(">" + "6i")
         #print(osknHeader)
+
+        boneIdList = []
+        #print("======Bone ID======")
+        bs.seek(info[0] + osknHeader[0], NOESEEK_ABS)
+        for a in range(0, osknHeader[4]):
+            boneIdList.append(bs.read("2H"))
+            if self.boneDict.__contains__(str(boneIdList[a][1])):
+                pass
+            else:
+                self.boneDict[str(boneIdList[a][1])] = len(self.boneDict)
+        #print(self.boneDict)
+
+        bonePList = []
+        #print("======Bone Parent======")
+        bs.seek(info[0] + osknHeader[5], NOESEEK_ABS)
+        for a in range(0, osknHeader[4]):
+            bonePList.append(bs.read("2H"))
+            #print(bonePList[a])
+
+        boneNList = []
+        #print("======Bone Name======")
+        for a in range(0, osknHeader[4]):
+            bs.seek(info[0] + osknHeader[2] + (4 * a), NOESEEK_ABS)
+            boneNameOff = bs.read(">I")
+            bs.seek(info[0] + boneNameOff[0], NOESEEK_ABS)
+            boneNList.append(bs.readString())
+            #print(boneNList[a])
+
+        #print("======Bone Matrix======")
+        for a in range(0, osknHeader[4]):
+            bs.seek(info[0] + osknHeader[1] + (0x40 * a), NOESEEK_ABS)
+            m01, m02, m03, m04 = bs.read(">4f")
+            m11, m12, m13, m14 = bs.read(">4f")
+            m21, m22, m23, m24 = bs.read(">4f")
+            m31, m32, m33, m34 = bs.read(">4f")
+            if str(bonePList[a][1]) in self.boneDict:
+                parent = self.boneDict[str(bonePList[a][1])]
+            else:
+                parent = -1
+                if boneNList[a] == "n_hara_b_wj_ex":
+                    if "41728" in self.boneDict:
+                        parent = self.boneDict["41728"]
+                elif boneNList[a] == "n_hara_c_wj_ex":
+                    if "46848" in self.boneDict:
+                        parent = self.boneDict["46848"]
+                elif boneNList[a] == "kl_mune_b_wj":
+                    if "47104" in self.boneDict:
+                        parent = self.boneDict["47104"]
+                elif boneNList[a] == "j_kao_wj":
+                    if "23040" in self.boneDict:
+                        parent = self.boneDict["23040"]
+                elif boneNList[a] == "kl_te_l_wj":
+                    if "30720" in self.boneDict:
+                        parent = self.boneDict["30720"]
+                elif boneNList[a] == "kl_te_r_wj":
+                    if "39680" in self.boneDict:
+                        parent = self.boneDict["39680"]
+
+            boneMtx = NoeMat43( [NoeVec3((m01, m02, m03)), NoeVec3((m11, m12, m13)), NoeVec3((m21, m22, m23)), NoeVec3((m04, m14, m24))] ).inverse()
+            newBone = NoeBone(self.boneDict[str(boneIdList[a][1])], boneNList[a], boneMtx, None, parent)
+            self.boneList.append(newBone)
+
+        if osknHeader[3] != 0:
+            #print("============")
+            bs.seek(info[0] + osknHeader[3], NOESEEK_ABS)
+            osknHeader2 = bs.read(">" + "9i")
+            #print(osknHeader2)
+
+            #print("============")
+            for a in range(0, osknHeader2[0]):
+                bs.seek(info[0] + osknHeader2[3] + (0xC * a), NOESEEK_ABS)
+                #print(bs.read(">" + "4b2I"))
+
+            #print("============")
+            for a in range(0, osknHeader2[2]):
+                bs.seek(info[0] + osknHeader2[8], NOESEEK_ABS)
+
+            #print("============")
+            for a in range(0, osknHeader2[1]):
+                bs.seek(info[0] + osknHeader2[4] + (0x4 * a), NOESEEK_ABS)
+                boneNameOff = bs.read(">I")
+                bs.seek(info[0] + boneNameOff[0], NOESEEK_ABS)
+                #print(bs.readString())
+
+            #print("============")
+            bs.seek(info[0] + osknHeader2[7], NOESEEK_ABS)
+            name1off = bs.read(">" + osknHeader2[6] * "I")
+            for a in range(0, osknHeader2[6]):
+                bs.seek(info[0] + name1off[a], NOESEEK_ABS)
+                #print(bs.readString())
+
+            #print("============")
+            for a in range(0, 1):
+                bs.seek(info[0] + osknHeader2[5] + (8 * a), NOESEEK_ABS)
+                boneNameOff = bs.read(">II")
+                bs.seek(info[0] + boneNameOff[0], NOESEEK_ABS)
+                bone1 = bs.readString()
+                bs.seek(info[0] + boneNameOff[1], NOESEEK_ABS)
+                boneNameOff2 = bs.read(">I")
+                bs.seek(info[0] + boneNameOff2[0], NOESEEK_ABS)
+                #print([bone1, bs.readString()])
 
     def load_OIDX(self, bs, info):
         #print("OIDX")
@@ -150,12 +276,14 @@ class osdModel:
             rapi.rpgBindColorBufferOfs(vertBuff, noesis.RPGEODATA_HALFFLOAT, self.MeshInfo[a][1][8], 36, 4)
             if self.MeshInfo[a][1][8] == 56:
                 rapi.rpgBindBoneWeightBufferOfs(vertBuff, noesis.RPGEODATA_USHORT, self.MeshInfo[a][1][8], 44, 4)
-                rapi.rpgBindBoneIndexBufferOfs(vertBuff, noesis.RPGEODATA_BYTE, self.MeshInfo[a][1][8], 52, 4)
+                rapi.rpgBindBoneIndexBufferOfs(vertBuff, noesis.RPGEODATA_UBYTE, self.MeshInfo[a][1][8], 52, 4)
 
             for b in range(0, len(self.MeshInfo[a][2])):
                 #print(self.MeshInfo[a][2][b])
-                #print(self.MeshInfo[a][2][b])
                 rapi.rpgSetMaterial(self.matList[self.MeshInfo[a][2][b][5] + matBase].name)
+                #print(self.MeshInfo[a][3][b])
+                if len(self.MeshInfo[a][3][b]) != 0:
+                    rapi.rpgSetBoneMap(self.MeshInfo[a][3][b])
                 bs.seek(self.faceStart + self.MeshInfo[a][2][b][14], NOESEEK_ABS)
                 faceBuff = bs.readBytes(self.MeshInfo[a][2][b][13] * 2)
                 rapi.rpgCommitTriangles(faceBuff, noesis.RPGEODATA_USHORT, self.MeshInfo[a][2][b][13], noesis.RPGEO_TRIANGLE, 1)
@@ -171,9 +299,9 @@ class txdTexture:
     def loadAll(self, texList):
         bs = self.bs
         self.texList = texList
-        baseName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getInputName()))
-        if( rapi.checkFileExists( rapi.getDirForFilePath( rapi.getInputName() ) + baseName + ".txi" ) ):
-            txiData = rapi.loadIntoByteArray( rapi.getDirForFilePath( rapi.getInputName() ) + baseName + ".txi" )
+        baseName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getLastCheckedName()))
+        if( rapi.checkFileExists( rapi.getDirForFilePath( rapi.getLastCheckedName() ) + baseName + ".txi" ) ):
+            txiData = rapi.loadIntoByteArray( rapi.getDirForFilePath( rapi.getLastCheckedName() ) + baseName + ".txi" )
             self.load_MTXI(txiData)
         while not bs.checkEOF():
             self.load_CHNK(bs)
@@ -219,7 +347,6 @@ class txdTexture:
             for b in range(0, txpHeader[1]):
                 bs.seek(txpbase + mipOffList[b], NOESEEK_ABS)
                 texHeader = bs.read("6I")
-                #print(texHeader)
                 texData = bs.readBytes(texHeader[5])
                 texFmt = 0
                 if len(self.texNames) == mtxdHeader[1]:
@@ -228,8 +355,10 @@ class txdTexture:
                     texName = (str(a) + "_" + str(b))
                 #RAW
                 if texHeader[3] == 1:
-                    #texData = rapi.imageFromMortonOrder(texData, texHeader[1], texHeader[2])
                     texFmt = noesis.NOESISTEX_RGB24
+                #RGBA
+                if texHeader[3] == 2:
+                    texFmt = noesis.NOESISTEX_RGBA32
                 #DXT1
                 if texHeader[3] == 6:
                     texFmt = noesis.NOESISTEX_DXT1
@@ -257,20 +386,22 @@ class txdTexture:
 
 
 chunkLoaderDict = {
-    "809914192": osdModel.load_POF0,
-    "1128681285": osdModel.load_EOFC,
-    "1146310477": osdModel.load_MOSD,
-    "1279544655": osdModel.load_OMDL,
-    "1313559375": osdModel.load_OSKN,
-    "1480870223": osdModel.load_OIDX,
-    "1481922127": osdModel.load_OVTX
+    "809914192"        : osdModel.load_POF0,
+    "1128681285"        : osdModel.load_EOFC,
+    "1146310477"        : osdModel.load_MOSD,
+    "1279544655"        : osdModel.load_OMDL,
+    "1313559375"        : osdModel.load_OSKN,
+    "1480870223"        : osdModel.load_OIDX,
+    "1481922127"        : osdModel.load_OVTX
 }
 
 texLoaderDict = {
-    "1146639437": txdTexture.load_MTXD,
-    "1397902917": txdTexture.load_ENRS,
-    "1128681285": txdTexture.load_EOFC,
+    "1146639437"        : txdTexture.load_MTXD,
+    "1397902917"        : txdTexture.load_ENRS,
+    "1128681285"        : txdTexture.load_EOFC,
 }
+
+
 
 def osdLoadModel(data, mdlList):
     ctx = rapi.rpgCreateContext()

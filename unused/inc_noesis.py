@@ -6,6 +6,7 @@
 
 import noesis
 import struct
+import os
 
 #rapi methods should only be used during handler callbacks
 import rapi
@@ -167,7 +168,46 @@ class NoeBitStream(NoeUnpacker):
     def checkOverrun(self, size):
         self.toUnpacker(); r = noeSuper(self).checkOverrun(size); self.fromUnpacker(); return r
 
-
+        
+#not really fully compatible with NoeBitStream, but may be swapped out in some limited use cases
+class NoeFileStream:
+    #f should be a file handle which has already been opened
+    def __init__(self, f, bigEndian = NOE_LITTLEENDIAN):
+        self.f = f
+        self.setEndian(bigEndian)
+    def setEndian(self, bigEndian = NOE_LITTLEENDIAN):
+        self.endian = "<" if bigEndian == NOE_LITTLEENDIAN else ">"
+        
+    def readBytes(self, numBytes):
+        return self.f.read(numBytes)
+    def readBool(self):
+        return self.f.read(1)[0] != 0
+    def readByte(self):
+        return noeUnpack(self.endian + "b", self.f.read(1))[0]
+    def readUByte(self):
+        return noeUnpack(self.endian + "B", self.f.read(1))[0]
+    def readShort(self):
+        return noeUnpack(self.endian + "h", self.f.read(2))[0]
+    def readUShort(self):
+        return noeUnpack(self.endian + "H", self.f.read(2))[0]
+    def readInt(self):
+        return noeUnpack(self.endian + "i", self.f.read(4))[0]
+    def readUInt(self):
+        return noeUnpack(self.endian + "I", self.f.read(4))[0]
+    def readFloat(self):
+        return noeUnpack(self.endian + "f", self.f.read(4))[0]
+    def readDouble(self):
+        return noeUnpack(self.endian + "d", self.f.read(8))[0]
+    def readInt64(self):
+        return noeUnpack(self.endian + "q", self.f.read(8))[0]
+    def readUInt64(self):
+        return noeUnpack(self.endian + "Q", self.f.read(8))[0]
+        
+    def seek(self, addr, isRelative = NOESEEK_ABS):
+        self.f.seek(addr, os.SEEK_SET if isRelative == NOESEEK_ABS else os.SEEK_CUR)
+    def tell(self):
+        return self.f.tell()
+        
 #3-component Vector
 class NoeVec3:
     def __init__(self, vec3 = (0.0, 0.0, 0.0)):
@@ -554,7 +594,7 @@ class NoeMat44:
         return noesis.mat44Translate(self, trnVector)
     def swapHandedness(self, axis = 0): #returns mat44
         return noesis.mat44SwapHandedness(self, axis)
-
+        
     def toMat43(self):
         return noesis.mat44ToMat43(self)
     def toBytes(self): #returns bytearray
@@ -694,6 +734,7 @@ class NoeMaterial:
     def __init__(self, name, texName):
         self.name = name
         self.setTexture(texName)
+        self.setFlags(0)
 
     #texture names must match the name of a texture in the corresponding texture list to be applied
     def setTexture(self, texName):
@@ -713,7 +754,7 @@ class NoeMaterial:
 
     def setEnvTexture(self, texName):
         self.envTexName = texName
-
+        
     def setFlags(self, flags, disableLighting = 0):
         self.flags = flags
         self.disableLighting = disableLighting
@@ -746,24 +787,39 @@ class NoeMaterial:
     #4th component is fresnel term scale
     def setEnvColor(self, clr = NoeVec4([1.0, 1.0, 1.0, 0.8])):
         self.envColor = clr
-
+        
     def setRimLighting(self, rimColor = NoeVec3([1.0, 1.0, 1.0]), rimSize = 1.0, rimPow = 3.0, rimBias = 0.0, rimOfs = NoeVec3([0.0, 0.0, 0.0])):
         self.rimColor = rimColor
         self.rimSize = rimSize
         self.rimPow = rimPow
         self.rimBias = rimBias
         self.rimOfs = rimOfs
+        
+    def setRoughness(self, roughnessScale, roughnessBias):
+        self.roughnessScale = roughnessScale
+        self.roughnessBias = roughnessBias
 
+    def setMetal(self, metalScale, metalBias):
+        self.metalScale = metalScale
+        self.metalBias = metalBias
+
+    def setAnisotropy(self, anisoScale, anisoAngle):
+        self.anisoScale = anisoScale
+        self.anisoAngle = anisoAngle
+        
+    def setSpecularSwizzle(self, specularSwizzle):
+        self.specularSwizzle = specularSwizzle
+        
     def setNextPass(self, nextPass):
         self.nextPass = nextPass
-
+        
     def setUserData(self, userTag, userData):
         if len(userTag) != 8:
             print("WARNING: Call to setUserData ignored, userTag should be an 8-byte unique id.")
         else:
             self.userTag = userTag
             self.userData = userData
-
+        
     #sets expression strings. see pluginshare.h for a list of expression functions and variables.
     def setExpr_vpos_x(self, exprStr):
         self.expr_vpos_x = exprStr
@@ -824,7 +880,7 @@ class NoeMaterial:
     def setExpr_speculartexidx(self, exprStr):
         self.expr_speculartexidx = exprStr
 
-
+        
 #material and texture lists must be provided to the Noesis API in one of these containers (for the purpose of possible future extension)
 class NoeModelMaterials:
     #must be initialized with lists of NoeTexture and NoeMaterial
@@ -865,7 +921,7 @@ class NoeKeyFramedValue:
         self.componentIndex = 0
     def __repr__(self):
         return "NoeKFVal(time:" + repr(self.time) + " value:" + repr(self.value) + ")"
-
+        
     def setComponentIndex(self, componentIndex):
         self.componentIndex = componentIndex
 
@@ -877,7 +933,7 @@ class NoeKeyFramedBone:
         self.setRotation([])
         self.setTranslation([])
         self.setScale([])
-
+        
     #for the set methods, keys should be a list of NoeKeyFramedValue or an object with similarly available members
     def setRotation(self, keys, type = noesis.NOEKF_ROTATION_QUATERNION_4, interpolationType = noesis.NOEKF_INTERPOLATE_LINEAR):
         self.rotationKeys = keys
@@ -895,13 +951,14 @@ class NoeKeyFramedBone:
 
 #keyframed animation class
 class NoeKeyFramedAnim:
-    def __init__(self, name, bones, kfBones, frameRate = 20.0):
+    def __init__(self, name, bones, kfBones, frameRate = 20.0, flags = 0):
         noesis.validateListType(bones, NoeBone)
         noesis.validateListType(kfBones, NoeKeyFramedBone)
         self.name = name
         self.bones = bones
         self.kfBones = kfBones
         self.frameRate = frameRate
+        self.flags = flags
     def __repr__(self):
         return "(NoeKFAnim:" + self.name + ")"
 
@@ -909,7 +966,7 @@ class NoeKeyFramedAnim:
 #main animation class
 #bones must be a list of NoeBone objects, frameMats must be a flat list of NoeMat43 objects
 class NoeAnim:
-    def __init__(self, name, bones, numFrames, frameMats, frameRate = 20.0):
+    def __init__(self, name, bones, numFrames, frameMats, frameRate = 20.0, flags = 0):
         noesis.validateListType(bones, NoeBone)
         noesis.validateListType(frameMats, NoeMat43)
         self.name = name
@@ -917,6 +974,7 @@ class NoeAnim:
         self.numFrames = numFrames
         self.frameMats = frameMats
         self.setFrameRate(frameRate)
+        self.flags = flags
     def __repr__(self):
         return "(NoeAnim:" + self.name + "," + repr(self.numFrames) + "," + repr(self.frameRate) + ")"
 
@@ -974,6 +1032,7 @@ class NoeMesh:
         self.setColors([])
         self.setWeights([])
         self.setMorphList([])
+        self.setBoneMap([])
         self.setUserStreams([])
         self.texRefIndex = -1 #this is set by Noesis internally when you load a model's textures manually
 
@@ -1031,8 +1090,11 @@ class NoeMesh:
         noesis.validateListType(morphList, NoeMorphFrame)
         self.morphList = morphList
 
+    def setBoneMap(self, boneMap):
+        self.boneMap = boneMap
+        
     def setUserStreams(self, userStreamList):
-        noesis.validateListType(userStreamList, NoeUserStream)
+        noesis.validateListType(userStreamList, NoeUserStream)        
         self.userStreams = userStreamList
 
     #indices into the parent model's globalVtx/globalIdx lists on export
@@ -1154,7 +1216,7 @@ class NoeSpline:
         if self.flags & noesis.NOESPLINEFLAG_CLOSED:
             return self.knots[len(self.knots)-1].outVec
         return self.knots[index].inVec
-
+        
     def getLastPos(self, index):
         if index > 0:
             return self.knots[index-1].pos
@@ -1290,6 +1352,12 @@ def noeTupleToList(tup):
 def noeStrFromBytes(bar, enc = "ASCII"):
     return str(bar, enc).rstrip("\0")
 
+    
+#force filtering to ascii range
+def noeAsciiFromBytes(bar):
+    filtered = bytearray([x if x < 0x80 else 0x2D for x in bar])
+    return str(filtered, "ASCII").rstrip("\0")
+
 
 #construct a bytearray containing the contents of data up to the first 0
 def noeParseToZero(data):
@@ -1300,6 +1368,15 @@ def noeParseToZero(data):
         dst += noePack("B", c)
     return dst
 
+
+#pad a bytearray out to a given alignment (assumes power of 2 alignment)
+def noePaddedByteArray(data, alignment):
+    alignmentMinusOne = alignment - 1
+    r = len(data) & alignmentMinusOne
+    if r != 0:
+        return data + bytearray(alignment - r)
+    return data
+    
 
 #returns None if the object doesn't have the given attribute, otherwise returns the attribute
 def noeSafeGet(obj, attr):
@@ -1358,14 +1435,14 @@ def noeProcessImage(data, pixelImageInfo, processFunction, *processFunctionArgs)
     if mipCount <= 0:
         print("WARNING: noeProcessImage assuming at least 1 mip.")
         mipCount = 1
-
+    
     if mipCount > len(mipInfo):
         print("ERROR: Not enough mipInfo to cover mip count.")
         return data
-
+    
     #we want to process mip levels from large to small, so sort mip infos by size first
     sortedMipInfo = sorted(mipInfo, key = lambda mi: mi[0]*mi[1], reverse = True)
-
+    
     dataOfs = 0
     processedData = bytearray()
     newMipsTotalSize = 0
@@ -1381,11 +1458,11 @@ def noeProcessImage(data, pixelImageInfo, processFunction, *processFunctionArgs)
                 newMipsInfoEntry = (mipW, mipH, len(processedMips), len(processedMip))
                 newMipsInfo.append(newMipsInfoEntry)
                 newMipsTotalSize += len(processedMip)
-
+                
             processedMips += processedMip
         dataOfs += mipsTotalSize
         processedData += processedMips
-
+    
     #put the data back in the info list, overriding mip offsets/sizes with our new processed offsets/sizes
     pixelImageInfo[:] = [faceCount, mipCount, newMipsTotalSize, newMipsInfo]
     return processedData

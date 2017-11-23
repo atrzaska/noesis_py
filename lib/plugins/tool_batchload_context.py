@@ -6,7 +6,6 @@ import os
 #1 = collapse by name
 #2 = collapse by name and reapply relative transforms
 #3 = collapse by name and reapply relative transforms, retransforming geometry as well
-#4 = 3, but transpose relative transform
 MERGE_BONES = 0
 
 globalLoadList = []
@@ -19,11 +18,11 @@ def registerNoesisTypes():
     handle = noesis.registerTool("Batch Load - List", batchLoadListToolMethod, "List all queued files")
     noesis.setToolFlags(handle, noesis.NTOOLFLAG_CONTEXTITEM)
     noesis.setToolVisibleCallback(handle, batchLoadListContextVisible)
-    
+
     handle = noesis.registerTool("Batch Load - Load", batchLoadLoadToolMethod, "Load all queued files")
     noesis.setToolFlags(handle, noesis.NTOOLFLAG_CONTEXTITEM)
     noesis.setToolVisibleCallback(handle, batchLoadListContextVisible)
-    
+
     handle = noesis.registerTool("Batch Load - Clear", batchLoadClearToolMethod, "Clear all queued files")
     noesis.setToolFlags(handle, noesis.NTOOLFLAG_CONTEXTITEM)
     noesis.setToolVisibleCallback(handle, batchLoadListContextVisible)
@@ -39,13 +38,13 @@ def batchLoadListContextVisible(toolIndex, selectedFile):
     if len(globalLoadList) == 0:
         return 0
     return 1
-    
+
 def batchLoadLoadToolMethod(toolIndex):
     global globalLoadList
     if len(globalLoadList) == 0:
         noesis.messagePrompt("No files are queued up.")
         return 0
-        
+
     dstFilePath = noesis.getScenesPath() + "batchload.noesis"
     with open(dstFilePath, "w") as f:
         f.write("NOESIS_SCENE_FILE\r\nversion 1\r\nphysicslib        \"\"\r\ndefaultAxis        \"0\"\r\n\r\n")
@@ -73,7 +72,7 @@ def batchLoadAddToolMethod(toolIndex):
     if selectedFile is not None:
         globalLoadList.append(selectedFile)
     return 0
-        
+
 def batchLoadClearToolMethod(toolIndex):
     global globalLoadList
     globalLoadList = []
