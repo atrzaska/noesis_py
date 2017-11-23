@@ -24,7 +24,7 @@ IMG_SCALE = 8
 MOD_SCALE = 2
 
 class ImageDecodePVRTC:
-    def __init__(self, pvrData, width, height, bpp):
+    def __init__(self, pvrData, width, height, bpp, flags = 0):
         self.pvrData = pvrData
         self.width = width
         self.height = height
