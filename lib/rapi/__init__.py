@@ -1,5 +1,6 @@
 from Rpg import Rpg
 from ImageDecodePVRTC import ImageDecodePVRTC
+import os
 
 rpg = Rpg()
 
@@ -24,8 +25,8 @@ def rpgBindUV1BufferOfs(buff, typeSize, structSize, structOffset):
 def rpgSetMaterial(name):
     return rpg.rpgSetMaterial(name)
 
-def rpgCommitTriangles(buff, type, numIdx, shape, unk1):
-    return rpg.rpgCommitTriangles(buff, type, numIdx, shape, unk1)
+def rpgCommitTriangles(buff, dataType, numIdx, shape, usePlotMap):
+    return rpg.rpgCommitTriangles(buff, dataType, numIdx, shape, usePlotMap)
 
 def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
     return ImageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags).call()
@@ -34,25 +35,23 @@ def imageFlipRGBA32(r, width, height, unk0, unk1):
     # TODO: implement me
     return r
 
-def getExtensionlessName(arg):
-    # TODO: needed for dreamy theater
-    pass
+def getExtensionlessName(path):
+    return os.path.splitext(path)[0]
 
-def getLocalFileName(arg):
-    # TODO: needed for dreamy theater
-    pass
+def getLocalFileName(path):
+    return os.path.abspath(path)
 
 def getLastCheckedName():
-    # TODO: needed for dreamy theater
-    pass
+    return rpg.getLastCheckedName()
+
+def setLastCheckedName(name):
+    return rpg.setLastCheckedName(name)
 
 def getDirForFilePath(path):
-    # TODO: needed for dreamy theater
-    pass
+    return os.path.dirname(os.path.abspath(path))
 
 def loadIntoByteArray(path):
-    # TODO: needed for dreamy theater
-    pass
+    return open(path, "rb")
 
 def rpgClearBufferBinds():
     # TODO: needed for dreamy theater
@@ -62,6 +61,7 @@ def setPreviewOption(key, value):
     # TODO: needed for dreamy theater
     pass
 
+# unofficial API
 def rpgSetName(name):
     # TODO: needed for dreamy theater
     pass
@@ -142,31 +142,11 @@ def getDeferredAnims():
     # TODO: implement me
     pass
 
-def getDirForFilePath(path):
-    # TODO: implement me
-    pass
-
-def getExtensionlessName(path):
-    # TODO: implement me
-    pass
-
 def getInputName():
     # TODO: implement me
     pass
 
-def getLastCheckedName():
-    # TODO: implement me
-    pass
-
-def getLocalFileName(path):
-    # TODO: implement me
-    pass
-
 def getOutputName():
-    # TODO: implement me
-    pass
-
-def loadIntoByteArray(path):
     # TODO: implement me
     pass
 

@@ -1,8 +1,8 @@
 class FaceInfo:
-    def __init__(self, buff, typeSize, numIdx, shape, unk1, material):
+    def __init__(self, buff, typeSize, numIdx, shape, usePlotMap, material):
         self.buff = buff
         self.typeSize = typeSize
         self.numIdx = numIdx
         self.shape = shape
-        self.unk1 = unk1
+        self.usePlotMap = usePlotMap
         self.material = material

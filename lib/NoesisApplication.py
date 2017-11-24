@@ -12,15 +12,21 @@ class NoesisApplication:
         for plugin in self.plugins():
             plugin.registerNoesisTypes()
 
+        if (len(sys.argv) == 1):
+            print("Please provide a model file")
+            return
+
         file = sys.argv[1]
 
         filename, file_extension = os.path.splitext(file)
 
         plugin = [x for x in noesis.plugins if x.format == file_extension]
+        models = []
 
         if plugin:
-            with open("./data/other/c001_decrypted.mdl", "rb") as f:
-                plugin[0].noepyLoadModel(f, noesis.models)
+            with open(file, "rb") as f:
+                rapi.setLastCheckedName(file)
+                plugin[0].noepyLoadModel(f, models)
             NoesisViewer(rapi.rpg).call()
         else:
             print("File format not supported")

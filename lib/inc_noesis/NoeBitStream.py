@@ -90,6 +90,17 @@ class NoeBitStream:
     def readUInt64(self):
         return self.readAndUnpack('1Q')[0]
 
+    def readString(self):
+        output = ''
+
+        while(True):
+            b = self.data.read(1)
+
+            if (b == '\0'):
+                return output
+
+            output += b
+
     def tell(self):
         return self.data.tell()
 
@@ -104,8 +115,8 @@ class NoeBitStream:
         return size
 
     def readAndUnpack(self, fmt):
-        matches = re.match("(\d+)(\w)", fmt)
-        length = int(matches.group(1))
+        matches = re.match("(\d+)?(\w)", fmt)
+        length = int(matches.group(1) or "1")
         type = matches.group(2)
 
         if type == 'L':
