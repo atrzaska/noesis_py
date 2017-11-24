@@ -39,7 +39,7 @@ def getExtensionlessName(path):
     return os.path.splitext(path)[0]
 
 def getLocalFileName(path):
-    return os.path.abspath(path)
+    return os.path.basename(path)
 
 def getLastCheckedName():
     return rpg.getLastCheckedName()
@@ -48,7 +48,7 @@ def setLastCheckedName(name):
     return rpg.setLastCheckedName(name)
 
 def getDirForFilePath(path):
-    return os.path.dirname(os.path.abspath(path))
+    return os.path.dirname(os.path.abspath(path)) + "/"
 
 def loadIntoByteArray(path):
     return open(path, "rb")

@@ -53,10 +53,10 @@ def objBinLoadModel(data, mdlList):
    baseName = rapi.getExtensionlessName(rapi.getLocalFileName(rapi.getLastCheckedName()))
    baseName = baseName[:-4]
 
-   binTexDB = rapi.loadIntoByteArray("/Volumes/DATA/ps3_models/project_diva_f_2nd_models/tex_db.bin")
+   binTexDB = rapi.loadIntoByteArray(rapi.getDirForFilePath( rapi.getLastCheckedName() ) + "tex_db.bin")
    load_binTexDB(binTexDB)
 
-   binBone = rapi.loadIntoByteArray("/Volumes/DATA/ps3_models/project_diva_f_2nd_models/bone_data.bin")
+   binBone = rapi.loadIntoByteArray(rapi.getDirForFilePath( rapi.getLastCheckedName() ) + "bone_data.bin")
    load_binBone(binBone)
 
    load_BinModel(bs)
