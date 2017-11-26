@@ -3,7 +3,6 @@ from NoeModule import NoeModule
 from AllocType import AllocType
 from numbers import Number
 import sys
-import inc_noesis
 
 # constants
 
@@ -723,3 +722,5 @@ def vec4Validate(noeVec4):
 
     if len(vec4) != 4:
         doException("vec4Validate: validation failed")
+
+import inc_noesis
