@@ -22,7 +22,7 @@ NOE_BIGENDIAN = 1
 NOE_LITTLEENDIAN = 0
 
 #class wrapper to parse through some bytes using the struct unpacker
-class NoeUnpacker:
+class NoeUnpacker(object):
     def __init__(self, data):
         self.byteOfs = 0
         self.data = data

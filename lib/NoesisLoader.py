@@ -46,10 +46,10 @@ class NoesisLoader:
 
             materialName = faceInfo.material
             noeMaterials = self.rpgContext.models[-1].materials
-            materials = noeMaterials.materials
+            materials = noeMaterials.matList
             material = next(x for x in materials if x.name == materialName)
-            textures = noeMaterials.textures
-            textureName = material.texture
+            textures = noeMaterials.texList
+            textureName = material.texName
             texture = next(x for x in textures if x.name == textureName)
 
             if texture != None:
@@ -104,7 +104,7 @@ class NoesisLoader:
 
         width = texture.width
         height = texture.height
-        data = texture.data
+        data = texture.pixelData
 
         return self.loadTextureFromData(texture.name, data, width, height)
 

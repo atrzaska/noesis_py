@@ -17,9 +17,8 @@ NOESEEK_REL = 1
 NOE_BIGENDIAN = 1
 NOE_LITTLEENDIAN = 0
 
-# TODO: check implementation
-def noeStrFromBytes(bytes):
-    return bytes
+def noeStrFromBytes(bar, enc = "ASCII"):
+    return str(bar, enc).rstrip("\0")
 
 def noeTupleToList(tup):
     return [item for item in tup]

@@ -107,9 +107,8 @@ class SanaeParser(object):
         self.texList.append(tex)
 
     def parse_textures(self, numTex):
-
         for i in range(numTex):
-            offset, size, unk, unk = self.inFile.read('4L')
+            offset, size, unk1, unk2 = self.inFile.read('4I')
             curr = self.inFile.tell()
             self.inFile.seek(offset)
             texData = self.inFile.readBytes(size)
@@ -162,15 +161,15 @@ class SanaeParser(object):
         '''Main parser method'''
 
         idstring = self.inFile.readBytes(4)
-        unk1, unk2, unk3, numMesh = self.inFile.read('4L')
+        unk1, unk2, unk3, numMesh = self.inFile.read('4I')
         self.inFile.readInt()
         self.inFile.seek(72, 1)
 
         self.parse_mesh_info(numMesh)
 
-        numBones, boneOfs, unk, unk = self.inFile.read('4L')
-        numMat, matOfs, unk, unk = self.inFile.read('4L')
-        numTex, texOfs, unk, unk = self.inFile.read('4L')
+        numBones, boneOfs, unk, unk = self.inFile.read('4I')
+        numMat, matOfs, unk, unk = self.inFile.read('4I')
+        numTex, texOfs, unk, unk = self.inFile.read('4I')
 
         for i in range(numMesh):
             self.meshList[i].vertOfs = self.inFile.readUInt()
