@@ -36,7 +36,7 @@ def texBinCheckType(data):
 def objBinLoadModel(data, mdlList):
    ctx = rapi.rpgCreateContext()
    bs = NoeBitStream(data)
-   print("print")
+   # print("print")
 
    global  texList, matList, tex_DB, texNameId_Array, boneData_Array, boneList, kfBones, baseName, bAnimInfoName, bAnimInfoRot
    texList = []
