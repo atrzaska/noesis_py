@@ -9,7 +9,7 @@ from NoesisLoader import *
 class NoesisViewer:
     def __init__(self, rpg):
         self.rpg = rpg
-        self.toon = True
+        self.toon = False
         self.loadedModels = []
 
     @classmethod
