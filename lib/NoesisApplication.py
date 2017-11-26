@@ -8,6 +8,9 @@ import os
 import sys
 
 class NoesisApplication:
+    def __init__(self):
+        self.models = []
+
     def run(self):
         for plugin in self.plugins():
             plugin.registerNoesisTypes()
@@ -16,19 +19,24 @@ class NoesisApplication:
             print("Please provide a model file")
             return
 
-        file = sys.argv[1]
+        files = sys.argv[1:len(sys.argv)]
 
+        for file in files:
+            self.loadFile(file)
+
+        NoesisViewer(rapi).call()
+
+
+    def loadFile(self, file):
         filename, file_extension = os.path.splitext(file)
 
         plugin = [x for x in plugins if x.format == file_extension]
-        models = []
 
         if plugin:
             with open(file, "rb") as f:
                 rapi.setLastCheckedName(file)
                 rapi.getLastCheckedName()
-                plugin[0].noepyLoadModel(f.read(), models)
-            NoesisViewer(rapi).call()
+                plugin[0].noepyLoadModel(f.read(), self.models)
         else:
             print("File format not supported")
 
