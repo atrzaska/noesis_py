@@ -449,8 +449,13 @@ def mat43Transpose(noeMat43):
     print("Not implemented method called: mat43Transpose")
 
 def mat43Validate(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43Validate")
+    mat43 = noeMat43.mat43
+
+    if len(mat43) != 4:
+        doException("mat43Validate: validate failed")
+
+    for vec in mat43:
+        vec3Validate(vec)
 
 def mat44Add(noeMat44, other):
     # TODO: implement me
@@ -463,6 +468,7 @@ def mat44FromBytes(otherBytes, bigEnd):
 def mat44Inverse(noeMat44):
     # TODO: implement me
     print("Not implemented method called: mat44Inverse")
+    return noeMat44
 
 def mat44Mul(noeMat44, other):
     # TODO: implement me
@@ -501,8 +507,13 @@ def mat44Transpose(noeMat44):
     print("Not implemented method called: mat44Transpose")
 
 def mat44Validate(noeMat44):
-    # TODO: implement me
-    print("Not implemented method called: mat44Validate")
+    mat44 = noeMat44.mat44
+
+    if len(mat44) != 4:
+        doException("mat44Validate: validate failed")
+
+    for vec in mat44:
+        vec4Validate(vec)
 
 def quat3FromBytes(otherBytes, bigEnd):
     # TODO: implement me
@@ -585,8 +596,9 @@ def quatValidate(noeQuat):
     print("Not implemented method called: quatValidate")
 
 def validateListType(list, types):
-    # TODO: implement me
-    print("Not implemented method called: validateListType")
+    for obj in list:
+        if not isinstance(obj, types):
+            doException("validateListType: validation failed")
 
 def vec3Add(noeVec3, other):
     # TODO: implement me
@@ -648,13 +660,9 @@ def vec3Validate(noeVec3):
     vec3 = noeVec3.vec3
 
     if len(vec3) != 3:
-        doException("Vector not valid")
-    if not isinstance(vec3[0], Number):
-        doException("Vector not valid")
-    if not isinstance(vec3[1], Number):
-        doException("Vector not valid")
-    if not isinstance(vec3[2], Number):
-        doException("Vector not valid")
+        doException("vec3Validate: validate failed")
+
+    validateListType(vec3, Number)
 
 def vec4Add(noeVec4, other):
     # TODO: implement me
@@ -707,13 +715,7 @@ def vec4ToVec3(noeVec4):
 def vec4Validate(noeVec4):
     vec4 = noeVec4.vec4
 
+    validateListType(vec4, Number)
+
     if len(vec4) != 4:
-        doException("Vector not valid")
-    if not isinstance(vec4[0], Number):
-        doException("Vector not valid")
-    if not isinstance(vec4[1], Number):
-        doException("Vector not valid")
-    if not isinstance(vec4[2], Number):
-        doException("Vector not valid")
-    if not isinstance(vec4[3], Number):
-        doException("Vector not valid")
+        doException("vec4Validate: validation failed")
