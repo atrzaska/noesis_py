@@ -3,6 +3,7 @@ from NoeModule import NoeModule
 from AllocType import AllocType
 from numbers import Number
 import sys
+import inc_noesis
 
 # constants
 
@@ -225,6 +226,7 @@ def anglesNormalize360(noeAngles):
 def anglesToMat43_XYZ(noeAngles, yFlip):
     # TODO: implement me
     print("Not implemented method called: anglesToMat43_XYZ")
+    return inc_noesis.NoeMat43()
 
 def anglesToMat43(noeAngles):
     # TODO: implement me
@@ -391,6 +393,7 @@ def mat43Lerp(noeMat43, other, fraction):
 def mat43Mul(noeMat43, other):
     # TODO: implement me
     print("Not implemented method called: mat43Mul")
+    return noeMat43
 
 def mat43Orthogonalize(noeMat43):
     # TODO: implement me
@@ -493,6 +496,7 @@ def mat44ToBytes(noeMat44):
 def mat44ToMat43(noeMat44):
     # TODO: implement me
     print("Not implemented method called: mat44ToMat43")
+    return inc_noesis.NoeMat43()
 
 def mat44TransformVec4(noeMat44, other):
     # TODO: implement me

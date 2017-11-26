@@ -18,6 +18,7 @@ class NoesisLoader:
         self.flipU = False
         self.flipV = False
         self.blending = True
+        self.loadTextures = False
 
     def render(self):
         self.gl_list = glGenLists(1)
@@ -52,7 +53,7 @@ class NoesisLoader:
             textureName = material.texName
             texture = next(x for x in textures if x.name == textureName)
 
-            if texture != None:
+            if self.loadTextures and texture != None:
                 glBindTexture(GL_TEXTURE_2D, self.loadTexture(texture))
 
             glBegin(SHAPE_TO_GL_OBJECT[faceInfo.shape])
