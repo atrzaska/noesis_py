@@ -17,6 +17,7 @@ class NoesisLoader:
         self.flipZ = False
         self.flipU = False
         self.flipV = False
+        self.scale = 3
         self.blending = True
         self.loadTextures = False
 
@@ -62,16 +63,21 @@ class NoesisLoader:
                 vertex = vertices[face]
                 uv = uvs[face]
 
-                x = normal[0] * -1 if self.flipX else normal[0]
-                y = normal[1]
-                z = normal[2]
+                scale = self.scale
+                flipX = -1 if self.flipX else 1
+                flipY = -1 if self.flipY else 1
+                flipZ = -1 if self.flipZ else 1
+
+                x = normal[0] * flipX * scale
+                y = normal[1] * flipY * scale
+                z = normal[2] * flipZ * scale
                 glNormal3fv([x, y, z])
-                u = 1 - uv[0] if self.flipU else uv[0]
-                v = 1 - uv[1] if self.flipV else uv[1]
+                u = (1 - uv[0] if self.flipU else uv[0])
+                v = (1 - uv[1] if self.flipV else uv[1])
                 glTexCoord2fv([u, v])
-                x = vertex[0] * -1 if self.flipX else vertex[0]
-                y = vertex[1]
-                z = vertex[2]
+                x = vertex[0] * flipX * scale
+                y = vertex[1] * flipY * scale
+                z = vertex[2] * flipZ * scale
                 glVertex3fv([x, y, z])
             glEnd()
 
