@@ -240,8 +240,7 @@ def anglesToVec3(noeAngles):
     print("Not implemented method called: anglesToVec3")
 
 def anglesValidate(noeAngles):
-    # TODO: implement me
-    print("Not implemented method called: anglesValidate")
+    vec3Validate(noeAngles)
 
 def bsGetBuffer(handle):
     return handle.bsGetBuffer()
@@ -390,9 +389,9 @@ def mat43Lerp(noeMat43, other, fraction):
     print("Not implemented method called: mat43Lerp")
 
 def mat43Mul(noeMat43, other):
-    # TODO: implement me
-    print("Not implemented method called: mat43Mul")
-    return noeMat43
+    noeMat44 = noeMat43.toMat44()
+    otherMat44 = other.toMat44()
+    return (noeMat44 * otherMat44).toMat43()
 
 def mat43Orthogonalize(noeMat43):
     # TODO: implement me
@@ -423,8 +422,22 @@ def mat43ToBytes(noeMat43):
     print("Not implemented method called: mat43ToBytes")
 
 def mat43ToMat44(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43ToMat44")
+    tmp = inc_noesis.NoeMat44()
+
+    tmp[0][0] = noeMat43[0][0]
+    tmp[0][1] = noeMat43[0][1]
+    tmp[0][2] = noeMat43[0][2]
+    tmp[1][0] = noeMat43[1][0]
+    tmp[1][1] = noeMat43[1][1]
+    tmp[1][2] = noeMat43[1][2]
+    tmp[2][0] = noeMat43[2][0]
+    tmp[2][1] = noeMat43[2][1]
+    tmp[2][2] = noeMat43[2][2]
+    tmp[3][0] = noeMat43[3][0]
+    tmp[3][1] = noeMat43[3][1]
+    tmp[3][2] = noeMat43[3][2]
+
+    return tmp
 
 def mat43ToQuat(noeMat43):
     # TODO: implement me
@@ -467,14 +480,79 @@ def mat44FromBytes(otherBytes, bigEnd):
     # TODO: implement me
     print("Not implemented method called: mat44FromBytes")
 
-def mat44Inverse(noeMat44):
-    # TODO: implement me
-    print("Not implemented method called: mat44Inverse")
-    return noeMat44
+def mat44Inverse(mtx):
+    tmp = inc_noesis.NoeMat44()
 
-def mat44Mul(noeMat44, other):
-    # TODO: implement me
-    print("Not implemented method called: mat44Mul")
+    det = (
+          (mtx[0][0] * mtx[1][1] - mtx[1][0] * mtx[0][1])
+        * (mtx[2][2] * mtx[3][3] - mtx[3][2] * mtx[2][3])
+        - (mtx[0][0] * mtx[2][1] - mtx[2][0] * mtx[0][1])
+        * (mtx[1][2] * mtx[3][3] - mtx[3][2] * mtx[1][3])
+        + (mtx[0][0] * mtx[3][1] - mtx[3][0] * mtx[0][1])
+        * (mtx[1][2] * mtx[2][3] - mtx[2][2] * mtx[1][3])
+        + (mtx[1][0] * mtx[2][1] - mtx[2][0] * mtx[1][1])
+        * (mtx[0][2] * mtx[3][3] - mtx[3][2] * mtx[0][3])
+        - (mtx[1][0] * mtx[3][1] - mtx[3][0] * mtx[1][1])
+        * (mtx[0][2] * mtx[2][3] - mtx[2][2] * mtx[0][3])
+        + (mtx[2][0] * mtx[3][1] - mtx[3][0] * mtx[2][1])
+        * (mtx[0][2] * mtx[1][3] - mtx[1][2] * mtx[0][3])
+    )
+
+    if (det == 0.0):
+        return tmp
+    else:
+        det = 1.0 / det
+
+        tmp[0][0] = det * (mtx[1][1] * (mtx[2][2] * mtx[3][3] - mtx[3][2] * mtx[2][3]) + mtx[2][1] * (mtx[3][2] * mtx[1][3] - mtx[1][2] * mtx[3][3]) + mtx[3][1] * (mtx[1][2] * mtx[2][3] - mtx[2][2] * mtx[1][3]))
+        tmp[1][0] = det * (mtx[1][2] * (mtx[2][0] * mtx[3][3] - mtx[3][0] * mtx[2][3]) + mtx[2][2] * (mtx[3][0] * mtx[1][3] - mtx[1][0] * mtx[3][3]) + mtx[3][2] * (mtx[1][0] * mtx[2][3] - mtx[2][0] * mtx[1][3]))
+        tmp[2][0] = det * (mtx[1][3] * (mtx[2][0] * mtx[3][1] - mtx[3][0] * mtx[2][1]) + mtx[2][3] * (mtx[3][0] * mtx[1][1] - mtx[1][0] * mtx[3][1]) + mtx[3][3] * (mtx[1][0] * mtx[2][1] - mtx[2][0] * mtx[1][1]))
+        tmp[3][0] = det * (mtx[1][0] * (mtx[3][1] * mtx[2][2] - mtx[2][1] * mtx[3][2]) + mtx[2][0] * (mtx[1][1] * mtx[3][2] - mtx[3][1] * mtx[1][2]) + mtx[3][0] * (mtx[2][1] * mtx[1][2] - mtx[1][1] * mtx[2][2]))
+
+        tmp[0][1] = det * (mtx[2][1] * (mtx[0][2] * mtx[3][3] - mtx[3][2] * mtx[0][3]) + mtx[3][1] * (mtx[2][2] * mtx[0][3] - mtx[0][2] * mtx[2][3]) + mtx[0][1] * (mtx[3][2] * mtx[2][3] - mtx[2][2] * mtx[3][3]))
+        tmp[1][1] = det * (mtx[2][2] * (mtx[0][0] * mtx[3][3] - mtx[3][0] * mtx[0][3]) + mtx[3][2] * (mtx[2][0] * mtx[0][3] - mtx[0][0] * mtx[2][3]) + mtx[0][2] * (mtx[3][0] * mtx[2][3] - mtx[2][0] * mtx[3][3]))
+        tmp[2][1] = det * (mtx[2][3] * (mtx[0][0] * mtx[3][1] - mtx[3][0] * mtx[0][1]) + mtx[3][3] * (mtx[2][0] * mtx[0][1] - mtx[0][0] * mtx[2][1]) + mtx[0][3] * (mtx[3][0] * mtx[2][1] - mtx[2][0] * mtx[3][1]))
+        tmp[3][1] = det * (mtx[2][0] * (mtx[3][1] * mtx[0][2] - mtx[0][1] * mtx[3][2]) + mtx[3][0] * (mtx[0][1] * mtx[2][2] - mtx[2][1] * mtx[0][2]) + mtx[0][0] * (mtx[2][1] * mtx[3][2] - mtx[3][1] * mtx[2][2]))
+
+        tmp[0][2] = det * (mtx[3][1] * (mtx[0][2] * mtx[1][3] - mtx[1][2] * mtx[0][3]) + mtx[0][1] * (mtx[1][2] * mtx[3][3] - mtx[3][2] * mtx[1][3]) + mtx[1][1] * (mtx[3][2] * mtx[0][3] - mtx[0][2] * mtx[3][3]))
+        tmp[1][2] = det * (mtx[3][2] * (mtx[0][0] * mtx[1][3] - mtx[1][0] * mtx[0][3]) + mtx[0][2] * (mtx[1][0] * mtx[3][3] - mtx[3][0] * mtx[1][3]) + mtx[1][2] * (mtx[3][0] * mtx[0][3] - mtx[0][0] * mtx[3][3]))
+        tmp[2][2] = det * (mtx[3][3] * (mtx[0][0] * mtx[1][1] - mtx[1][0] * mtx[0][1]) + mtx[0][3] * (mtx[1][0] * mtx[3][1] - mtx[3][0] * mtx[1][1]) + mtx[1][3] * (mtx[3][0] * mtx[0][1] - mtx[0][0] * mtx[3][1]))
+        tmp[3][2] = det * (mtx[3][0] * (mtx[1][1] * mtx[0][2] - mtx[0][1] * mtx[1][2]) + mtx[0][0] * (mtx[3][1] * mtx[1][2] - mtx[1][1] * mtx[3][2]) + mtx[1][0] * (mtx[0][1] * mtx[3][2] - mtx[3][1] * mtx[0][2]))
+
+        tmp[0][3] = det * (mtx[0][1] * (mtx[2][2] * mtx[1][3] - mtx[1][2] * mtx[2][3]) + mtx[1][1] * (mtx[0][2] * mtx[2][3] - mtx[2][2] * mtx[0][3]) + mtx[2][1] * (mtx[1][2] * mtx[0][3] - mtx[0][2] * mtx[1][3]))
+        tmp[1][3] = det * (mtx[0][2] * (mtx[2][0] * mtx[1][3] - mtx[1][0] * mtx[2][3]) + mtx[1][2] * (mtx[0][0] * mtx[2][3] - mtx[2][0] * mtx[0][3]) + mtx[2][2] * (mtx[1][0] * mtx[0][3] - mtx[0][0] * mtx[1][3]))
+        tmp[2][3] = det * (mtx[0][3] * (mtx[2][0] * mtx[1][1] - mtx[1][0] * mtx[2][1]) + mtx[1][3] * (mtx[0][0] * mtx[2][1] - mtx[2][0] * mtx[0][1]) + mtx[2][3] * (mtx[1][0] * mtx[0][1] - mtx[0][0] * mtx[1][1]))
+        tmp[3][3] = det * (mtx[0][0] * (mtx[1][1] * mtx[2][2] - mtx[2][1] * mtx[1][2]) + mtx[1][0] * (mtx[2][1] * mtx[0][2] - mtx[0][1] * mtx[2][2]) + mtx[2][0] * (mtx[0][1] * mtx[1][2] - mtx[1][1] * mtx[0][2]))
+
+        return tmp
+
+def mat44Mul(mtx, rhs):
+    tmp = inc_noesis.NoeMat44()
+
+    # Row 1
+    tmp[0][0] = (mtx[0][0] * rhs[0][0]) + (mtx[0][1] * rhs[1][0]) + (mtx[0][2] * rhs[2][0]) + (mtx[0][3] * rhs[3][0])
+    tmp[0][1] = (mtx[0][0] * rhs[0][1]) + (mtx[0][1] * rhs[1][1]) + (mtx[0][2] * rhs[2][1]) + (mtx[0][3] * rhs[3][1])
+    tmp[0][2] = (mtx[0][0] * rhs[0][2]) + (mtx[0][1] * rhs[1][2]) + (mtx[0][2] * rhs[2][2]) + (mtx[0][3] * rhs[3][2])
+    tmp[0][3] = (mtx[0][0] * rhs[0][3]) + (mtx[0][1] * rhs[1][3]) + (mtx[0][2] * rhs[2][3]) + (mtx[0][3] * rhs[3][3])
+
+    # Row 2
+    tmp[1][0] = (mtx[1][0] * rhs[0][0]) + (mtx[1][1] * rhs[1][0]) + (mtx[1][2] * rhs[2][0]) + (mtx[1][3] * rhs[3][0])
+    tmp[1][1] = (mtx[1][0] * rhs[0][1]) + (mtx[1][1] * rhs[1][1]) + (mtx[1][2] * rhs[2][1]) + (mtx[1][3] * rhs[3][1])
+    tmp[1][2] = (mtx[1][0] * rhs[0][2]) + (mtx[1][1] * rhs[1][2]) + (mtx[1][2] * rhs[2][2]) + (mtx[1][3] * rhs[3][2])
+    tmp[1][3] = (mtx[1][0] * rhs[0][3]) + (mtx[1][1] * rhs[1][3]) + (mtx[1][2] * rhs[2][3]) + (mtx[1][3] * rhs[3][3])
+
+    # Row 3
+    tmp[2][0] = (mtx[2][0] * rhs[0][0]) + (mtx[2][1] * rhs[1][0]) + (mtx[2][2] * rhs[2][0]) + (mtx[2][3] * rhs[3][0])
+    tmp[2][1] = (mtx[2][0] * rhs[0][1]) + (mtx[2][1] * rhs[1][1]) + (mtx[2][2] * rhs[2][1]) + (mtx[2][3] * rhs[3][1])
+    tmp[2][2] = (mtx[2][0] * rhs[0][2]) + (mtx[2][1] * rhs[1][2]) + (mtx[2][2] * rhs[2][2]) + (mtx[2][3] * rhs[3][2])
+    tmp[2][3] = (mtx[2][0] * rhs[0][3]) + (mtx[2][1] * rhs[1][3]) + (mtx[2][2] * rhs[2][3]) + (mtx[2][3] * rhs[3][3])
+
+    # Row 4
+    tmp[3][0] = (mtx[3][0] * rhs[0][0]) + (mtx[3][1] * rhs[1][0]) + (mtx[3][2] * rhs[2][0]) + (mtx[3][3] * rhs[3][0])
+    tmp[3][1] = (mtx[3][0] * rhs[0][1]) + (mtx[3][1] * rhs[1][1]) + (mtx[3][2] * rhs[2][1]) + (mtx[3][3] * rhs[3][1])
+    tmp[3][2] = (mtx[3][0] * rhs[0][2]) + (mtx[3][1] * rhs[1][2]) + (mtx[3][2] * rhs[2][2]) + (mtx[3][3] * rhs[3][2])
+    tmp[3][3] = (mtx[3][0] * rhs[0][3]) + (mtx[3][1] * rhs[1][3]) + (mtx[3][2] * rhs[2][3]) + (mtx[3][3] * rhs[3][3])
+
+    return tmp
 
 def mat44Rotate(noeMat44, degrees, rotAngles):
     # TODO: implement me
@@ -493,9 +571,22 @@ def mat44ToBytes(noeMat44):
     print("Not implemented method called: mat44ToBytes")
 
 def mat44ToMat43(noeMat44):
-    # TODO: implement me
-    print("Not implemented method called: mat44ToMat43")
-    return inc_noesis.NoeMat43()
+    tmp = inc_noesis.NoeMat43()
+
+    tmp[0][0] = noeMat44[0][0]
+    tmp[0][1] = noeMat44[0][1]
+    tmp[0][2] = noeMat44[0][2]
+    tmp[1][0] = noeMat44[1][0]
+    tmp[1][1] = noeMat44[1][1]
+    tmp[1][2] = noeMat44[1][2]
+    tmp[2][0] = noeMat44[2][0]
+    tmp[2][1] = noeMat44[2][1]
+    tmp[2][2] = noeMat44[2][2]
+    tmp[3][0] = noeMat44[3][0]
+    tmp[3][1] = noeMat44[3][1]
+    tmp[3][2] = noeMat44[3][2]
+
+    return tmp
 
 def mat44TransformVec4(noeMat44, other):
     # TODO: implement me
@@ -531,8 +622,7 @@ def quat3ToQuat(noeQuat3):
     print("Not implemented method called: quat3ToQuat")
 
 def quat3Validate(noeQuat3):
-    # TODO: implement me
-    print("Not implemented method called: quat3Validate")
+    vec3Validate(noeQuat3)
 
 def quatAdd(noeQuat, other):
     # TODO: implement me
@@ -595,8 +685,12 @@ def quatTranspose(noeQuat):
     print("Not implemented method called: quatTranspose")
 
 def quatValidate(noeQuat):
-    # TODO: implement me
-    print("Not implemented method called: quatValidate")
+    quat = noeVec4.quat
+
+    validateListType(quat, Number)
+
+    if len(quat) != 4:
+        doException("quatValidate: validation failed")
 
 def validateListType(list, types):
     for obj in list:
