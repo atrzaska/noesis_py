@@ -1,3 +1,5 @@
+from util import last
+
 class RapiModel:
     def setModelMaterials(self, materials):
         self.materials = materials
@@ -9,4 +11,4 @@ class RapiModel:
         self.animations = animations
 
     def currentMaterial(self):
-        return self.materials[-1]
+        return last(self.materials)

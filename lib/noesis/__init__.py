@@ -3,7 +3,7 @@ from NoeModule import NoeModule
 from AllocType import AllocType
 from numbers import Number
 import sys
-import logger
+from util import logNotImplementedMethod
 
 # constants
 
@@ -75,28 +75,28 @@ def allocBytes(size):
     return bytearray(size)
 
 def freeModule(module):
-    logger.logNotImplementedMethod('freeModule', locals())
+    logNotImplementedMethod('freeModule', locals())
 
 def getCharSplineSet():
-    logger.logNotImplementedMethod('getCharSplineSet', locals())
+    logNotImplementedMethod('getCharSplineSet', locals())
 
 def getFormatExtensionFlags():
-    logger.logNotImplementedMethod('getFormatExtensionFlags', locals())
+    logNotImplementedMethod('getFormatExtensionFlags', locals())
 
 def getMFFP(uint):
-    logger.logNotImplementedMethod('getMFFP', locals())
+    logNotImplementedMethod('getMFFP', locals())
 
 def getScenesPath():
-    logger.logNotImplementedMethod('getScenesPath', locals())
+    logNotImplementedMethod('getScenesPath', locals())
 
 def getSelectedDirectory():
-    logger.logNotImplementedMethod('getSelectedDirectory', locals())
+    logNotImplementedMethod('getSelectedDirectory', locals())
 
 def getSelectedFile():
-    logger.logNotImplementedMethod('getSelectedFile', locals())
+    logNotImplementedMethod('getSelectedFile', locals())
 
 def getWindowHandle():
-    logger.logNotImplementedMethod('getWindowHandle', locals())
+    logNotImplementedMethod('getWindowHandle', locals())
 
 def instantiateModule():
     module = NoeModule()
@@ -104,29 +104,29 @@ def instantiateModule():
     return module
 
 def isPreviewModuleRAPIValid():
-    logger.logNotImplementedMethod('isPreviewModuleRAPIValid', locals())
+    logNotImplementedMethod('isPreviewModuleRAPIValid', locals())
 
 def loadImageRGBA():
-    logger.logNotImplementedMethod('loadImageRGBA', locals())
+    logNotImplementedMethod('loadImageRGBA', locals())
 
 def logPopup():
     # this should open the debug window
     pass
 
 def messagePrompt():
-    logger.logNotImplementedMethod('messagePrompt', locals())
+    logNotImplementedMethod('messagePrompt', locals())
 
 def openAndRemoveTempFile():
-    logger.logNotImplementedMethod('openAndRemoveTempFile', locals())
+    logNotImplementedMethod('openAndRemoveTempFile', locals())
 
 def openFile():
-    logger.logNotImplementedMethod('openFile', locals())
+    logNotImplementedMethod('openFile', locals())
 
 def optGetArg():
-    logger.logNotImplementedMethod('optGetArg', locals())
+    logNotImplementedMethod('optGetArg', locals())
 
 def optWasInvoked():
-    logger.logNotImplementedMethod('optWasInvoked', locals())
+    logNotImplementedMethod('optWasInvoked', locals())
 
 # TODO: fileType can be semicolon separated '.obj;.obc'
 def register(name, fileType):
@@ -135,10 +135,10 @@ def register(name, fileType):
     return handler
 
 def registerCleanupFunction():
-    logger.logNotImplementedMethod('registerCleanupFunction', locals())
+    logNotImplementedMethod('registerCleanupFunction', locals())
 
 def registerTool():
-    logger.logNotImplementedMethod('registerTool', locals())
+    logNotImplementedMethod('registerTool', locals())
 
 def setHandlerExtractArc(handle, value):
     handle.grpExtractArc = value
@@ -162,19 +162,19 @@ def setHandlerWriteAnim(handle, value):
     handle.noepyWriteAnim = value
 
 def setModuleRAPI():
-    logger.logNotImplementedMethod('setModuleRAPI', locals())
+    logNotImplementedMethod('setModuleRAPI', locals())
 
 def setPreviewModuleRAPI():
-    logger.logNotImplementedMethod('setPreviewModuleRAPI', locals())
+    logNotImplementedMethod('setPreviewModuleRAPI', locals())
 
 def setToolFlags():
-    logger.logNotImplementedMethod('setToolFlags', locals())
+    logNotImplementedMethod('setToolFlags', locals())
 
 def setToolVisibleCallback():
-    logger.logNotImplementedMethod('setToolVisibleCallback', locals())
+    logNotImplementedMethod('setToolVisibleCallback', locals())
 
 def userPrompt():
-    logger.logNotImplementedMethod('userPrompt', locals())
+    logNotImplementedMethod('userPrompt', locals())
 
 # inc_noesis methods
 
@@ -182,32 +182,32 @@ def allocType(name, data = None):
     return AllocType(name, data)
 
 def anglesALerp(noeAngles, other, degrees):
-    logger.logNotImplementedMethod('anglesALerp', locals())
+    logNotImplementedMethod('anglesALerp', locals())
 
 def anglesAngleVectors(noeAngles):
-    logger.logNotImplementedMethod('anglesAngleVectors', locals())
+    logNotImplementedMethod('anglesAngleVectors', locals())
 
 def anglesMod(noeAngles, f):
-    logger.logNotImplementedMethod('anglesMod', locals())
+    logNotImplementedMethod('anglesMod', locals())
 
 def anglesNormalize180(noeAngles):
-    logger.logNotImplementedMethod('anglesNormalize180', locals())
+    logNotImplementedMethod('anglesNormalize180', locals())
 
 def anglesNormalize360(noeAngles):
-    logger.logNotImplementedMethod('anglesNormalize360', locals())
+    logNotImplementedMethod('anglesNormalize360', locals())
 
 def anglesToMat43_XYZ(noeAngles, yFlip):
-    logger.logNotImplementedMethod('anglesToMat43_XYZ', locals())
+    logNotImplementedMethod('anglesToMat43_XYZ', locals())
     return inc_noesis.NoeMat43()
 
 def anglesToMat43(noeAngles):
-    logger.logNotImplementedMethod('anglesToMat43', locals())
+    logNotImplementedMethod('anglesToMat43', locals())
 
 def anglesToQuat(noeAngles):
-    logger.logNotImplementedMethod('anglesToQuat', locals())
+    logNotImplementedMethod('anglesToQuat', locals())
 
 def anglesToVec3(noeAngles):
-    logger.logNotImplementedMethod('anglesToVec3', locals())
+    logNotImplementedMethod('anglesToVec3', locals())
 
 def anglesValidate(noeAngles):
     vec3Validate(noeAngles)
@@ -324,31 +324,31 @@ def bsWriteUShort(handle, val):
     return handle.bsWriteUShort(val)
 
 def cubicBezier3D(points, frac):
-    logger.logNotImplementedMethod('cubicBezier3D', locals())
+    logNotImplementedMethod('cubicBezier3D', locals())
 
 def doException(name):
     raise ValueError(name)
 
 def encodeFloat16(val):
-    logger.logNotImplementedMethod('encodeFloat16', locals())
+    logNotImplementedMethod('encodeFloat16', locals())
 
 def getFloat16(ushort):
-    logger.logNotImplementedMethod('getFloat16', locals())
+    logNotImplementedMethod('getFloat16', locals())
 
 def mat43Add(noeMat43, other):
-    logger.logNotImplementedMethod('mat43Add', locals())
+    logNotImplementedMethod('mat43Add', locals())
 
 def mat43FromBytes(otherBytes, bigEnd):
-    logger.logNotImplementedMethod('mat43FromBytes', locals())
+    logNotImplementedMethod('mat43FromBytes', locals())
 
 def mat43Inverse(noeMat43):
-    logger.logNotImplementedMethod('mat43Inverse', locals())
+    logNotImplementedMethod('mat43Inverse', locals())
 
 def mat43IsSkewed(noeMat43):
-    logger.logNotImplementedMethod('mat43IsSkewed', locals())
+    logNotImplementedMethod('mat43IsSkewed', locals())
 
 def mat43Lerp(noeMat43, other, fraction):
-    logger.logNotImplementedMethod('mat43Lerp', locals())
+    logNotImplementedMethod('mat43Lerp', locals())
 
 def mat43Mul(noeMat43, other):
     noeMat44 = noeMat43.toMat44()
@@ -356,25 +356,25 @@ def mat43Mul(noeMat43, other):
     return (noeMat44 * otherMat44).toMat43()
 
 def mat43Orthogonalize(noeMat43):
-    logger.logNotImplementedMethod('mat43Orthogonalize', locals())
+    logNotImplementedMethod('mat43Orthogonalize', locals())
 
 def mat43Rotate(noeMat43, degrees, rotAngles, transposeRot):
-    logger.logNotImplementedMethod('mat43Rotate', locals())
+    logNotImplementedMethod('mat43Rotate', locals())
 
 def mat43SLerp(noeMat43, other, fraction):
-    logger.logNotImplementedMethod('mat43SLerp', locals())
+    logNotImplementedMethod('mat43SLerp', locals())
 
 def mat43Sub(noeMat43, other):
-    logger.logNotImplementedMethod('mat43Sub', locals())
+    logNotImplementedMethod('mat43Sub', locals())
 
 def mat43SwapHandedness(noeMat43, axis):
-    logger.logNotImplementedMethod('mat43SwapHandedness', locals())
+    logNotImplementedMethod('mat43SwapHandedness', locals())
 
 def mat43ToAngles(noeMat43):
-    logger.logNotImplementedMethod('mat43ToAngles', locals())
+    logNotImplementedMethod('mat43ToAngles', locals())
 
 def mat43ToBytes(noeMat43):
-    logger.logNotImplementedMethod('mat43ToBytes', locals())
+    logNotImplementedMethod('mat43ToBytes', locals())
 
 def mat43ToMat44(noeMat43):
     tmp = inc_noesis.NoeMat44()
@@ -395,22 +395,22 @@ def mat43ToMat44(noeMat43):
     return tmp
 
 def mat43ToQuat(noeMat43):
-    logger.logNotImplementedMethod('mat43ToQuat', locals())
+    logNotImplementedMethod('mat43ToQuat', locals())
 
 def mat43TransformNormal(noeMat43, other):
-    logger.logNotImplementedMethod('mat43TransformNormal', locals())
+    logNotImplementedMethod('mat43TransformNormal', locals())
 
 def mat43TransformPoint(noeMat43, other):
-    logger.logNotImplementedMethod('mat43TransformPoint', locals())
+    logNotImplementedMethod('mat43TransformPoint', locals())
 
 def mat43TransformVec4(noeMat43, other):
-    logger.logNotImplementedMethod('mat43TransformVec4', locals())
+    logNotImplementedMethod('mat43TransformVec4', locals())
 
 def mat43Translate(noeMat43, trnVector):
-    logger.logNotImplementedMethod('mat43Translate', locals())
+    logNotImplementedMethod('mat43Translate', locals())
 
 def mat43Transpose(noeMat43):
-    logger.logNotImplementedMethod('mat43Transpose', locals())
+    logNotImplementedMethod('mat43Transpose', locals())
 
 def mat43Validate(noeMat43):
     mat43 = noeMat43.mat43
@@ -422,10 +422,10 @@ def mat43Validate(noeMat43):
         vec3Validate(vec)
 
 def mat44Add(noeMat44, other):
-    logger.logNotImplementedMethod('mat44Add', locals())
+    logNotImplementedMethod('mat44Add', locals())
 
 def mat44FromBytes(otherBytes, bigEnd):
-    logger.logNotImplementedMethod('mat44FromBytes', locals())
+    logNotImplementedMethod('mat44FromBytes', locals())
 
 def mat44Inverse(mtx):
     tmp = inc_noesis.NoeMat44()
@@ -502,16 +502,16 @@ def mat44Mul(mtx, rhs):
     return tmp
 
 def mat44Rotate(noeMat44, degrees, rotAngles):
-    logger.logNotImplementedMethod('mat44Rotate', locals())
+    logNotImplementedMethod('mat44Rotate', locals())
 
 def mat44Sub(noeMat44, other):
-    logger.logNotImplementedMethod('mat44Sub', locals())
+    logNotImplementedMethod('mat44Sub', locals())
 
 def mat44SwapHandedness(noeMat44, axis):
-    logger.logNotImplementedMethod('mat44SwapHandedness', locals())
+    logNotImplementedMethod('mat44SwapHandedness', locals())
 
 def mat44ToBytes(noeMat44):
-    logger.logNotImplementedMethod('mat44ToBytes', locals())
+    logNotImplementedMethod('mat44ToBytes', locals())
 
 def mat44ToMat43(noeMat44):
     tmp = inc_noesis.NoeMat43()
@@ -532,13 +532,13 @@ def mat44ToMat43(noeMat44):
     return tmp
 
 def mat44TransformVec4(noeMat44, other):
-    logger.logNotImplementedMethod('mat44TransformVec4', locals())
+    logNotImplementedMethod('mat44TransformVec4', locals())
 
 def mat44Translate(noeMat44, trnVector):
-    logger.logNotImplementedMethod('mat44Translate', locals())
+    logNotImplementedMethod('mat44Translate', locals())
 
 def mat44Transpose(noeMat44):
-    logger.logNotImplementedMethod('mat44Transpose', locals())
+    logNotImplementedMethod('mat44Transpose', locals())
 
 def mat44Validate(noeMat44):
     mat44 = noeMat44.mat44
@@ -550,61 +550,61 @@ def mat44Validate(noeMat44):
         vec4Validate(vec)
 
 def quat3FromBytes(otherBytes, bigEnd):
-    logger.logNotImplementedMethod('quat3FromBytes', locals())
+    logNotImplementedMethod('quat3FromBytes', locals())
 
 def quat3ToBytes(noeQuat3):
-    logger.logNotImplementedMethod('quat3ToBytes', locals())
+    logNotImplementedMethod('quat3ToBytes', locals())
 
 def quat3ToQuat(noeQuat3):
-    logger.logNotImplementedMethod('quat3ToQuat', locals())
+    logNotImplementedMethod('quat3ToQuat', locals())
 
 def quat3Validate(noeQuat3):
     vec3Validate(noeQuat3)
 
 def quatAdd(noeQuat, other):
-    logger.logNotImplementedMethod('quatAdd', locals())
+    logNotImplementedMethod('quatAdd', locals())
 
 def quatFromBytes(otherBytes, bigEnd):
-    logger.logNotImplementedMethod('quatFromBytes', locals())
+    logNotImplementedMethod('quatFromBytes', locals())
 
 def quatLen(noeQuat):
-    logger.logNotImplementedMethod('quatLen', locals())
+    logNotImplementedMethod('quatLen', locals())
 
 def quatLerp(noeQuat, other, fraction):
-    logger.logNotImplementedMethod('quatLerp', locals())
+    logNotImplementedMethod('quatLerp', locals())
 
 def quatMul(noeQuat, other):
-    logger.logNotImplementedMethod('quatMul', locals())
+    logNotImplementedMethod('quatMul', locals())
 
 def quatNormalize(noeQuat):
-    logger.logNotImplementedMethod('quatNormalize', locals())
+    logNotImplementedMethod('quatNormalize', locals())
 
 def quatSLerp(noeQuat, other, fraction):
-    logger.logNotImplementedMethod('quatSLerp', locals())
+    logNotImplementedMethod('quatSLerp', locals())
 
 def quatSub(noeQuat, other):
-    logger.logNotImplementedMethod('quatSub', locals())
+    logNotImplementedMethod('quatSub', locals())
 
 def quatToAngles(noeQuat):
-    logger.logNotImplementedMethod('quatToAngles', locals())
+    logNotImplementedMethod('quatToAngles', locals())
 
 def quatToBytes(noeQuat):
-    logger.logNotImplementedMethod('quatToBytes', locals())
+    logNotImplementedMethod('quatToBytes', locals())
 
 def quatToMat43(noeQuat, transposed):
-    logger.logNotImplementedMethod('quatToMat43', locals())
+    logNotImplementedMethod('quatToMat43', locals())
 
 def quatToQuat3(noeQuat):
-    logger.logNotImplementedMethod('quatToQuat3', locals())
+    logNotImplementedMethod('quatToQuat3', locals())
 
 def quatTransformNormal(noeQuat, other):
-    logger.logNotImplementedMethod('quatTransformNormal', locals())
+    logNotImplementedMethod('quatTransformNormal', locals())
 
 def quatTransformPoint(noeQuat, other):
-    logger.logNotImplementedMethod('quatTransformPoint', locals())
+    logNotImplementedMethod('quatTransformPoint', locals())
 
 def quatTranspose(noeQuat):
-    logger.logNotImplementedMethod('quatTranspose', locals())
+    logNotImplementedMethod('quatTranspose', locals())
 
 def quatValidate(noeQuat):
     quat = noeVec4.quat
@@ -620,46 +620,46 @@ def validateListType(list, types):
             doException("validateListType: validation failed")
 
 def vec3Add(noeVec3, other):
-    logger.logNotImplementedMethod('vec3Add', locals())
+    logNotImplementedMethod('vec3Add', locals())
 
 def vec3Cross(noeVec3, other):
-    logger.logNotImplementedMethod('vec3Cross', locals())
+    logNotImplementedMethod('vec3Cross', locals())
 
 def vec3Div(noeVec3, other):
-    logger.logNotImplementedMethod('vec3Div', locals())
+    logNotImplementedMethod('vec3Div', locals())
 
 def vec3FromBytes(otherBytes, bigEnd):
-    logger.logNotImplementedMethod('vec3FromBytes', locals())
+    logNotImplementedMethod('vec3FromBytes', locals())
 
 def vec3Len(noeVec3):
-    logger.logNotImplementedMethod('vec3Len', locals())
+    logNotImplementedMethod('vec3Len', locals())
 
 def vec3LenSq(noeVec3):
-    logger.logNotImplementedMethod('vec3LenSq', locals())
+    logNotImplementedMethod('vec3LenSq', locals())
 
 def vec3Lerp(noeVec3, other, fraction):
-    logger.logNotImplementedMethod('vec3Lerp', locals())
+    logNotImplementedMethod('vec3Lerp', locals())
 
 def vec3Mul(noeVec3, other):
-    logger.logNotImplementedMethod('vec3Mul', locals())
+    logNotImplementedMethod('vec3Mul', locals())
 
 def vec3Norm(noeVec3):
-    logger.logNotImplementedMethod('vec3Norm', locals())
+    logNotImplementedMethod('vec3Norm', locals())
 
 def vec3Sub(noeVec3, other):
-    logger.logNotImplementedMethod('vec3Sub', locals())
+    logNotImplementedMethod('vec3Sub', locals())
 
 def vec3ToAngles(noeVec3):
-    logger.logNotImplementedMethod('vec3ToAngles', locals())
+    logNotImplementedMethod('vec3ToAngles', locals())
 
 def vec3ToBytes(noeVec3):
-    logger.logNotImplementedMethod('vec3ToBytes', locals())
+    logNotImplementedMethod('vec3ToBytes', locals())
 
 def vec3ToMat43(noeVec3):
-    logger.logNotImplementedMethod('vec3ToMat43', locals())
+    logNotImplementedMethod('vec3ToMat43', locals())
 
 def vec3ToVec4(noeVec3):
-    logger.logNotImplementedMethod('vec3ToVec4', locals())
+    logNotImplementedMethod('vec3ToVec4', locals())
 
 def vec3Validate(noeVec3):
     vec3 = noeVec3.vec3
@@ -670,40 +670,40 @@ def vec3Validate(noeVec3):
     validateListType(vec3, Number)
 
 def vec4Add(noeVec4, other):
-    logger.logNotImplementedMethod('vec4Add', locals())
+    logNotImplementedMethod('vec4Add', locals())
 
 def vec4Div(noeVec4, other):
-    logger.logNotImplementedMethod('vec4Div', locals())
+    logNotImplementedMethod('vec4Div', locals())
 
 def vec4Dot(noeVec4, other):
-    logger.logNotImplementedMethod('vec4Dot', locals())
+    logNotImplementedMethod('vec4Dot', locals())
 
 def vec4FromBytes(otherBytes, bigEnd):
-    logger.logNotImplementedMethod('vec4FromBytes', locals())
+    logNotImplementedMethod('vec4FromBytes', locals())
 
 def vec4Len(noeVec4):
-    logger.logNotImplementedMethod('vec4Len', locals())
+    logNotImplementedMethod('vec4Len', locals())
 
 def vec4LenSq(noeVec4):
-    logger.logNotImplementedMethod('vec4LenSq', locals())
+    logNotImplementedMethod('vec4LenSq', locals())
 
 def vec4Lerp(noeVec4, other, fraction):
-    logger.logNotImplementedMethod('vec4Lerp', locals())
+    logNotImplementedMethod('vec4Lerp', locals())
 
 def vec4Mul(noeVec4, other):
-    logger.logNotImplementedMethod('vec4Mul', locals())
+    logNotImplementedMethod('vec4Mul', locals())
 
 def vec4Norm(noeVec4):
-    logger.logNotImplementedMethod('vec4Norm', locals())
+    logNotImplementedMethod('vec4Norm', locals())
 
 def vec4Sub(noeVec4, other):
-    logger.logNotImplementedMethod('vec4Sub', locals())
+    logNotImplementedMethod('vec4Sub', locals())
 
 def vec4ToBytes(noeVec4):
-    logger.logNotImplementedMethod('vec4ToBytes', locals())
+    logNotImplementedMethod('vec4ToBytes', locals())
 
 def vec4ToVec3(noeVec4):
-    logger.logNotImplementedMethod('vec4ToVec3', locals())
+    logNotImplementedMethod('vec4ToVec3', locals())
 
 def vec4Validate(noeVec4):
     vec4 = noeVec4.vec4
