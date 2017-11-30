@@ -6,6 +6,7 @@ import os
 import struct
 import itertools
 import sys
+import logger
 
 # state
 
@@ -58,8 +59,7 @@ def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
     return ImageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags).call()
 
 def imageFlipRGBA32(r, width, height, unk0, unk1):
-    # TODO: implement me
-    print("Not implemented method called: imageFlipRGBA32")
+    logger.logNotImplementedMethod('imageFlipRGBA32', locals())
 
 def getExtensionlessName(path):
     return os.path.splitext(path)[0]
@@ -81,188 +81,142 @@ def loadIntoByteArray(path):
     return open(path, "rb").read()
 
 def rpgClearBufferBinds():
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: rpgClearBufferBinds")
+    logger.logNotImplementedMethod('rpgClearBufferBinds', locals())
 
 def setPreviewOption(key, value):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: setPreviewOption")
+    logger.logNotImplementedMethod('setPreviewOption', locals())
 
 def rpgSetName(name):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: rpgSetName")
+    logger.logNotImplementedMethod('rpgSetName', locals())
 
 def rpgSetUVScaleBias(vec1, vec_2):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: rpgSetUVScaleBias")
+    logger.logNotImplementedMethod('rpgSetUVScaleBias', locals())
 
 def rpgSetBoneMap(boneMap):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: rpgSetBoneMap")
+    logger.logNotImplementedMethod('rpgSetBoneMap', locals())
 
 def imageDecodeDXT(data, width, height, format):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: imageDecodeDXT")
+    logger.logNotImplementedMethod('imageDecodeDXT', locals())
 
 def rpgBindColorBufferOfs(buff, typeSize, structSize, structOffset, unk_4):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: rpgBindColorBufferOfs")
+    logger.logNotImplementedMethod('rpgBindColorBufferOfs', locals())
 
 def rpgBindBoneWeightBufferOfs(buff, typeSize, structSize, structOffset, unk_4):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: rpgBindBoneWeightBufferOfs")
+    logger.logNotImplementedMethod('rpgBindBoneWeightBufferOfs', locals())
 
 def rpgBindBoneIndexBufferOfs(boneBuff, typeSize, structSize, structOffset, unk_4):
-    # TODO: implement me, needed for dreamy theater
-    print("Not implemented method called: rpgBindBoneIndexBufferOfs")
+    logger.logNotImplementedMethod('rpgBindBoneIndexBufferOfs', locals())
 
 def checkFileExists(path):
-    # TODO: implement me
-    print("Not implemented method called: checkFileExists")
+    logger.logNotImplementedMethod('checkFileExists', locals())
 
 def callExtensionMethod(method, *args):
-    # TODO: implement me
-    print("Not implemented method called: callExtensionMethod")
+    logger.logNotImplementedMethod('callExtensionMethod', locals())
 
 def createPCMWaveHeader(size, bitrate, samplerate, channelcount):
-    # TODO: implement me
-    print("Not implemented method called: createPCMWaveHeader")
+    logger.logNotImplementedMethod('createPCMWaveHeader', locals())
 
 def createProceduralAnim(bones, animations, numFrames):
-    # TODO: implement me
-    print("Not implemented method called: createProceduralAnim")
+    logger.logNotImplementedMethod('createProceduralAnim', locals())
 
 def dataToIntList(data, size, rpgeodataType, endianess):
-    # TODO: implement me
-    print("Not implemented method called: dataToIntList")
+    logger.logNotImplementedMethod('dataToIntList', locals())
 
 def decodeADPCMBlock(data, bitsPerSample, numSamplesToDecode, lshift, filter, filterTable0, filterTable1, listOf2PreviousSamples, bitOffset, bitStride, sampleScale):
-    # TODO: implement me
-    print("Not implemented method called: decodeADPCMBlock")
+    logger.logNotImplementedMethod('decodeADPCMBlock', locals())
 
 def decodeNormals32(normals, stride, xBits, yBits, zBits, endianness):
-    # TODO: implement me
-    print("Not implemented method called: decodeNormals32")
+    logger.logNotImplementedMethod('decodeNormals32', locals())
 
 def decompInflate(sourceBytes, destinationSize, windowSize = 0):
-    # TODO: implement me
-    print("Not implemented method called: decompInflate")
+    logger.logNotImplementedMethod('decompInflate', locals())
 
 def decompLZHMelt(data, size):
-    # TODO: implement me
-    print("Not implemented method called: decompLZHMelt")
+    logger.logNotImplementedMethod('decompLZHMelt', locals())
 
 def decompPRS(data, size):
-    # TODO: implement me
-    print("Not implemented method called: decompPRS")
+    logger.logNotImplementedMethod('decompPRS', locals())
 
 def decryptAES(data, key):
-    # TODO: implement me
-    print("Not implemented method called: decryptAES")
+    logger.logNotImplementedMethod('decryptAES', locals())
 
 def exportArchiveFile(filename, data):
-    # TODO: implement me
-    print("Not implemented method called: exportArchiveFile")
+    logger.logNotImplementedMethod('exportArchiveFile', locals())
 
 def getDeferredAnims():
-    # TODO: implement me
-    print("Not implemented method called: getDeferredAnims")
+    logger.logNotImplementedMethod('getDeferredAnims', locals())
 
 def getInputName():
-    # TODO: implement me
-    print("Not implemented method called: getInputName")
+    logger.logNotImplementedMethod('getInputName', locals())
 
 def getOutputName():
-    # TODO: implement me
-    print("Not implemented method called: getOutputName")
+    logger.logNotImplementedMethod('getOutputName', locals())
 
 def immBegin(shape):
-    # TODO: implement me
-    print("Not implemented method called: immBegin")
+    logger.logNotImplementedMethod('immBegin', locals())
 
 def immBoneIndex(boneIndex):
-    # TODO: implement me
-    print("Not implemented method called: immBoneIndex")
+    logger.logNotImplementedMethod('immBoneIndex', locals())
 
 def immBoneWeight(boneWeight):
-    # TODO: implement me
-    print("Not implemented method called: immBoneWeight")
+    logger.logNotImplementedMethod('immBoneWeight', locals())
 
 def immColor4(color):
-    # TODO: implement me
-    print("Not implemented method called: immColor4")
+    logger.logNotImplementedMethod('immColor4', locals())
 
 def immEnd():
-    # TODO: implement me
-    print("Not implemented method called: immEnd")
+    logger.logNotImplementedMethod('immEnd', locals())
 
 def immLMUV2(lmuv):
-    # TODO: implement me
-    print("Not implemented method called: immLMUV2")
+    logger.logNotImplementedMethod('immLMUV2', locals())
 
 def immNormal3(normal):
-    # TODO: implement me
-    print("Not implemented method called: immNormal3")
+    logger.logNotImplementedMethod('immNormal3', locals())
 
 def immUV2(uv):
-    # TODO: implement me
-    print("Not implemented method called: immUV2")
+    logger.logNotImplementedMethod('immUV2', locals())
 
 def immVertex3(vertex):
-    # TODO: implement me
-    print("Not implemented method called: immVertex3")
+    logger.logNotImplementedMethod('immVertex3', locals())
 
 def immVertex3f(positions, offset = 0):
-    # TODO: implement me
-    print("Not implemented method called: immVertex3f")
+    logger.logNotImplementedMethod('immVertex3f', locals())
 
 def isGeometryTarget():
-    # TODO: implement me
-    print("Not implemented method called: isGeometryTarget")
+    logger.logNotImplementedMethod('isGeometryTarget', locals())
 
 def imageApplyPalette(data, width, height, palette, numberOfPaletteEntries):
-    # TODO: implement me
-    print("Not implemented method called: imageApplyPalette")
+    logger.logNotImplementedMethod('imageApplyPalette', locals())
 
 def imageBlit32(destinationData, destinationWidth, destinationHeight, destinationXOffset, destinationYOffset, sourceData, sourceEidth, sourceHeight, sourceXOoffset, sourceYOffset, destStride = 0, sourceStride = 0):
-    # TODO: implement me
-    print("Not implemented method called: imageBlit32")
+    logger.logNotImplementedMethod('imageBlit32', locals())
 
 def rpgCreatePlaneSpaceUVs():
-    # TODO: implement me
-    print("Not implemented method called: rpgCreatePlaneSpaceUVs")
+    logger.logNotImplementedMethod('rpgCreatePlaneSpaceUVs', locals())
 
 def rpgFlatNormals():
-    # TODO: implement me
-    print("Not implemented method called: rpgFlatNormals")
+    logger.logNotImplementedMethod('rpgFlatNormals', locals())
 
 def rpgGetVertexCount():
-    # TODO: implement me
-    print("Not implemented method called: rpgGetVertexCount")
+    logger.logNotImplementedMethod('rpgGetVertexCount', locals())
 
 def rpgOptimize():
-    # TODO: implement me
-    print("Not implemented method called: rpgOptimize")
+    logger.logNotImplementedMethod('rpgOptimize', locals())
 
 def rpgReset():
-    # TODO: implement me
-    print("Not implemented method called: rpgReset")
+    logger.logNotImplementedMethod('rpgReset', locals())
 
 def rpgSetLightmap(name):
-    # TODO: implement me
-    print("Not implemented method called: rpgSetLightmap")
+    logger.logNotImplementedMethod('rpgSetLightmap', locals())
 
 def rpgSetBoneMap(boneMap):
-    # TODO: implement me
-    print("Not implemented method called: rpgSetBoneMap")
+    logger.logNotImplementedMethod('rpgSetBoneMap', locals())
 
 def setPreviewOption(key, value):
-    # TODO: implement me
-    print("Not implemented method called: setPreviewOption")
+    logger.logNotImplementedMethod('setPreviewOption', locals())
 
 def rpgSetOption(key, value):
-    # TODO: implement me
-    print("Not implemented method called: rpgSetOption")
+    logger.logNotImplementedMethod('rpgSetOption', locals())
 
 # private
 

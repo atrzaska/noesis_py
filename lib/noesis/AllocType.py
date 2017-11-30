@@ -1,6 +1,7 @@
 from io import BytesIO
 import re
 import struct
+import logger
 
 NOE_BIGENDIAN = 1
 NOE_LITTLEENDIAN = 0
@@ -49,12 +50,10 @@ class AllocType:
         return size
 
     def bsReadBits(self, numBits):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsReadBits', locals())
 
     def bsReadBool(self):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsReadBool', locals())
 
     def bsReadByte(self):
         return self.readAndUnpack('1b')[0]
@@ -75,8 +74,7 @@ class AllocType:
         return self.readAndUnpack('1q')[0]
 
     def bsReadLine(self):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsReadLine', locals())
 
     def bsReadShort(self):
         return self.readAndUnpack('1h')[0]
@@ -114,60 +112,46 @@ class AllocType:
         self.data.seek(ofs)
 
     def bsWriteBits(self, val, numBits):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteBits', locals())
 
     def bsWriteBool(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteBool', locals())
 
     def bsWriteByte(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteByte', locals())
 
     def bsWriteBytes(self, data):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteBytes', locals())
 
     def bsWriteDouble(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteDouble', locals())
 
     def bsWriteFloat(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteFloat', locals())
 
     def bsWriteInt(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteInt', locals())
 
     def bsWriteInt64(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteInt64', locals())
 
     def bsWriteShort(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteShort', locals())
 
     def bsWriteString(self, str, writeTerminator):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteString', locals())
 
     def bsWriteUByte(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteUByte', locals())
 
     def bsWriteUInt(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteUInt', locals())
 
     def bsWriteUInt64(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteUInt64', locals())
 
     def bsWriteUShort(self, val):
-        # TODO implement me
-        pass
+        logger.logNotImplementedMethod('bsWriteUShort', locals())
 
     # private
 

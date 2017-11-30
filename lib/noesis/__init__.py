@@ -3,6 +3,7 @@ from NoeModule import NoeModule
 from AllocType import AllocType
 from numbers import Number
 import sys
+import logger
 
 # constants
 
@@ -74,36 +75,28 @@ def allocBytes(size):
     return bytearray(size)
 
 def freeModule(module):
-    # TODO: implement me
-    print("Not implemented method called: freeModule")
+    logger.logNotImplementedMethod('freeModule', locals())
 
 def getCharSplineSet():
-    # TODO: implement me
-    print("Not implemented method called: getCharSplineSet")
+    logger.logNotImplementedMethod('getCharSplineSet', locals())
 
 def getFormatExtensionFlags():
-    # TODO: implement me
-    print("Not implemented method called: getFormatExtensionFlags")
+    logger.logNotImplementedMethod('getFormatExtensionFlags', locals())
 
 def getMFFP(uint):
-    # TODO: implement me
-    print("Not implemented method called: getMFFP")
+    logger.logNotImplementedMethod('getMFFP', locals())
 
 def getScenesPath():
-    # TODO: implement me
-    print("Not implemented method called: getScenesPath")
+    logger.logNotImplementedMethod('getScenesPath', locals())
 
 def getSelectedDirectory():
-    # TODO: implement me
-    print("Not implemented method called: getSelectedDirectory")
+    logger.logNotImplementedMethod('getSelectedDirectory', locals())
 
 def getSelectedFile():
-    # TODO: implement me
-    print("Not implemented method called: getSelectedFile")
+    logger.logNotImplementedMethod('getSelectedFile', locals())
 
 def getWindowHandle():
-    # TODO: implement me
-    print("Not implemented method called: getWindowHandle")
+    logger.logNotImplementedMethod('getWindowHandle', locals())
 
 def instantiateModule():
     module = NoeModule()
@@ -111,36 +104,29 @@ def instantiateModule():
     return module
 
 def isPreviewModuleRAPIValid():
-    # TODO: implement me
-    print("Not implemented method called: isPreviewModuleRAPIValid")
+    logger.logNotImplementedMethod('isPreviewModuleRAPIValid', locals())
 
 def loadImageRGBA():
-    # TODO: implement me
-    print("Not implemented method called: loadImageRGBA")
+    logger.logNotImplementedMethod('loadImageRGBA', locals())
 
 def logPopup():
     # this should open the debug window
     pass
 
 def messagePrompt():
-    # TODO: implement me
-    print("Not implemented method called: messagePrompt")
+    logger.logNotImplementedMethod('messagePrompt', locals())
 
 def openAndRemoveTempFile():
-    # TODO: implement me
-    print("Not implemented method called: openAndRemoveTempFile")
+    logger.logNotImplementedMethod('openAndRemoveTempFile', locals())
 
 def openFile():
-    # TODO: implement me
-    print("Not implemented method called: openFile")
+    logger.logNotImplementedMethod('openFile', locals())
 
 def optGetArg():
-    # TODO: implement me
-    print("Not implemented method called: optGetArg")
+    logger.logNotImplementedMethod('optGetArg', locals())
 
 def optWasInvoked():
-    # TODO: implement me
-    print("Not implemented method called: optWasInvoked")
+    logger.logNotImplementedMethod('optWasInvoked', locals())
 
 # TODO: fileType can be semicolon separated '.obj;.obc'
 def register(name, fileType):
@@ -149,12 +135,10 @@ def register(name, fileType):
     return handler
 
 def registerCleanupFunction():
-    # TODO: implement me
-    print("Not implemented method called: registerCleanupFunction")
+    logger.logNotImplementedMethod('registerCleanupFunction', locals())
 
 def registerTool():
-    # TODO: implement me
-    print("Not implemented method called: registerTool")
+    logger.logNotImplementedMethod('registerTool', locals())
 
 def setHandlerExtractArc(handle, value):
     handle.grpExtractArc = value
@@ -178,24 +162,19 @@ def setHandlerWriteAnim(handle, value):
     handle.noepyWriteAnim = value
 
 def setModuleRAPI():
-    # TODO: implement me
-    print("Not implemented method called: setModuleRAPI")
+    logger.logNotImplementedMethod('setModuleRAPI', locals())
 
 def setPreviewModuleRAPI():
-    # TODO: implement me
-    print("Not implemented method called: setPreviewModuleRAPI")
+    logger.logNotImplementedMethod('setPreviewModuleRAPI', locals())
 
 def setToolFlags():
-    # TODO: implement me
-    print("Not implemented method called: setToolFlags")
+    logger.logNotImplementedMethod('setToolFlags', locals())
 
 def setToolVisibleCallback():
-    # TODO: implement me
-    print("Not implemented method called: setToolVisibleCallback")
+    logger.logNotImplementedMethod('setToolVisibleCallback', locals())
 
 def userPrompt():
-    # TODO: implement me
-    print("Not implemented method called: userPrompt")
+    logger.logNotImplementedMethod('userPrompt', locals())
 
 # inc_noesis methods
 
@@ -203,41 +182,32 @@ def allocType(name, data = None):
     return AllocType(name, data)
 
 def anglesALerp(noeAngles, other, degrees):
-    # TODO: implement me
-    print("Not implemented method called: anglesALerp")
+    logger.logNotImplementedMethod('anglesALerp', locals())
 
 def anglesAngleVectors(noeAngles):
-    # TODO: implement me
-    print("Not implemented method called: anglesAngleVectors")
+    logger.logNotImplementedMethod('anglesAngleVectors', locals())
 
 def anglesMod(noeAngles, f):
-    # TODO: implement me
-    print("Not implemented method called: anglesMod")
+    logger.logNotImplementedMethod('anglesMod', locals())
 
 def anglesNormalize180(noeAngles):
-    # TODO: implement me
-    print("Not implemented method called: anglesNormalize180")
+    logger.logNotImplementedMethod('anglesNormalize180', locals())
 
 def anglesNormalize360(noeAngles):
-    # TODO: implement me
-    print("Not implemented method called: anglesNormalize360")
+    logger.logNotImplementedMethod('anglesNormalize360', locals())
 
 def anglesToMat43_XYZ(noeAngles, yFlip):
-    # TODO: implement me
-    print("Not implemented method called: anglesToMat43_XYZ")
+    logger.logNotImplementedMethod('anglesToMat43_XYZ', locals())
     return inc_noesis.NoeMat43()
 
 def anglesToMat43(noeAngles):
-    # TODO: implement me
-    print("Not implemented method called: anglesToMat43")
+    logger.logNotImplementedMethod('anglesToMat43', locals())
 
 def anglesToQuat(noeAngles):
-    # TODO: implement me
-    print("Not implemented method called: anglesToQuat")
+    logger.logNotImplementedMethod('anglesToQuat', locals())
 
 def anglesToVec3(noeAngles):
-    # TODO: implement me
-    print("Not implemented method called: anglesToVec3")
+    logger.logNotImplementedMethod('anglesToVec3', locals())
 
 def anglesValidate(noeAngles):
     vec3Validate(noeAngles)
@@ -354,39 +324,31 @@ def bsWriteUShort(handle, val):
     return handle.bsWriteUShort(val)
 
 def cubicBezier3D(points, frac):
-    # TODO: implement me
-    print("Not implemented method called: cubicBezier3D")
+    logger.logNotImplementedMethod('cubicBezier3D', locals())
 
 def doException(name):
     raise ValueError(name)
 
 def encodeFloat16(val):
-    # TODO: implement me
-    print("Not implemented method called: encodeFloat16")
+    logger.logNotImplementedMethod('encodeFloat16', locals())
 
 def getFloat16(ushort):
-    # TODO: implement me
-    print("Not implemented method called: getFloat16")
+    logger.logNotImplementedMethod('getFloat16', locals())
 
 def mat43Add(noeMat43, other):
-    # TODO: implement me
-    print("Not implemented method called: mat43Add")
+    logger.logNotImplementedMethod('mat43Add', locals())
 
 def mat43FromBytes(otherBytes, bigEnd):
-    # TODO: implement me
-    print("Not implemented method called: mat43FromBytes")
+    logger.logNotImplementedMethod('mat43FromBytes', locals())
 
 def mat43Inverse(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43Inverse")
+    logger.logNotImplementedMethod('mat43Inverse', locals())
 
 def mat43IsSkewed(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43IsSkewed")
+    logger.logNotImplementedMethod('mat43IsSkewed', locals())
 
 def mat43Lerp(noeMat43, other, fraction):
-    # TODO: implement me
-    print("Not implemented method called: mat43Lerp")
+    logger.logNotImplementedMethod('mat43Lerp', locals())
 
 def mat43Mul(noeMat43, other):
     noeMat44 = noeMat43.toMat44()
@@ -394,32 +356,25 @@ def mat43Mul(noeMat43, other):
     return (noeMat44 * otherMat44).toMat43()
 
 def mat43Orthogonalize(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43Orthogonalize")
+    logger.logNotImplementedMethod('mat43Orthogonalize', locals())
 
 def mat43Rotate(noeMat43, degrees, rotAngles, transposeRot):
-    # TODO: implement me
-    print("Not implemented method called: mat43Rotate")
+    logger.logNotImplementedMethod('mat43Rotate', locals())
 
 def mat43SLerp(noeMat43, other, fraction):
-    # TODO: implement me
-    print("Not implemented method called: mat43SLerp")
+    logger.logNotImplementedMethod('mat43SLerp', locals())
 
 def mat43Sub(noeMat43, other):
-    # TODO: implement me
-    print("Not implemented method called: mat43Sub")
+    logger.logNotImplementedMethod('mat43Sub', locals())
 
 def mat43SwapHandedness(noeMat43, axis):
-    # TODO: implement me
-    print("Not implemented method called: mat43SwapHandedness")
+    logger.logNotImplementedMethod('mat43SwapHandedness', locals())
 
 def mat43ToAngles(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43ToAngles")
+    logger.logNotImplementedMethod('mat43ToAngles', locals())
 
 def mat43ToBytes(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43ToBytes")
+    logger.logNotImplementedMethod('mat43ToBytes', locals())
 
 def mat43ToMat44(noeMat43):
     tmp = inc_noesis.NoeMat44()
@@ -440,28 +395,22 @@ def mat43ToMat44(noeMat43):
     return tmp
 
 def mat43ToQuat(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43ToQuat")
+    logger.logNotImplementedMethod('mat43ToQuat', locals())
 
 def mat43TransformNormal(noeMat43, other):
-    # TODO: implement me
-    print("Not implemented method called: mat43TransformNormal")
+    logger.logNotImplementedMethod('mat43TransformNormal', locals())
 
 def mat43TransformPoint(noeMat43, other):
-    # TODO: implement me
-    print("Not implemented method called: mat43TransformPoint")
+    logger.logNotImplementedMethod('mat43TransformPoint', locals())
 
 def mat43TransformVec4(noeMat43, other):
-    # TODO: implement me
-    print("Not implemented method called: mat43TransformVec4")
+    logger.logNotImplementedMethod('mat43TransformVec4', locals())
 
 def mat43Translate(noeMat43, trnVector):
-    # TODO: implement me
-    print("Not implemented method called: mat43Translate")
+    logger.logNotImplementedMethod('mat43Translate', locals())
 
 def mat43Transpose(noeMat43):
-    # TODO: implement me
-    print("Not implemented method called: mat43Transpose")
+    logger.logNotImplementedMethod('mat43Transpose', locals())
 
 def mat43Validate(noeMat43):
     mat43 = noeMat43.mat43
@@ -473,12 +422,10 @@ def mat43Validate(noeMat43):
         vec3Validate(vec)
 
 def mat44Add(noeMat44, other):
-    # TODO: implement me
-    print("Not implemented method called: mat44Add")
+    logger.logNotImplementedMethod('mat44Add', locals())
 
 def mat44FromBytes(otherBytes, bigEnd):
-    # TODO: implement me
-    print("Not implemented method called: mat44FromBytes")
+    logger.logNotImplementedMethod('mat44FromBytes', locals())
 
 def mat44Inverse(mtx):
     tmp = inc_noesis.NoeMat44()
@@ -555,20 +502,16 @@ def mat44Mul(mtx, rhs):
     return tmp
 
 def mat44Rotate(noeMat44, degrees, rotAngles):
-    # TODO: implement me
-    print("Not implemented method called: mat44Rotate")
+    logger.logNotImplementedMethod('mat44Rotate', locals())
 
 def mat44Sub(noeMat44, other):
-    # TODO: implement me
-    print("Not implemented method called: mat44Sub")
+    logger.logNotImplementedMethod('mat44Sub', locals())
 
 def mat44SwapHandedness(noeMat44, axis):
-    # TODO: implement me
-    print("Not implemented method called: mat44SwapHandedness")
+    logger.logNotImplementedMethod('mat44SwapHandedness', locals())
 
 def mat44ToBytes(noeMat44):
-    # TODO: implement me
-    print("Not implemented method called: mat44ToBytes")
+    logger.logNotImplementedMethod('mat44ToBytes', locals())
 
 def mat44ToMat43(noeMat44):
     tmp = inc_noesis.NoeMat43()
@@ -589,16 +532,13 @@ def mat44ToMat43(noeMat44):
     return tmp
 
 def mat44TransformVec4(noeMat44, other):
-    # TODO: implement me
-    print("Not implemented method called: mat44TransformVec4")
+    logger.logNotImplementedMethod('mat44TransformVec4', locals())
 
 def mat44Translate(noeMat44, trnVector):
-    # TODO: implement me
-    print("Not implemented method called: mat44Translate")
+    logger.logNotImplementedMethod('mat44Translate', locals())
 
 def mat44Transpose(noeMat44):
-    # TODO: implement me
-    print("Not implemented method called: mat44Transpose")
+    logger.logNotImplementedMethod('mat44Transpose', locals())
 
 def mat44Validate(noeMat44):
     mat44 = noeMat44.mat44
@@ -610,79 +550,61 @@ def mat44Validate(noeMat44):
         vec4Validate(vec)
 
 def quat3FromBytes(otherBytes, bigEnd):
-    # TODO: implement me
-    print("Not implemented method called: quat3FromBytes")
+    logger.logNotImplementedMethod('quat3FromBytes', locals())
 
 def quat3ToBytes(noeQuat3):
-    # TODO: implement me
-    print("Not implemented method called: quat3ToBytes")
+    logger.logNotImplementedMethod('quat3ToBytes', locals())
 
 def quat3ToQuat(noeQuat3):
-    # TODO: implement me
-    print("Not implemented method called: quat3ToQuat")
+    logger.logNotImplementedMethod('quat3ToQuat', locals())
 
 def quat3Validate(noeQuat3):
     vec3Validate(noeQuat3)
 
 def quatAdd(noeQuat, other):
-    # TODO: implement me
-    print("Not implemented method called: quatAdd")
+    logger.logNotImplementedMethod('quatAdd', locals())
 
 def quatFromBytes(otherBytes, bigEnd):
-    # TODO: implement me
-    print("Not implemented method called: quatFromBytes")
+    logger.logNotImplementedMethod('quatFromBytes', locals())
 
 def quatLen(noeQuat):
-    # TODO: implement me
-    print("Not implemented method called: quatLen")
+    logger.logNotImplementedMethod('quatLen', locals())
 
 def quatLerp(noeQuat, other, fraction):
-    # TODO: implement me
-    print("Not implemented method called: quatLerp")
+    logger.logNotImplementedMethod('quatLerp', locals())
 
 def quatMul(noeQuat, other):
-    # TODO: implement me
-    print("Not implemented method called: quatMul")
+    logger.logNotImplementedMethod('quatMul', locals())
 
 def quatNormalize(noeQuat):
-    # TODO: implement me
-    print("Not implemented method called: quatNormalize")
+    logger.logNotImplementedMethod('quatNormalize', locals())
 
 def quatSLerp(noeQuat, other, fraction):
-    # TODO: implement me
-    print("Not implemented method called: quatSLerp")
+    logger.logNotImplementedMethod('quatSLerp', locals())
 
 def quatSub(noeQuat, other):
-    # TODO: implement me
-    print("Not implemented method called: quatSub")
+    logger.logNotImplementedMethod('quatSub', locals())
 
 def quatToAngles(noeQuat):
-    # TODO: implement me
-    print("Not implemented method called: quatToAngles")
+    logger.logNotImplementedMethod('quatToAngles', locals())
 
 def quatToBytes(noeQuat):
-    # TODO: implement me
-    print("Not implemented method called: quatToBytes")
+    logger.logNotImplementedMethod('quatToBytes', locals())
 
 def quatToMat43(noeQuat, transposed):
-    # TODO: implement me
-    print("Not implemented method called: quatToMat43")
+    logger.logNotImplementedMethod('quatToMat43', locals())
 
 def quatToQuat3(noeQuat):
-    # TODO: implement me
-    print("Not implemented method called: quatToQuat3")
+    logger.logNotImplementedMethod('quatToQuat3', locals())
 
 def quatTransformNormal(noeQuat, other):
-    # TODO: implement me
-    print("Not implemented method called: quatTransformNormal")
+    logger.logNotImplementedMethod('quatTransformNormal', locals())
 
 def quatTransformPoint(noeQuat, other):
-    # TODO: implement me
-    print("Not implemented method called: quatTransformPoint")
+    logger.logNotImplementedMethod('quatTransformPoint', locals())
 
 def quatTranspose(noeQuat):
-    # TODO: implement me
-    print("Not implemented method called: quatTranspose")
+    logger.logNotImplementedMethod('quatTranspose', locals())
 
 def quatValidate(noeQuat):
     quat = noeVec4.quat
@@ -698,60 +620,46 @@ def validateListType(list, types):
             doException("validateListType: validation failed")
 
 def vec3Add(noeVec3, other):
-    # TODO: implement me
-    print("Not implemented method called: vec3Add")
+    logger.logNotImplementedMethod('vec3Add', locals())
 
 def vec3Cross(noeVec3, other):
-    # TODO: implement me
-    print("Not implemented method called: vec3Cross")
+    logger.logNotImplementedMethod('vec3Cross', locals())
 
 def vec3Div(noeVec3, other):
-    # TODO: implement me
-    print("Not implemented method called: vec3Div")
+    logger.logNotImplementedMethod('vec3Div', locals())
 
 def vec3FromBytes(otherBytes, bigEnd):
-    # TODO: implement me
-    print("Not implemented method called: vec3FromBytes")
+    logger.logNotImplementedMethod('vec3FromBytes', locals())
 
 def vec3Len(noeVec3):
-    # TODO: implement me
-    print("Not implemented method called: vec3Len")
+    logger.logNotImplementedMethod('vec3Len', locals())
 
 def vec3LenSq(noeVec3):
-    # TODO: implement me
-    print("Not implemented method called: vec3LenSq")
+    logger.logNotImplementedMethod('vec3LenSq', locals())
 
 def vec3Lerp(noeVec3, other, fraction):
-    # TODO: implement me
-    print("Not implemented method called: vec3Lerp")
+    logger.logNotImplementedMethod('vec3Lerp', locals())
 
 def vec3Mul(noeVec3, other):
-    # TODO: implement me
-    print("Not implemented method called: vec3Mul")
+    logger.logNotImplementedMethod('vec3Mul', locals())
 
 def vec3Norm(noeVec3):
-    # TODO: implement me
-    print("Not implemented method called: vec3Norm")
+    logger.logNotImplementedMethod('vec3Norm', locals())
 
 def vec3Sub(noeVec3, other):
-    # TODO: implement me
-    print("Not implemented method called: vec3Sub")
+    logger.logNotImplementedMethod('vec3Sub', locals())
 
 def vec3ToAngles(noeVec3):
-    # TODO: implement me
-    print("Not implemented method called: vec3ToAngles")
+    logger.logNotImplementedMethod('vec3ToAngles', locals())
 
 def vec3ToBytes(noeVec3):
-    # TODO: implement me
-    print("Not implemented method called: vec3ToBytes")
+    logger.logNotImplementedMethod('vec3ToBytes', locals())
 
 def vec3ToMat43(noeVec3):
-    # TODO: implement me
-    print("Not implemented method called: vec3ToMat43")
+    logger.logNotImplementedMethod('vec3ToMat43', locals())
 
 def vec3ToVec4(noeVec3):
-    # TODO: implement me
-    print("Not implemented method called: vec3ToVec4")
+    logger.logNotImplementedMethod('vec3ToVec4', locals())
 
 def vec3Validate(noeVec3):
     vec3 = noeVec3.vec3
@@ -762,52 +670,40 @@ def vec3Validate(noeVec3):
     validateListType(vec3, Number)
 
 def vec4Add(noeVec4, other):
-    # TODO: implement me
-    print("Not implemented method called: vec4Add")
+    logger.logNotImplementedMethod('vec4Add', locals())
 
 def vec4Div(noeVec4, other):
-    # TODO: implement me
-    print("Not implemented method called: vec4Div")
+    logger.logNotImplementedMethod('vec4Div', locals())
 
 def vec4Dot(noeVec4, other):
-    # TODO: implement me
-    print("Not implemented method called: vec4Dot")
+    logger.logNotImplementedMethod('vec4Dot', locals())
 
 def vec4FromBytes(otherBytes, bigEnd):
-    # TODO: implement me
-    print("Not implemented method called: vec4FromBytes")
+    logger.logNotImplementedMethod('vec4FromBytes', locals())
 
 def vec4Len(noeVec4):
-    # TODO: implement me
-    print("Not implemented method called: vec4Len")
+    logger.logNotImplementedMethod('vec4Len', locals())
 
 def vec4LenSq(noeVec4):
-    # TODO: implement me
-    print("Not implemented method called: vec4LenSq")
+    logger.logNotImplementedMethod('vec4LenSq', locals())
 
 def vec4Lerp(noeVec4, other, fraction):
-    # TODO: implement me
-    print("Not implemented method called: vec4Lerp")
+    logger.logNotImplementedMethod('vec4Lerp', locals())
 
 def vec4Mul(noeVec4, other):
-    # TODO: implement me
-    print("Not implemented method called: vec4Mul")
+    logger.logNotImplementedMethod('vec4Mul', locals())
 
 def vec4Norm(noeVec4):
-    # TODO: implement me
-    print("Not implemented method called: vec4Norm")
+    logger.logNotImplementedMethod('vec4Norm', locals())
 
 def vec4Sub(noeVec4, other):
-    # TODO: implement me
-    print("Not implemented method called: vec4Sub")
+    logger.logNotImplementedMethod('vec4Sub', locals())
 
 def vec4ToBytes(noeVec4):
-    # TODO: implement me
-    print("Not implemented method called: vec4ToBytes")
+    logger.logNotImplementedMethod('vec4ToBytes', locals())
 
 def vec4ToVec3(noeVec4):
-    # TODO: implement me
-    print("Not implemented method called: vec4ToVec3")
+    logger.logNotImplementedMethod('vec4ToVec3', locals())
 
 def vec4Validate(noeVec4):
     vec4 = noeVec4.vec4
