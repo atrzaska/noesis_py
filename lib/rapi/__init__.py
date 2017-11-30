@@ -25,7 +25,7 @@ def rpgConstructModel():
     return model
 
 def rpgConstructModelSlim():
-    return rpg.rpgConstructModel()
+    return rpgConstructModel()
 
 # TODO make format dynamic baed on typeSize
 def rpgBindPositionBufferOfs(buff, typeSize, structSize, structOffset):

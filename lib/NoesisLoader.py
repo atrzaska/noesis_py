@@ -52,6 +52,8 @@ class NoesisLoader:
             material = next(x for x in materials if x.name == materialName)
             textures = noeMaterials.texList
             textureName = material.texName
+            # TODO: texture is not loaded from data
+            # TODO: texture is not loaded by format
             texture = next(x for x in textures if x.name == textureName)
 
             if self.loadTextures and texture != None:
