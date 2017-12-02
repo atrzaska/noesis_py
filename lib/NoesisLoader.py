@@ -163,7 +163,7 @@ class NoesisLoader:
         if internalType == GL_RGB or internalType == GL_RGBA:
             glTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, internalType, GL_UNSIGNED_BYTE, data)
         else:
-            glCompressedTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, len(data), data)
+            glCompressedTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, data)
 
         self.loadedTextures[name] = textureId
         return textureId
