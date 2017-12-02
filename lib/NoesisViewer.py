@@ -31,6 +31,7 @@ class NoesisViewer:
         glEnable(GL_COLOR_MATERIAL)
         glEnable(GL_DEPTH_TEST)
         glShadeModel(GL_SMOOTH)
+        glClearColor(0.2, 0.2, 0.2, 0.2)
 
         for context in self.rpg.contexts:
             noesisLoader = NoesisLoader(context)

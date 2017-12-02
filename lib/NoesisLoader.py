@@ -1,6 +1,7 @@
 import os
 import pygame
 from OpenGL.GL import *
+from OpenGL.GL.EXT.texture_compression_s3tc import *
 import rapi
 
 SHAPE_TO_GL_OBJECT = {
@@ -8,18 +9,44 @@ SHAPE_TO_GL_OBJECT = {
     'RPGEO_TRIANGLE_STRIP': GL_TRIANGLE_STRIP
 }
 
+PIXELFORMAT_TO_OPENGL_INTERNAL_TYPE = {
+    'NOESISTEX_DXT1': GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+    'NOESISTEX_DXT3': GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+    'NOESISTEX_DXT5': GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+    'NOESISTEX_RGB24': GL_RGB,
+    'NOESISTEX_RGBA32': GL_RGBA,
+    'NOESISTEX_UNKNOWN': GL_RGBA
+}
+
+FILE_EXTENSION_TO_OPENGL_INTERNAL_TYPE = {
+    'png': GL_RGBA,
+    'jpg': GL_RGB,
+    'bmp': GL_RGB,
+    'gif': GL_RGB,
+}
+
+FILE_EXTENSION_TO_PYGAME_TYPE = {
+    'png': 'RGBA',
+    'jpg': 'RGB',
+    'bmp': 'RGB',
+    'gif': 'RGB',
+}
+
 class NoesisLoader:
     def __init__(self, rpgContext):
         self.rpgContext = rpgContext
         self.loadedTextures = {}
-        self.flipX = False
+        self.flipX = True
         self.flipY = False
         self.flipZ = False
         self.flipU = False
         self.flipV = False
-        self.scale = 3
+        self.scale = 1
         self.blending = True
-        self.loadTextures = False
+        self.loadTextures = True
+
+        if not glInitTextureCompressionS3TcEXT():
+            print('ERROR: glInitTextureCompressionS3TcEXT not supported')
 
     def render(self):
         self.gl_list = glGenLists(1)
@@ -46,18 +73,29 @@ class NoesisLoader:
                 uvs = self.rpgContext.uvBuffers[i]
                 faceInfo = self.rpgContext.faceBuffers[i]
 
-            materialName = faceInfo.material
-            noeMaterials = self.rpgContext.models[-1].materials
-            materials = noeMaterials.matList
-            material = next(x for x in materials if x.name == materialName)
-            textures = noeMaterials.texList
-            textureName = material.texName
-            # TODO: texture is not loaded from data
-            # TODO: texture is not loaded by format
-            texture = next(x for x in textures if x.name == textureName)
+            if self.loadTextures:
+                materialName = faceInfo.material
+                noeMaterials = self.rpgContext.models[-1].materials
+                materials = noeMaterials.matList
+                material = next(x for x in materials if x.name == materialName)
+                textures = noeMaterials.texList
+                textureName = material.texName
 
-            if self.loadTextures and texture != None:
-                glBindTexture(GL_TEXTURE_2D, self.loadTexture(texture))
+                texture = None
+
+                if textures != []:
+                    texture = next(x for x in textures if x.name == textureName)
+
+                loadedTextureId = None
+                if texture != None:
+                    loadedTextureId = self.loadNoeTexture(texture)
+                else:
+                    loadedTextureId = self.loadFileTexture(textureName)
+
+                if loadedTextureId != None:
+                    glBindTexture(GL_TEXTURE_2D, loadedTextureId)
+                else:
+                    print("Texture not found: " + textureName)
 
             glBegin(SHAPE_TO_GL_OBJECT[faceInfo.shape])
             for face in faceInfo.buff:
@@ -87,41 +125,45 @@ class NoesisLoader:
         glEndList()
         return self
 
-    def loadMaterial(self, material):
-        texture = material.texture
-
-        if texture in self.loadedTextures:
-            return self.loadedTextures[texture]
+    def loadFileTexture(self, name):
+        if name in self.loadedTextures:
+            return self.loadedTextures[name]
 
         directory = os.getcwd()
-        filename = directory + '/data/' + texture
+        filename = directory + '/data/' + name
+        extension = os.path.splitext(filename)[1][1:].lower()
+        internalType = FILE_EXTENSION_TO_OPENGL_INTERNAL_TYPE[extension]
         surf = pygame.image.load(filename)
-        image = pygame.image.tostring(surf, 'RGBA', 1)
-        ix, iy = surf.get_rect().size
+        pygameType = FILE_EXTENSION_TO_PYGAME_TYPE[extension]
+        data = pygame.image.tostring(surf, pygameType)
+        width, height = surf.get_rect().size
 
-        textureId = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, textureId)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
-        self.loadedTextures[texture] = textureId
-        return textureId
+        return self.loadTextureFromData(name, data, width, height, internalType)
 
-    def loadTexture(self, texture):
-        if texture.name in self.loadedTextures:
-            return self.loadedTextures[texture.name]
+    def loadNoeTexture(self, texture):
+        name = texture.name
+
+        if name in self.loadedTextures:
+            return self.loadedTextures[name]
 
         width = texture.width
         height = texture.height
         data = texture.pixelData
+        pixelType = texture.pixelType
+        internalType = PIXELFORMAT_TO_OPENGL_INTERNAL_TYPE[pixelType]
 
-        return self.loadTextureFromData(texture.name, data, width, height)
+        return self.loadTextureFromData(texture.name, data, width, height, internalType)
 
-    def loadTextureFromData(self, name, data, width, height):
+    def loadTextureFromData(self, name, data, width, height, internalType):
         textureId = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, textureId)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data)
+
+        if internalType == GL_RGB or internalType == GL_RGBA:
+            glTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, internalType, GL_UNSIGNED_BYTE, data)
+        else:
+            glCompressedTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, len(data), data)
+
         self.loadedTextures[name] = textureId
         return textureId
