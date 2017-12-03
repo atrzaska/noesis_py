@@ -36,12 +36,12 @@ class NoesisLoader:
     def __init__(self, rpgContext):
         self.rpgContext = rpgContext
         self.loadedTextures = {}
-        self.flipX = True
+        self.flipX = False
         self.flipY = False
         self.flipZ = False
         self.flipU = False
         self.flipV = False
-        self.scale = 3
+        self.scale = 10
         self.blending = True
         self.loadTextures = True
 
