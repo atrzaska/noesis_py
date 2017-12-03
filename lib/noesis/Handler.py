@@ -4,10 +4,10 @@ class Handler:
         self.format = format
         self.noepyCheckType = None
         self.noepyLoadModel = None
-        self.grpExtractArc = None
-        self.txdLoadRGBA = None
+        self.noepyExtractArc = None
+        self.noepyLoadRGBA = None
         self.noepyWriteModel = None
-        self.walWriteRGBA = None
+        self.noepyWriteRGBA = None
         self.noepyWriteAnim = None
         self.options = []
 

@@ -141,13 +141,13 @@ def registerTool():
     logNotImplementedMethod('registerTool', locals())
 
 def setHandlerExtractArc(handle, value):
-    handle.grpExtractArc = value
+    handle.noepyExtractArc = value
 
 def setHandlerLoadModel(handle, value):
     handle.noepyLoadModel = value
 
 def setHandlerLoadRGBA(handle, value):
-    handle.txdLoadRGBA = value
+    handle.noepyLoadRGBA = value
 
 def setHandlerTypeCheck(handle, value):
     handle.noepyCheckType = value
@@ -156,7 +156,7 @@ def setHandlerWriteModel(handle, value):
     handle.noepyWriteModel = value
 
 def setHandlerWriteRGBA(handle, value):
-    handle.walWriteRGBA = value
+    handle.noepyWriteRGBA = value
 
 def setHandlerWriteAnim(handle, value):
     handle.noepyWriteAnim = value

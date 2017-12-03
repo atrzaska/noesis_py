@@ -2,19 +2,19 @@ from util import last
 
 class RapiContext:
     def __init__(self):
-        self.models = []
+        self.models = [] # TODO: not used yet
         self.vertexBuffers = []
         self.normalBuffers = []
         self.uvBuffers = []
         self.faceBuffers = []
-        self.colorBuffers = []
-        self.boneWeightBuffers = []
-        self.boneIndexBuffers = []
+        self.colorBuffers = [] # 0 # TODO: not used yet
+        self.boneWeightBuffers = [] # TODO: not used yet
+        self.boneIndexBuffers = []  # TODO: not used yet
         self.materials = []
-        self.names = []
-        self.lightMaps = []
-        self.boneMaps = []
-        self.uvScaleBiases = []
+        self.names = [] # TODO: not used yet
+        self.lightMaps = [] # 0  # TODO: not used yet
+        self.boneMaps = [] # TODO: not used yet
+        self.uvScaleBiases = [] # TODO: not used yet
 
     def currentModel(self):
         return last(self.models)
