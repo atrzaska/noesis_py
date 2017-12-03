@@ -41,7 +41,7 @@ class NoesisLoader:
         self.flipZ = False
         self.flipU = False
         self.flipV = False
-        self.scale = 1
+        self.scale = 3
         self.blending = True
         self.loadTextures = True
 
