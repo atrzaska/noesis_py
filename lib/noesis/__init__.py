@@ -607,7 +607,7 @@ def quatTranspose(noeQuat):
     logNotImplementedMethod('quatTranspose', locals())
 
 def quatValidate(noeQuat):
-    quat = noeVec4.quat
+    quat = noeQuat.quat
 
     validateListType(quat, Number)
 
