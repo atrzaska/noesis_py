@@ -1,6 +1,6 @@
 from RapiModel import RapiModel
 from RapiContext import RapiContext
-from FaceInfo import FaceInfo
+from FaceBuffer import FaceBuffer
 from ImageDecodePVRTC import ImageDecodePVRTC
 import os
 import struct
@@ -54,8 +54,9 @@ def rpgSetMaterial(material):
 def rpgCommitTriangles(buff, typeSize, numIdx, shape, usePlotMap):
     fmt = "{numIdx}H".format(**locals()) # TODO: make format dynamic
     unpacked = struct.unpack(fmt, buff)
-    faceBuffer = FaceInfo(unpacked, typeSize, numIdx, shape, usePlotMap, currentContext().currentMaterial())
+    faceBuffer = FaceBuffer(unpacked, typeSize, numIdx, shape, usePlotMap, currentContext().currentMaterial())
     currentContext().faceBuffers.append(faceBuffer)
+    currentContext().commit()
 
 def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
     return ImageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags).call()

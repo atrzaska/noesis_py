@@ -1,4 +1,4 @@
-class FaceInfo:
+class FaceBuffer:
     def __init__(self, buff, typeSize, numIdx, shape, usePlotMap, material):
         self.buff = buff
         self.typeSize = typeSize
