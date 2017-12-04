@@ -60,8 +60,8 @@ class NoesisLoader:
         glEnable(GL_TEXTURE_2D)
         glFrontFace(GL_CCW)
 
+        vertexBufferLength = len(self.rpgContext.vertexBuffers)
         for i in range(len(self.rpgContext.faceBuffers)):
-            vertexBufferLength = len(self.rpgContext.vertexBuffers)
             if vertexBufferLength == 1:
                 vertices = self.rpgContext.vertexBuffers[0]
                 normals = self.rpgContext.normalBuffers[0]
