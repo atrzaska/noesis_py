@@ -58,8 +58,8 @@ class NoesisLoader:
         glNewList(self.gl_list, GL_COMPILE)
 
         if self.blending:
-            glEnable(GL_BLEND)
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glEnable(GL_BLEND)
 
         glEnable(GL_TEXTURE_2D)
         glFrontFace(GL_CCW)
