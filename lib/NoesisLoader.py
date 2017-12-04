@@ -2,6 +2,7 @@ import os
 import pygame
 from OpenGL.GL import *
 from OpenGL.GL.EXT.texture_compression_s3tc import *
+from OpenGL.GL.ARB.multisample import *
 import rapi
 
 SHAPE_TO_GL_OBJECT = {
@@ -47,9 +48,12 @@ class NoesisLoader:
 
         if not glInitTextureCompressionS3TcEXT():
             print('ERROR: glInitTextureCompressionS3TcEXT not supported')
+        if not glInitMultisampleARB():
+            print('ERROR: glInitMultisampleARB not supported')
 
     def render(self):
         self.gl_list = glGenLists(1)
+        glEnable(GL_MULTISAMPLE_ARB)
 
         glNewList(self.gl_list, GL_COMPILE)
 

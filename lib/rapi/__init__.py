@@ -54,6 +54,7 @@ def rpgSetMaterial(material):
 def rpgCommitTriangles(buff, typeSize, numIdx, shape, usePlotMap):
     fmt = "{numIdx}H".format(**locals()) # TODO: make format dynamic
     unpacked = struct.unpack(fmt, buff)
+    # TODO handle FFFF - end of triangle strip
 
     faceBuffer = FaceInfo(unpacked, typeSize, numIdx, shape, usePlotMap, currentContext().currentMaterial())
     currentContext().faceBuffers.append(faceBuffer)
