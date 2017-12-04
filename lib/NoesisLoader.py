@@ -65,6 +65,8 @@ class NoesisLoader:
         glFrontFace(GL_CCW)
 
         vertexBufferLength = len(self.rpgContext.vertexBuffers)
+        # TODO: vertexBuffers are model specific
+        # if you load multiple models they should be in a model scope
         for i in range(len(self.rpgContext.faceBuffers)):
             if vertexBufferLength == 1:
                 vertices = self.rpgContext.vertexBuffers[0]
@@ -84,13 +86,12 @@ class NoesisLoader:
                 material = next(x for x in materials if x.name == materialName)
                 textures = noeMaterials.texList
                 textureName = material.texName
-
                 texture = None
+                loadedTextureId = None
 
                 if textures != []:
                     texture = next(x for x in textures if x.name == textureName)
 
-                loadedTextureId = None
                 if texture != None:
                     loadedTextureId = self.loadNoeTexture(texture)
                 else:
@@ -101,8 +102,15 @@ class NoesisLoader:
                 else:
                     print("Texture not found: " + textureName)
 
+
             glBegin(SHAPE_TO_GL_OBJECT[faceInfo.shape])
+
             for face in faceInfo.buff:
+                if face == 65535:
+                    glEnd()
+                    glBegin(SHAPE_TO_GL_OBJECT[faceInfo.shape])
+                    continue
+
                 normal = normals[face]
                 vertex = vertices[face]
                 uv = uvs[face]
@@ -115,13 +123,18 @@ class NoesisLoader:
                 x = normal[0] * flipX * scale
                 y = normal[1] * flipY * scale
                 z = normal[2] * flipZ * scale
+
                 glNormal3fv([x, y, z])
+
                 u = (1 - uv[0] if self.flipU else uv[0])
                 v = (1 - uv[1] if self.flipV else uv[1])
+
                 glTexCoord2fv([u, v])
+
                 x = vertex[0] * flipX * scale
                 y = vertex[1] * flipY * scale
                 z = vertex[2] * flipZ * scale
+
                 glVertex3fv([x, y, z])
             glEnd()
 

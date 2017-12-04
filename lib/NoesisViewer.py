@@ -43,7 +43,6 @@ class NoesisViewer:
         glLoadIdentity()
         width, height = viewport
         gluPerspective(90.0, width/float(height), 1, 100.0)
-        glEnable(GL_DEPTH_TEST)
         glMatrixMode(GL_MODELVIEW)
 
         rx, ry = (0,0)
