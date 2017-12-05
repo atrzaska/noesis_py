@@ -1,1 +1,2 @@
 import all methods from readme
+implement #rapi.setPreviewOption("setAngOfs", "0 180 0") to have default rotation
