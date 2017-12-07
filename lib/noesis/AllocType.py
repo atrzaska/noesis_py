@@ -162,22 +162,9 @@ class AllocType:
             return '>'
 
     def readAndUnpack(self, fmt):
-        matches = re.match("(\d+)?(\w)", fmt)
-        length = int(matches.group(1) or "1")
-        endianessSign = self.endianessSign()
-
-        type = matches.group(2)
-
-        if type == 'L':
-            type = 'I'
-        if type == 'l':
-            type = 'i'
-
-        typeSize = SIZES[type]
-        readLength = typeSize * length
-        fmt = "{endianessSign}{length}{type}".format(**locals())
-
-        return struct.unpack(fmt, self.data.read(readLength))
+        readLength = struct.calcsize(fmt)
+        data = self.read(readLength)
+        return struct.unpack(fmt, data)
 
     def read(self, length):
         return self.data.read(length)
