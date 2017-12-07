@@ -59,7 +59,7 @@ class AllocType:
         return self.readAndUnpack('1b')[0]
 
     def bsReadBytes(self, numBytes):
-        return self.data.read(numBytes)
+        return self.read(numBytes)
 
     def bsReadDouble(self):
         return self.readAndUnpack('1d')[0]
@@ -83,7 +83,7 @@ class AllocType:
         output = ''
 
         while(True):
-            b = self.data.read(1)
+            b = self.read(1)
 
             if (b == '\0'):
                 return output
@@ -178,3 +178,6 @@ class AllocType:
         fmt = "{endianessSign}{length}{type}".format(**locals())
 
         return struct.unpack(fmt, self.data.read(readLength))
+
+    def read(self, length):
+        return self.data.read(length)
