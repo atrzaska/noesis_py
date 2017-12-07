@@ -1,3 +1,6 @@
 import all methods from readme
 mikitm008 displays skirt weirdly
 implement #rapi.setPreviewOption("setAngOfs", "0 180 0") to have default rotation
+load textures from model directory
+go over tmp unimplemented methods
+finish writting test and run it on original noesis
