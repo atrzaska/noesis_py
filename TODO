@@ -4,3 +4,6 @@ implement #rapi.setPreviewOption("setAngOfs", "0 180 0") to have default rotatio
 load textures from model directory
 go over tmp unimplemented methods
 finish writting test and run it on original noesis
+implement write methods
+finish allocType methods
+handle different face breaks 0xFFFF

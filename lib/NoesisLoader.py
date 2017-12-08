@@ -102,7 +102,7 @@ class NoesisLoader:
             glBegin(SHAPE_TO_GL_OBJECT[faces.shape])
 
             for face in faces.buff:
-                if face == 65535:
+                if face == 65535: # TODO: handle other types
                     glEnd()
                     glBegin(SHAPE_TO_GL_OBJECT[faces.shape])
                     continue
