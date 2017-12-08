@@ -77,24 +77,26 @@ class NoesisLoader:
                 materialName = faces.material
                 noeMaterials = self.rpgContext.models[-1].materials
                 materials = noeMaterials.matList
-                material = next(x for x in materials if x.name == materialName)
-                textures = noeMaterials.texList
-                textureName = material.texName
-                texture = None
-                loadedTextureId = None
+                if materialName:
+                    material = next(x for x in materials if x.name == materialName)
+                    textures = noeMaterials.texList
+                    textureName = material and material.texName
+                    if textureName:
+                        texture = None
+                        loadedTextureId = None
 
-                if textures != []:
-                    texture = next(x for x in textures if x.name == textureName)
+                        if textures != []:
+                            texture = next(x for x in textures if x.name == textureName)
 
-                if texture != None:
-                    loadedTextureId = self.loadNoeTexture(texture)
-                else:
-                    loadedTextureId = self.loadFileTexture(textureName)
+                        if texture != None:
+                            loadedTextureId = self.loadNoeTexture(texture)
+                        else:
+                            loadedTextureId = self.loadFileTexture(textureName)
 
-                if loadedTextureId != None:
-                    glBindTexture(GL_TEXTURE_2D, loadedTextureId)
-                else:
-                    print("Texture not found: " + textureName)
+                        if loadedTextureId != None:
+                            glBindTexture(GL_TEXTURE_2D, loadedTextureId)
+                        else:
+                            print("Texture not found: " + textureName)
 
 
             glBegin(SHAPE_TO_GL_OBJECT[faces.shape])
