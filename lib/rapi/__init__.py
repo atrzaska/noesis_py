@@ -81,7 +81,10 @@ def getDirForFilePath(path):
     return os.path.dirname(os.path.abspath(path)) + "/"
 
 def loadIntoByteArray(path):
-    return open(path, "rb").read()
+    handle = open(path, "rb")
+    data = handle.read()
+    handle.close()
+    return data
 
 def rpgClearBufferBinds():
     logNotImplementedMethod('rpgClearBufferBinds', locals())
