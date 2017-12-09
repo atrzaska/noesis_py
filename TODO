@@ -7,3 +7,4 @@ finish writting test and run it on original noesis
 implement write methods
 finish allocType methods
 handle different face breaks 0xFFFF
+add missing constants
