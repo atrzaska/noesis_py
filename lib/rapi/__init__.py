@@ -51,8 +51,14 @@ def rpgBindUV1BufferOfs(buff, typeSize, structSize, structOffset):
 def rpgSetMaterial(material):
     currentContext().materials.append(material)
 
+COMMIT_TRIANGLES_UNPACK_TYPE = {
+    1: 'B',
+    2: 'H',
+    4: 'I',
+}
+
 def rpgCommitTriangles(buff, typeSize, numIdx, shape, usePlotMap):
-    fmt = "{numIdx}H".format(**locals()) # TODO: make format dynamic
+    fmt = str(numIdx) + COMMIT_TRIANGLES_UNPACK_TYPE[typeSize]
     unpacked = struct.unpack(fmt, buff)
     faceBuffer = FaceBuffer(unpacked, typeSize, numIdx, shape, usePlotMap, currentContext().currentMaterial())
     currentContext().faceBuffers.append(faceBuffer)

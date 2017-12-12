@@ -349,7 +349,7 @@ def getFloat16(ushort):
 def mat43Add(noeMat43, other):
     logNotImplementedMethod('mat43Add', locals())
 
-def mat43FromBytes(otherBytes, bigEnd):
+def mat43FromBytes(data, bigEnd):
     logNotImplementedMethod('mat43FromBytes', locals())
 
 def mat43Inverse(noeMat43):
@@ -435,7 +435,7 @@ def mat43Validate(noeMat43):
 def mat44Add(noeMat44, other):
     logNotImplementedMethod('mat44Add', locals())
 
-def mat44FromBytes(otherBytes, bigEnd):
+def mat44FromBytes(data, bigEnd):
     logNotImplementedMethod('mat44FromBytes', locals())
 
 def mat44Inverse(mtx):
@@ -560,7 +560,7 @@ def mat44Validate(noeMat44):
     for vec in mat44:
         vec4Validate(vec)
 
-def quat3FromBytes(otherBytes, bigEnd):
+def quat3FromBytes(data, bigEnd):
     logNotImplementedMethod('quat3FromBytes', locals())
 
 def quat3ToBytes(noeQuat3):
@@ -575,7 +575,7 @@ def quat3Validate(noeQuat3):
 def quatAdd(noeQuat, other):
     logNotImplementedMethod('quatAdd', locals())
 
-def quatFromBytes(otherBytes, bigEnd):
+def quatFromBytes(data, bigEnd):
     logNotImplementedMethod('quatFromBytes', locals())
 
 def quatLen(noeQuat):
@@ -639,7 +639,7 @@ def vec3Cross(noeVec3, other):
 def vec3Div(noeVec3, other):
     logNotImplementedMethod('vec3Div', locals())
 
-def vec3FromBytes(otherBytes, bigEnd):
+def vec3FromBytes(data, bigEnd):
     logNotImplementedMethod('vec3FromBytes', locals())
 
 def vec3Len(noeVec3):
@@ -689,7 +689,7 @@ def vec4Div(noeVec4, other):
 def vec4Dot(noeVec4, other):
     logNotImplementedMethod('vec4Dot', locals())
 
-def vec4FromBytes(otherBytes, bigEnd):
+def vec4FromBytes(bytes, bigEnd):
     logNotImplementedMethod('vec4FromBytes', locals())
 
 def vec4Len(noeVec4):

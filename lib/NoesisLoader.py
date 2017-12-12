@@ -24,6 +24,7 @@ FILE_EXTENSION_TO_OPENGL_INTERNAL_TYPE = {
     'jpg': GL_RGB,
     'bmp': GL_RGB,
     'gif': GL_RGB,
+    'tga': GL_RGB,
 }
 
 FILE_EXTENSION_TO_PYGAME_TYPE = {
@@ -31,6 +32,7 @@ FILE_EXTENSION_TO_PYGAME_TYPE = {
     'jpg': 'RGB',
     'bmp': 'RGB',
     'gif': 'RGB',
+    'tga': 'RGB',
 }
 
 class NoesisLoader:
@@ -39,10 +41,10 @@ class NoesisLoader:
         self.loadedTextures = {}
         self.flipX = False
         self.flipY = False
-        self.flipZ = False
+        self.flipZ = True
         self.flipU = False
-        self.flipV = False
-        self.scale = 10
+        self.flipV = True
+        self.scale = 1
         self.blending = True
         self.loadTextures = True
 
@@ -96,8 +98,7 @@ class NoesisLoader:
                         if loadedTextureId != None:
                             glBindTexture(GL_TEXTURE_2D, loadedTextureId)
                         else:
-                            print("Texture not found: " + textureName)
-
+                            print('Texture not found: ' + textureName)
 
             glBegin(SHAPE_TO_GL_OBJECT[faces.shape])
 
@@ -142,8 +143,13 @@ class NoesisLoader:
         if name in self.loadedTextures:
             return self.loadedTextures[name]
 
-        directory = os.getcwd()
-        filename = directory + '/data/' + name
+        modelDirectory = rapi.getDirForFilePath( rapi.getLastCheckedName() )
+        filename = modelDirectory + name
+
+        if not os.path.isfile(filename):
+            print('File not found: ' + filename)
+            return None
+
         extension = os.path.splitext(filename)[1][1:].lower()
         internalType = FILE_EXTENSION_TO_OPENGL_INTERNAL_TYPE[extension]
         surf = pygame.image.load(filename)
@@ -172,6 +178,8 @@ class NoesisLoader:
         glBindTexture(GL_TEXTURE_2D, textureId)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
 
         if internalType == GL_RGB or internalType == GL_RGBA:
             glTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, internalType, GL_UNSIGNED_BYTE, data)
