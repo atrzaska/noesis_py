@@ -336,7 +336,7 @@ def bsWriteUShort(handle, val):
 
 # custom function
 def bsReadAndUnpack(handle, fmt):
-    return handle.readAndUnpack(fmt)
+    return handle.bsReadAndUnpack(fmt)
 
 # custom function
 def bsDumpMask(handle):

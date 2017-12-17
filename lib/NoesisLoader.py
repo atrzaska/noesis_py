@@ -19,32 +19,16 @@ PIXELFORMAT_TO_OPENGL_INTERNAL_TYPE = {
     'NOESISTEX_UNKNOWN': GL_RGBA
 }
 
-FILE_EXTENSION_TO_OPENGL_INTERNAL_TYPE = {
-    'png': GL_RGBA,
-    'jpg': GL_RGB,
-    'bmp': GL_RGB,
-    'gif': GL_RGB,
-    'tga': GL_RGB,
-}
-
-FILE_EXTENSION_TO_PYGAME_TYPE = {
-    'png': 'RGBA',
-    'jpg': 'RGB',
-    'bmp': 'RGB',
-    'gif': 'RGB',
-    'tga': 'RGB',
-}
-
 class NoesisLoader:
     def __init__(self, rpgContext):
         self.rpgContext = rpgContext
         self.loadedTextures = {}
         self.flipX = False
         self.flipY = False
-        self.flipZ = True
+        self.flipZ = False
         self.flipU = False
-        self.flipV = True
-        self.scale = 1
+        self.flipV = False
+        self.scale = 3
         self.blending = True
         self.loadTextures = True
 
@@ -151,10 +135,18 @@ class NoesisLoader:
             return None
 
         extension = os.path.splitext(filename)[1][1:].lower()
-        internalType = FILE_EXTENSION_TO_OPENGL_INTERNAL_TYPE[extension]
         surf = pygame.image.load(filename)
-        pygameType = FILE_EXTENSION_TO_PYGAME_TYPE[extension]
-        data = pygame.image.tostring(surf, pygameType)
+        bitsize = surf.get_bitsize()
+
+        if bitsize ==  24:
+            data = pygame.image.tostring(surf, 'RGB')
+            internalType = GL_RGB
+        elif bitsize == 32:
+            data = pygame.image.tostring(surf, 'RGBA')
+            internalType = GL_RGBA
+        else:
+            print('Unknown bit size: ' + str(bitsize))
+
         width, height = surf.get_rect().size
 
         return self.loadTextureFromData(name, data, width, height, internalType)

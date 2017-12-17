@@ -8,3 +8,21 @@ implement write methods
 finish allocType methods
 handle different face breaks 0xFFFF
 add missing constants
+read rgb or rgba format from texture file directly
+fromBytes methods don't have @staticmethod in inc_noesis
+
+pmd:
+self.flipX = False
+self.flipY = False
+self.flipZ = True
+self.flipU = False
+self.flipV = False
+self.scale = 1
+
+dt:
+self.flipX = False
+self.flipY = False
+self.flipZ = False
+self.flipU = False
+self.flipV = False
+self.scale = 3

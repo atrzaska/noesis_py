@@ -3,21 +3,22 @@
 import sys
 import os
 
+KEY = bytearray([0x44,0x90,0x12,0x28])
+
 def xor(data, key):
     return bytearray(((data[i] ^ key[i % len(key)]) for i in range(0,len(data))))
 
-def decrypt():
-    if len(sys.argv) < 2:
-        return
-
-    key = bytearray([0x44,0x90,0x12,0x28])
-    path = sys.argv[1]
+def decrypt(path):
     basenameWithoutExtension = os.path.splitext(path)[0]
-    output = "{basenameWithoutExtension}_decrypted.mdl".format(**locals())
+    output = basenameWithoutExtension + "_decrypted.mdl"
     encryptedData = bytearray(open(path).read())
-    decryptedData = xor(encryptedData, key)
+    decryptedData = xor(encryptedData, KEY)
     decryptedData = decryptedData[16:]
     open(output, 'wb').write(decryptedData)
 
 if __name__ == "__main__":
-    decrypt()
+    if len(sys.argv) < 2:
+        print 'usage: decrypt_music_girl_miku_mdl model_file'
+        return
+
+    decrypt(sys.argv[1])

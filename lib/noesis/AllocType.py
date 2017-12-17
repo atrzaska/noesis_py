@@ -2,14 +2,16 @@ from io import BytesIO
 import re
 import struct
 from util import logNotImplementedMethod
-from inc_noesis import *
+
+NOE_BIGENDIAN = 1
+NOE_LITTLEENDIAN = 0
 
 class AllocType:
     def __init__(self, name, data):
         self.name = name
         self.data = BytesIO(data or '')
         self.readData = [0] * len(data or '')
-        self.setEndian(NOE_LITTLEENDIAN)
+        self.bsSetEndian(NOE_LITTLEENDIAN)
         self.flags = 0
 
     def bsGetBuffer(self):
@@ -139,16 +141,16 @@ class AllocType:
     # private
 
     def readValue(self, fmt):
-        return self.readAndUnpack(self.endian + fmt)[0]
+        return self.bsReadAndUnpack(self.endian + fmt)[0]
 
-    def readAndUnpack(self, fmt):
+    def bsReadAndUnpack(self, fmt):
         readLength = struct.calcsize(fmt)
         data = self.read(readLength)
         return struct.unpack(fmt, data)
 
     def read(self, length):
         if self.bsGetOfs() + length > self.bsGetSize():
-            raise BufferError('Buffer error: tried to read pass data buffer length')
+            raise OverflowError('Buffer error: tried to read ' + str(length) +' bytes from buffer at offset ' + str(self.bsGetSize()))
         for i in range(length):
             self.readData[self.bsGetOfs() + i] += 1
         return self.data.read(length)
