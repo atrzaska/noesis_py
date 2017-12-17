@@ -334,6 +334,18 @@ def bsWriteUInt64(handle, val):
 def bsWriteUShort(handle, val):
     return handle.bsWriteUShort(val)
 
+# custom function
+def bsReadAndUnpack(handle, fmt):
+    return handle.readAndUnpack(fmt)
+
+# custom function
+def bsDumpMask(handle):
+    data = handle.readData
+    writeData = ''.join(map(chr, data))
+    mask = open('/Users/andrzej/Desktop/mask.bin', 'wb')
+    mask.write(writeData)
+    mask.close()
+
 def cubicBezier3D(points, frac):
     logNotImplementedMethod('cubicBezier3D', locals())
 

@@ -2,31 +2,14 @@ from io import BytesIO
 import re
 import struct
 from util import logNotImplementedMethod
-
-NOE_BIGENDIAN = 1
-NOE_LITTLEENDIAN = 0
-
-SIZES = {
-    'c': 1,
-    'b': 1,
-    'B': 1,
-    'h': 2,
-    'H': 2,
-    'i': 4,
-    'I': 4,
-    'l': 4,
-    'L': 4,
-    'q': 8,
-    'Q': 8,
-    'f': 4,
-    'd': 8
-}
+from inc_noesis import *
 
 class AllocType:
     def __init__(self, name, data):
         self.name = name
         self.data = BytesIO(data or '')
-        self.endianess = NOE_LITTLEENDIAN
+        self.readData = [0] * len(data or '')
+        self.setEndian(NOE_LITTLEENDIAN)
         self.flags = 0
 
     def bsGetBuffer(self):
@@ -56,28 +39,28 @@ class AllocType:
         logNotImplementedMethod('bsReadBool', locals())
 
     def bsReadByte(self):
-        return self.readAndUnpack('1b')[0]
+        return self.readValue('b')
 
     def bsReadBytes(self, numBytes):
         return self.read(numBytes)
 
     def bsReadDouble(self):
-        return self.readAndUnpack('1d')[0]
+        return self.readValue('d')
 
     def bsReadFloat(self):
-        return self.readAndUnpack('1f')[0]
+        return self.readValue('f')
 
     def bsReadInt(self):
-        return self.readAndUnpack('1i')[0]
+        return self.readValue('i')
 
     def bsReadInt64(self):
-        return self.readAndUnpack('1q')[0]
+        return self.readValue('q')
 
     def bsReadLine(self):
         logNotImplementedMethod('bsReadLine', locals())
 
     def bsReadShort(self):
-        return self.readAndUnpack('1h')[0]
+        return self.readValue('h')
 
     def bsReadString(self):
         output = ''
@@ -91,19 +74,19 @@ class AllocType:
             output += b
 
     def bsReadUByte(self):
-        return self.readAndUnpack('1B')[0]
+        return self.readValue('B')
 
     def bsReadUInt(self):
-        return self.readAndUnpack('1I')[0]
+        return self.readValue('I')
 
     def bsReadUInt64(self):
-        return self.readAndUnpack('1Q')[0]
+        return self.readValue('Q')
 
     def bsReadUShort(self):
-        return self.readAndUnpack('1H')[0]
+        return self.readValue('H')
 
     def bsSetEndian(self, bigEndian):
-        self.endianess = bigEndian
+        self.endian = "<" if bigEndian == NOE_LITTLEENDIAN else ">"
 
     def bsSetFlags(self, flags):
         self.flags = flags
@@ -155,11 +138,8 @@ class AllocType:
 
     # private
 
-    def endianessSign(self):
-        if (self.endianess == NOE_LITTLEENDIAN):
-            return '<'
-        else:
-            return '>'
+    def readValue(self, fmt):
+        return self.readAndUnpack(self.endian + fmt)[0]
 
     def readAndUnpack(self, fmt):
         readLength = struct.calcsize(fmt)
@@ -167,4 +147,8 @@ class AllocType:
         return struct.unpack(fmt, data)
 
     def read(self, length):
+        if self.bsGetOfs() + length > self.bsGetSize():
+            raise BufferError('Buffer error: tried to read pass data buffer length')
+        for i in range(length):
+            self.readData[self.bsGetOfs() + i] += 1
         return self.data.read(length)
