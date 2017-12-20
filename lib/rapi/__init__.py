@@ -14,6 +14,17 @@ this = sys.modules[__name__]
 this.contexts = []
 this.lastCheckedName = None
 
+INTEGER_TYPES = {
+    1: 'B',
+    2: 'H',
+    4: 'I',
+}
+
+FLOAT_TYPES = {
+    4: 'f',
+    8: 'd',
+}
+
 def rpgCreateContext():
     context = RapiContext()
     this.contexts.append(context)
@@ -27,38 +38,32 @@ def rpgConstructModel():
 def rpgConstructModelSlim():
     return rpgConstructModel()
 
-# TODO make format dynamic baed on typeSize
 def rpgBindPositionBufferOfs(buff, typeSize, structSize, structOffset):
     splitted = splitBuffer(buff, structSize)
     mapped = map(lambda x: x[structOffset:structOffset + typeSize * 3], splitted)
-    mapped = map(lambda x: struct.unpack('3f', x), mapped) # TODO: make format dynamic
+    fmt = str(3) + FLOAT_TYPES[typeSize]
+    mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     currentContext().vertexBuffers.append(mapped)
 
-# TODO make format dynamic baed on typeSize
 def rpgBindNormalBufferOfs(buff, typeSize, structSize, structOffset):
     splitted = splitBuffer(buff, structSize)
     mapped = map(lambda x: x[structOffset:structOffset + typeSize * 3], splitted)
-    mapped = map(lambda x: struct.unpack('3f', x), mapped) # TODO: make format dynamic
+    fmt = str(3) + FLOAT_TYPES[typeSize]
+    mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     currentContext().normalBuffers.append(mapped)
 
-# TODO make format dynamic baed on typeSize
 def rpgBindUV1BufferOfs(buff, typeSize, structSize, structOffset):
     splitted = splitBuffer(buff, structSize)
     mapped = map(lambda x: x[structOffset:structOffset + typeSize * 2], splitted)
-    mapped = map(lambda x: struct.unpack('2f', x), mapped) # TODO: make format dynamic
+    fmt = str(2) + FLOAT_TYPES[typeSize]
+    mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     currentContext().uvBuffers.append(mapped)
 
 def rpgSetMaterial(material):
     currentContext().materials.append(material)
 
-COMMIT_TRIANGLES_UNPACK_TYPE = {
-    1: 'B',
-    2: 'H',
-    4: 'I',
-}
-
 def rpgCommitTriangles(buff, typeSize, numIdx, shape, usePlotMap):
-    fmt = str(numIdx) + COMMIT_TRIANGLES_UNPACK_TYPE[typeSize]
+    fmt = str(numIdx) + INTEGER_TYPES[typeSize]
     unpacked = struct.unpack(fmt, buff)
     faceBuffer = FaceBuffer(unpacked, typeSize, numIdx, shape, usePlotMap, currentContext().currentMaterial())
     currentContext().faceBuffers.append(faceBuffer)
@@ -107,28 +112,25 @@ def rpgSetUVScaleBias(vec1, vec2):
 def imageDecodeDXT(data, width, height, format):
     logNotImplementedMethod('imageDecodeDXT', locals())
 
-# TODO make format dynamic baed on typeSize
 def rpgBindColorBufferOfs(buff, typeSize, structSize, structOffset, count):
     splitted = splitBuffer(buff, structSize)
     mapped = map(lambda x: x[structOffset:structOffset + typeSize * count], splitted)
-    fmt = str(count) + 'f'
-    mapped = map(lambda x: struct.unpack(fmt, x), mapped) # TODO: make format dynamic
+    fmt = str(count) + FLOAT_TYPES[typeSize]
+    mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     currentContext().colorBuffers.append(mapped)
 
-# TODO make format dynamic baed on typeSize
 def rpgBindBoneWeightBufferOfs(buff, typeSize, structSize, structOffset, count):
     splitted = splitBuffer(buff, structSize)
     mapped = map(lambda x: x[structOffset:structOffset + typeSize * count], splitted)
-    fmt = str(count) + 'f'
-    mapped = map(lambda x: struct.unpack(fmt, x), mapped) # TODO: make format dynamic
+    fmt = str(count) + FLOAT_TYPES[typeSize]
+    mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     currentContext().boneWeightBuffers.append(mapped)
 
-# TODO make format dynamic baed on typeSize
 def rpgBindBoneIndexBufferOfs(buff, typeSize, structSize, structOffset, count):
     splitted = splitBuffer(buff, structSize)
     mapped = map(lambda x: x[structOffset:structOffset + typeSize * count], splitted)
-    fmt = str(count) + 'f'
-    mapped = map(lambda x: struct.unpack(fmt, x), mapped) # TODO: make format dynamic
+    fmt = str(count) + INTEGER_TYPES[typeSize]
+    mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     currentContext().boneIndexBuffers.append(mapped)
 
 def checkFileExists(path):
