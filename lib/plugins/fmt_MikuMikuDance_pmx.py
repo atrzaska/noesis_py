@@ -27,7 +27,6 @@ INDEX_TYPES = {
     'rigidbody': { 1: 'b', 2: 'h', 4: 'i' },
 }
 
-
 BONEFLAG_TAILPOS_IS_BONE = 0x0001
 BONEFLAG_CAN_ROTATE = 0x0002
 BONEFLAG_CAN_TRANSLATE = 0x0004

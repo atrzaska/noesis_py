@@ -13,6 +13,7 @@ from util import logNotImplementedMethod, last
 this = sys.modules[__name__]
 this.contexts = []
 this.lastCheckedName = None
+this.options = {}
 
 INTEGER_TYPES = {
     1: 'B',
@@ -134,7 +135,7 @@ def rpgBindBoneIndexBufferOfs(buff, typeSize, structSize, structOffset, count):
     currentContext().boneIndexBuffers.append(mapped)
 
 def checkFileExists(path):
-    logNotImplementedMethod('checkFileExists', locals())
+    return os.path.isfile(path)
 
 def callExtensionMethod(method, *args):
     logNotImplementedMethod('callExtensionMethod', locals())
@@ -242,6 +243,7 @@ def setPreviewOption(key, value):
     logNotImplementedMethod('setPreviewOption', locals())
 
 def rpgSetOption(key, value):
+    options[key] = value
     logNotImplementedMethod('rpgSetOption', locals())
 
 # private
