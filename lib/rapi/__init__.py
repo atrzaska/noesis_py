@@ -82,8 +82,9 @@ def rpgBindBoneIndexBufferOfs(buff, type, structSize, structOffset, count):
 
 def rpgCommitTriangles(buff, type, numIdx, shape, usePlotMap):
     fmt = str(numIdx) + UNPACK_TYPES[type]
-    unpacked = struct.unpack(fmt, buff)
-    faceBuffer = FaceBuffer(unpacked, type, numIdx, shape, usePlotMap, currentContext().currentMaterial())
+    unpackedBuffer = struct.unpack(fmt, buff)
+    material = currentContext().currentMaterial()
+    faceBuffer = FaceBuffer(unpackedBuffer, type, numIdx, shape, usePlotMap, material)
     currentContext().faceBuffers.append(faceBuffer)
     currentContext().commit()
 
