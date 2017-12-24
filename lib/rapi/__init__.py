@@ -470,59 +470,62 @@ def noesisIsExporting(*args):
 def processCommands(*args):
     logNotImplementedMethod('processCommands', locals())
 
-def rpgBindBoneIndexBuffer(data, type, size1, weightsPerVertex):
-    logNotImplementedMethod('rpgBindBoneIndexBuffer', locals())
+def rpgBindBoneIndexBuffer(data, type, stride, count):
+    return rpgBindBoneIndexBufferOfs(data, type, stride, 0, count)
 
 def rpgBindBoneIndexBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
     currentContext().boneIndexBuffers.append(unpackedBuffer)
 
-def rpgBindBoneWeightBuffer(data, type, size1, size2):
-    logNotImplementedMethod('rpgBindBoneWeightBuffer', locals())
+def rpgBindBoneWeightBuffer(data, type, stride, count):
+    return rpgBindBoneWeightBufferOfs(data, type, stride, 0, count)
 
 def rpgBindBoneWeightBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
     currentContext().boneWeightBuffers.append(unpackedBuffer)
 
-def rpgBindColorBuffer(data, type, size, unk_4):
-    logNotImplementedMethod('rpgBindColorBuffer', locals())
+def rpgBindColorBuffer(data, type, stride, count):
+    return rpgBindColorBufferOfs(data, type, stride, 0, count)
 
 def rpgBindColorBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
     currentContext().colorBuffers.append(unpackedBuffer)
 
-def rpgBindNormalBuffer(data, type, size):
-    logNotImplementedMethod('rpgBindNormalBuffer', locals())
+def rpgBindNormalBuffer(data, type, stride):
+    return rpgBindNormalBufferOfs(data, type, stride, 0)
 
 def rpgBindNormalBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
     currentContext().normalBuffers.append(unpackedBuffer)
 
-def rpgBindPositionBuffer(data, type, size):
-    logNotImplementedMethod('rpgBindPositionBuffer', locals())
+def rpgBindPositionBuffer(data, type, stride):
+    return rpgBindPositionBufferOfs(data, type, stride, 0)
 
 def rpgBindPositionBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
     currentContext().vertexBuffers.append(unpackedBuffer)
 
-def rpgBindTangentBuffer(*args):
-    logNotImplementedMethod('rpgBindTangentBuffer', locals())
+def rpgBindTangentBuffer(data, type, stride):
+    return rpgBindTangentBufferOfs(data, type, stride, 0)
 
 def rpgBindTangentBufferOfs(data, type, stride, offset):
     logNotImplementedMethod('rpgBindTangentBufferOfs', locals())
 
-def rpgBindUserDataBuffer(*args):
-    logNotImplementedMethod('rpgBindUserDataBuffer', locals())
+def rpgBindUserDataBuffer(data, type, stride):
+    return rpgBindUserDataBufferOfs(data, type, stride, 0)
 
-def rpgBindUV1Buffer(data, type, size):
-    logNotImplementedMethod('rpgBindUV1Buffer', locals())
+def rpgBindUserDataBufferOfs(data, type, stride, offset):
+    logNotImplementedMethod('rpgBindUserDataBufferOfs', locals())
+
+def rpgBindUV1Buffer(data, type, stride):
+    return rpgBindUV1BufferOfs(data, type, stride, 0)
 
 def rpgBindUV1BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
     currentContext().uvBuffers.append(unpackedBuffer)
 
-def rpgBindUV2Buffer(data, type, size):
-    logNotImplementedMethod('rpgBindUV2Buffer', locals())
+def rpgBindUV2Buffer(data, type, stride):
+    return rpgBindUV2BufferOfs(data, type, stride, 0)
 
 def rpgBindUV2BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
@@ -570,11 +573,17 @@ def rpgCreateContext():
 def rpgCreatePlaneSpaceUVs():
     logNotImplementedMethod('rpgCreatePlaneSpaceUVs', locals())
 
-def rpgFeedMorphTargetNormals(morphNrmAr, type, unk_12):
+def rpgFeedMorphTargetNormals(morphNrmAr, type, stride):
     logNotImplementedMethod('rpgFeedMorphTargetNormals', locals())
 
-def rpgFeedMorphTargetPositions(morphPosAr, type, unk_12):
+def rpgFeedMorphTargetNormalsOfs(morphNrmAr, type, stride, offset):
+    logNotImplementedMethod('rpgFeedMorphTargetNormalsOfs', locals())
+
+def rpgFeedMorphTargetPositions(morphPosAr, type, stride):
     logNotImplementedMethod('rpgFeedMorphTargetPositions', locals())
+
+def rpgFeedMorphTargetPositionsOfs(morphPosAr, type, stride, offset):
+    logNotImplementedMethod('rpgFeedMorphTargetPositionsOfs', locals())
 
 def rpgFlatNormals():
     logNotImplementedMethod('rpgFlatNormals', locals())
