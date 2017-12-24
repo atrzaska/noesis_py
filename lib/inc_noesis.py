@@ -67,9 +67,9 @@ class NoeBitStream(NoeUnpacker):
             self.dataSize = len(self.data)
         self.setEndian(bigEndian)
 
-    def getBuffer(self, startOfs = None, endOfs = None):
-        if startOfs is not None and endOfs is not None:
-            return noesis.bsGetBufferSlice(self.h, startOfs, endOfs)
+    def getBuffer(self, start = None, end = None):
+        if start is not None and end is not None:
+            return noesis.bsGetBufferSlice(self.h, start, end)
         else:
             return noesis.bsGetBuffer(self.h)
     def getSize(self):

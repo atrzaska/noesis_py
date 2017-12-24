@@ -365,8 +365,8 @@ def anglesValidate(noeAngles):
 def bsGetBuffer(handle):
     return handle.bsGetBuffer()
 
-def bsGetBufferSlice(handle, startOfs, endOfs):
-    return handle.bsGetBufferSlice(startOfs, endOfs)
+def bsGetBufferSlice(handle, start, end):
+    return handle.bsGetBufferSlice(start, end)
 
 def bsGetFlags(handle):
     return handle.bsGetFlags()

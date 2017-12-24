@@ -1,4 +1,5 @@
-from io import BytesIO
+import math
+import io
 import re
 import struct
 from util import logNotImplementedMethod
@@ -9,7 +10,7 @@ NOE_LITTLEENDIAN = 0
 class AllocType:
     def __init__(self, name, data):
         self.name = name
-        self.data = BytesIO(data or '')
+        self.data = io.BytesIO(data or '')
         self.readData = [0] * len(data or '')
         self.bsSetEndian(NOE_LITTLEENDIAN)
         self.flags = 0
@@ -17,9 +18,15 @@ class AllocType:
     def bsGetBuffer(self):
         return self.data
 
-    def bsGetBufferSlice(self, startOfs, endOfs):
-        # TODO implement slice
-        return self.data
+    def bsGetBufferSlice(self, start, end):
+        if start is not None and end is None:
+            return self.data[start:]
+        elif start is None and end is not None:
+            return self.data[:end]
+        elif start is not None and end is not None:
+            return self.data[start:end]
+        else
+            return self.data
 
     def bsGetFlags(self):
         return self.flags
@@ -38,7 +45,7 @@ class AllocType:
         logNotImplementedMethod('bsReadBits', locals())
 
     def bsReadBool(self):
-        logNotImplementedMethod('bsReadBool', locals())
+        return self.readValue('?')
 
     def bsReadByte(self):
         return self.readValue('b')
@@ -59,7 +66,15 @@ class AllocType:
         return self.readValue('q')
 
     def bsReadLine(self):
-        logNotImplementedMethod('bsReadLine', locals())
+        output = ''
+
+        while(True):
+            b = self.read(1)
+
+            if (b == '\n'):
+                return output
+
+            output += b
 
     def bsReadShort(self):
         return self.readValue('h')
@@ -100,45 +115,50 @@ class AllocType:
         logNotImplementedMethod('bsWriteBits', locals())
 
     def bsWriteBool(self, val):
-        logNotImplementedMethod('bsWriteBool', locals())
+        self.writeValue('?', val)
 
     def bsWriteByte(self, val):
-        logNotImplementedMethod('bsWriteByte', locals())
+        self.writeValue('b', val)
 
     def bsWriteBytes(self, data):
-        logNotImplementedMethod('bsWriteBytes', locals())
+        self.data.write(data)
 
     def bsWriteDouble(self, val):
-        logNotImplementedMethod('bsWriteDouble', locals())
+        self.writeValue('d', val)
 
     def bsWriteFloat(self, val):
-        logNotImplementedMethod('bsWriteFloat', locals())
+        self.writeValue('f', val)
 
     def bsWriteInt(self, val):
-        logNotImplementedMethod('bsWriteInt', locals())
+        self.writeValue('i', val)
 
     def bsWriteInt64(self, val):
-        logNotImplementedMethod('bsWriteInt64', locals())
+        self.writeValue('q', val)
 
     def bsWriteShort(self, val):
-        logNotImplementedMethod('bsWriteShort', locals())
+        self.writeValue('h', val)
 
     def bsWriteString(self, str, writeTerminator):
-        logNotImplementedMethod('bsWriteString', locals())
+        self.data.write(str)
+        if writeTerminator:
+            self.date.write('\0')
 
     def bsWriteUByte(self, val):
-        logNotImplementedMethod('bsWriteUByte', locals())
+        self.writeValue('B', val)
 
     def bsWriteUInt(self, val):
-        logNotImplementedMethod('bsWriteUInt', locals())
+        self.writeValue('I', val)
 
     def bsWriteUInt64(self, val):
-        logNotImplementedMethod('bsWriteUInt64', locals())
+        self.writeValue('Q', val)
 
     def bsWriteUShort(self, val):
-        logNotImplementedMethod('bsWriteUShort', locals())
+        self.writeValue('H', val)
 
     # private
+
+    def writeValue(self, fmt, val):
+        self.data.write(struct.pack(fmt, val))
 
     def readValue(self, fmt):
         return self.bsReadAndUnpack(self.endian + fmt)[0]
