@@ -10,6 +10,10 @@ handle different face breaks 0xFFFF
 add missing constants
 read rgb or rgba format from texture file directly
 fromBytes methods don't have @staticmethod in inc_noesis
+DONE: imported all conts from readme
+TODO: verify if no method name is missing in noesis module and rapi module
+TODO: noesis module methods have missing arguments, review arguments!
+for example noesis.setToolVisibleCallback has no args defined but should have 2
 
 pmd:
 self.flipX = False
