@@ -25,7 +25,7 @@ class AllocType:
             return self.data[:end]
         elif start is not None and end is not None:
             return self.data[start:end]
-        else
+        else:
             return self.data
 
     def bsGetFlags(self):

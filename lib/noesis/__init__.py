@@ -218,115 +218,11 @@ this = sys.modules[__name__]
 this.plugins = []
 this.this.modules = []
 
-# methods
-
 def addOption(handle, option, description, flags):
     return handle.addOption(option, description, flags)
 
 def allocBytes(size):
     return bytearray(size)
-
-def freeModule(module):
-    logNotImplementedMethod('freeModule', locals())
-
-def getCharSplineSet(char):
-    logNotImplementedMethod('getCharSplineSet', locals())
-
-def getFormatExtensionFlags(extension):
-    logNotImplementedMethod('getFormatExtensionFlags', locals())
-
-def getMFFP(uint):
-    logNotImplementedMethod('getMFFP', locals())
-
-def getScenesPath():
-    logNotImplementedMethod('getScenesPath', locals())
-
-def getSelectedDirectory():
-    logNotImplementedMethod('getSelectedDirectory', locals())
-
-def getSelectedFile():
-    logNotImplementedMethod('getSelectedFile', locals())
-
-def getWindowHandle():
-    logNotImplementedMethod('getWindowHandle', locals())
-
-def instantiateModule():
-    module = NoeModule()
-    this.modules.append(module)
-    return module
-
-def isPreviewModuleRAPIValid():
-    logNotImplementedMethod('isPreviewModuleRAPIValid', locals())
-
-def loadImageRGBA(path):
-    logNotImplementedMethod('loadImageRGBA', locals())
-
-def logPopup():
-    # this should open the debug window, but we're just using console output
-    pass
-
-def messagePrompt(message):
-    print(message)
-
-def openAndRemoveTempFile(path):
-    logNotImplementedMethod('openAndRemoveTempFile', locals())
-
-def openFile(path):
-    logNotImplementedMethod('openFile', locals())
-
-def optGetArg(name):
-    logNotImplementedMethod('optGetArg', locals())
-
-def optWasInvoked(name):
-    logNotImplementedMethod('optWasInvoked', locals())
-
-# TODO: fileType can be semicolon separated '.obj;.obc'
-def register(name, fileType):
-    handler = Handler(name, fileType)
-    this.plugins.append(handler)
-    return handler
-
-def registerCleanupFunction(callback):
-    logNotImplementedMethod('registerCleanupFunction', locals())
-
-def registerTool(name, callback, description):
-    logNotImplementedMethod('registerTool', locals())
-
-def setHandlerExtractArc(handle, callback):
-    handle.noepyExtractArc = callback
-
-def setHandlerLoadModel(handle, callback):
-    handle.noepyLoadModel = callback
-
-def setHandlerLoadRGBA(handle, callback):
-    handle.noepyLoadRGBA = callback
-
-def setHandlerTypeCheck(handle, callback):
-    handle.noepyCheckType = callback
-
-def setHandlerWriteModel(handle, callback):
-    handle.noepyWriteModel = callback
-
-def setHandlerWriteRGBA(handle, callback):
-    handle.noepyWriteRGBA = callback
-
-def setHandlerWriteAnim(handle, callback):
-    handle.noepyWriteAnim = callback
-
-def setModuleRAPI(handle):
-    logNotImplementedMethod('setModuleRAPI', locals())
-
-def setPreviewModuleRAPI():
-    logNotImplementedMethod('setPreviewModuleRAPI', locals())
-
-def setToolFlags(handle, flags):
-    logNotImplementedMethod('setToolFlags', locals())
-
-def setToolVisibleCallback(handle, callback):
-    handle.toolVisibleCallback = callback
-
-def userPrompt(userValType, title, prompt, defaultValue, validationHandler):
-    logNotImplementedMethod('userPrompt', locals())
 
 def allocType(name, data = None):
     return AllocType(name, data)
@@ -346,12 +242,12 @@ def anglesNormalize180(noeAngles):
 def anglesNormalize360(noeAngles):
     logNotImplementedMethod('anglesNormalize360', locals())
 
-def anglesToMat43_XYZ(noeAngles, yFlip):
-    logNotImplementedMethod('anglesToMat43_XYZ', locals())
-    return inc_noesis.NoeMat43()
-
 def anglesToMat43(noeAngles):
     logNotImplementedMethod('anglesToMat43', locals())
+
+def anglesToMat43_XYZ(noeAngles, yFlip):
+    # TODO: implement this properly
+    return inc_noesis.NoeMat43()
 
 def anglesToQuat(noeAngles):
     logNotImplementedMethod('anglesToQuat', locals())
@@ -361,6 +257,15 @@ def anglesToVec3(noeAngles):
 
 def anglesValidate(noeAngles):
     vec3Validate(noeAngles)
+
+def bezier3D(*args):
+    logNotImplementedMethod('bezier3D', locals())
+
+def bezierTangent3D(*args):
+    logNotImplementedMethod('bezierTangent3D', locals())
+
+def bilinLerp(*args):
+    logNotImplementedMethod('bilinLerp', locals())
 
 def bsGetBuffer(handle):
     return handle.bsGetBuffer()
@@ -473,8 +378,23 @@ def bsWriteUInt64(handle, val):
 def bsWriteUShort(handle, val):
     return handle.bsWriteUShort(val)
 
+def checkToolMenuItem(*args):
+    logNotImplementedMethod('checkToolMenuItem', locals())
+
+def constLerp(*args):
+    logNotImplementedMethod('constLerp', locals())
+
 def cubicBezier3D(points, frac):
     logNotImplementedMethod('cubicBezier3D', locals())
+
+def cubicLerp(*args):
+    logNotImplementedMethod('cubicLerp', locals())
+
+def deinterleaveBytes(*args):
+    logNotImplementedMethod('deinterleaveBytes', locals())
+
+def disableFormatByDescription(*args):
+    logNotImplementedMethod('disableFormatByDescription', locals())
 
 def doException(name):
     raise ValueError(name)
@@ -509,6 +429,21 @@ def encodeFloat16(val):
         f16 = sign
     return f16
 
+def encodeMFFP(*args):
+    logNotImplementedMethod('encodeMFFP', locals())
+
+def fileIsLoadable(*args):
+    logNotImplementedMethod('fileIsLoadable', locals())
+
+def freeModule(module):
+    logNotImplementedMethod('freeModule', locals())
+
+def getAPIVersion(*args):
+    logNotImplementedMethod('getAPIVersion', locals())
+
+def getCharSplineSet(char):
+    logNotImplementedMethod('getCharSplineSet', locals())
+
 def getFloat16(ushort):
     s = int((ushort >> 15) & 0x00000001)    # sign
     e = int((ushort >> 10) & 0x0000001f)    # exponent
@@ -536,6 +471,66 @@ def getFloat16(ushort):
     packed = struct.pack('I', temp)
     return struct.unpack('f', packed)[0]
 
+def getFormatExtensionFlags(extension):
+    logNotImplementedMethod('getFormatExtensionFlags', locals())
+
+def getMainPath(*args):
+    logNotImplementedMethod('getMainPath', locals())
+
+def getMFFP(uint):
+    logNotImplementedMethod('getMFFP', locals())
+
+def getOpenPreviewFile(*args):
+    logNotImplementedMethod('getOpenPreviewFile', locals())
+
+def getPluginsPath(*args):
+    logNotImplementedMethod('getPluginsPath', locals())
+
+def getScenesPath():
+    logNotImplementedMethod('getScenesPath', locals())
+
+def getSelectedDirectory():
+    logNotImplementedMethod('getSelectedDirectory', locals())
+
+def getSelectedFile():
+    logNotImplementedMethod('getSelectedFile', locals())
+
+def getToolFlags(*args):
+    logNotImplementedMethod('getToolFlags', locals())
+
+def getWindowHandle():
+    logNotImplementedMethod('getWindowHandle', locals())
+
+def hermiteLerp(*args):
+    logNotImplementedMethod('hermiteLerp', locals())
+
+def instantiateModule():
+    module = NoeModule()
+    this.modules.append(module)
+    return module
+
+def isPreviewModuleRAPIValid():
+    logNotImplementedMethod('isPreviewModuleRAPIValid', locals())
+
+def linLerp(*args):
+    logNotImplementedMethod('linLerp', locals())
+
+def loadImageRGBA(path):
+    logNotImplementedMethod('loadImageRGBA', locals())
+
+def logError(*args):
+    logNotImplementedMethod('logError', locals())
+
+def logFlush(*args):
+    logNotImplementedMethod('logFlush', locals())
+
+def logOutput(*args):
+    logNotImplementedMethod('logOutput', locals())
+
+def logPopup():
+    # this should open the debug window, but we're just using console output
+    pass
+
 def mat43Add(noeMat43, other):
     logNotImplementedMethod('mat43Add', locals())
 
@@ -543,7 +538,7 @@ def mat43FromBytes(data, bigEnd):
     logNotImplementedMethod('mat43FromBytes', locals())
 
 def mat43Inverse(noeMat43):
-    logNotImplementedMethod('mat43Inverse', locals())
+    # TODO: implement this properly
     return noeMat43
 
 def mat43IsSkewed(noeMat43):
@@ -751,6 +746,30 @@ def mat44Validate(noeMat44):
     for vec in mat44:
         vec4Validate(vec)
 
+def messagePrompt(message):
+    print(message)
+
+def morton2D(*args):
+    logNotImplementedMethod('morton2D', locals())
+
+def nextPow2(*args):
+    logNotImplementedMethod('nextPow2', locals())
+
+def openAndRemoveTempFile(path):
+    logNotImplementedMethod('openAndRemoveTempFile', locals())
+
+def openFile(path):
+    logNotImplementedMethod('openFile', locals())
+
+def optGetArg(name):
+    logNotImplementedMethod('optGetArg', locals())
+
+def optWasInvoked(name):
+    logNotImplementedMethod('optWasInvoked', locals())
+
+def planeFromPoints(*args):
+    logNotImplementedMethod('planeFromPoints', locals())
+
 def quat3FromBytes(data, bigEnd):
     logNotImplementedMethod('quat3FromBytes', locals())
 
@@ -815,6 +834,63 @@ def quatValidate(noeQuat):
 
     if len(quat) != 4:
         doException("quatValidate: validation failed")
+
+def register(name, fileType):
+    # TODO: fileType can be semicolon separated '.obj;.obc'
+    handler = Handler(name, fileType)
+    this.plugins.append(handler)
+    return handler
+
+def registerCleanupFunction(callback):
+    logNotImplementedMethod('registerCleanupFunction', locals())
+
+def registerTool(name, callback, description):
+    logNotImplementedMethod('registerTool', locals())
+
+def saveImageRGBA(*args):
+    logNotImplementedMethod('saveImageRGBA', locals())
+
+def setHandlerExtractArc(handle, callback):
+    handle.noepyExtractArc = callback
+
+def setHandlerLoadModel(handle, callback):
+    handle.noepyLoadModel = callback
+
+def setHandlerLoadRGBA(handle, callback):
+    handle.noepyLoadRGBA = callback
+
+def setHandlerTypeCheck(handle, callback):
+    handle.noepyCheckType = callback
+
+def setHandlerWriteAnim(handle, callback):
+    handle.noepyWriteAnim = callback
+
+def setHandlerWriteModel(handle, callback):
+    handle.noepyWriteModel = callback
+
+def setHandlerWriteRGBA(handle, callback):
+    handle.noepyWriteRGBA = callback
+
+def setModuleRAPI(handle):
+    logNotImplementedMethod('setModuleRAPI', locals())
+
+def setPreviewModuleRAPI():
+    logNotImplementedMethod('setPreviewModuleRAPI', locals())
+
+def setToolFlags(handle, flags):
+    logNotImplementedMethod('setToolFlags', locals())
+
+def setToolVisibleCallback(handle, callback):
+    handle.toolVisibleCallback = callback
+
+def setTypeExportOptions(*args):
+    logNotImplementedMethod('setTypeExportOptions', locals())
+
+def triLerp(*args):
+    logNotImplementedMethod('triLerp', locals())
+
+def userPrompt(userValType, title, prompt, defaultValue, validationHandler):
+    logNotImplementedMethod('userPrompt', locals())
 
 def validateListType(list, types):
     for obj in list:
@@ -917,86 +993,6 @@ def vec4Validate(noeVec4):
 
     if len(vec4) != 4:
         doException("vec4Validate: validation failed")
-
-# check args
-
-def bezier3D(*args):
-    logNotImplementedMethod('bezier3D', locals())
-
-def bezierTangent3D(*args):
-    logNotImplementedMethod('bezierTangent3D', locals())
-
-def bilinLerp(*args):
-    logNotImplementedMethod('bilinLerp', locals())
-
-def checkToolMenuItem(*args):
-    logNotImplementedMethod('checkToolMenuItem', locals())
-
-def constLerp(*args):
-    logNotImplementedMethod('constLerp', locals())
-
-def cubicLerp(*args):
-    logNotImplementedMethod('cubicLerp', locals())
-
-def deinterleaveBytes(*args):
-    logNotImplementedMethod('deinterleaveBytes', locals())
-
-def disableFormatByDescription(*args):
-    logNotImplementedMethod('disableFormatByDescription', locals())
-
-def encodeMFFP(*args):
-    logNotImplementedMethod('encodeMFFP', locals())
-
-def fileIsLoadable(*args):
-    logNotImplementedMethod('fileIsLoadable', locals())
-
-def getAPIVersion(*args):
-    logNotImplementedMethod('getAPIVersion', locals())
-
-def getMainPath(*args):
-    logNotImplementedMethod('getMainPath', locals())
-
-def getOpenPreviewFile(*args):
-    logNotImplementedMethod('getOpenPreviewFile', locals())
-
-def getPluginsPath(*args):
-    logNotImplementedMethod('getPluginsPath', locals())
-
-def getToolFlags(*args):
-    logNotImplementedMethod('getToolFlags', locals())
-
-def hermiteLerp(*args):
-    logNotImplementedMethod('hermiteLerp', locals())
-
-def linLerp(*args):
-    logNotImplementedMethod('linLerp', locals())
-
-def logError(*args):
-    logNotImplementedMethod('logError', locals())
-
-def logFlush(*args):
-    logNotImplementedMethod('logFlush', locals())
-
-def logOutput(*args):
-    logNotImplementedMethod('logOutput', locals())
-
-def morton2D(*args):
-    logNotImplementedMethod('morton2D', locals())
-
-def nextPow2(*args):
-    logNotImplementedMethod('nextPow2', locals())
-
-def planeFromPoints(*args):
-    logNotImplementedMethod('planeFromPoints', locals())
-
-def saveImageRGBA(*args):
-    logNotImplementedMethod('saveImageRGBA', locals())
-
-def setTypeExportOptions(*args):
-    logNotImplementedMethod('setTypeExportOptions', locals())
-
-def triLerp(*args):
-    logNotImplementedMethod('triLerp', locals())
 
 # private
 
