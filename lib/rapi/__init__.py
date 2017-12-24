@@ -1,12 +1,12 @@
 from RapiModel import RapiModel
 from RapiContext import RapiContext
 from FaceBuffer import FaceBuffer
-from ImageDecodePVRTC import ImageDecodePVRTC
 import os
 import struct
 import itertools
 import sys
 from util import logNotImplementedMethod, last, halfFloatsToFloats
+from pvr import pvr_decode
 
 # state
 
@@ -92,7 +92,7 @@ def rpgSetMaterial(material):
 
 # TODO: not working fully yet
 def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
-    return ImageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags).call()
+    return pvr_decode(data, width, height, bitsPerPixel)
 
 def imageFlipRGBA32(r, width, height, unk0, unk1):
     logNotImplementedMethod('imageFlipRGBA32', locals())
