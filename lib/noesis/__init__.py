@@ -851,25 +851,25 @@ def saveImageRGBA(*args):
     logNotImplementedMethod('saveImageRGBA', locals())
 
 def setHandlerExtractArc(handle, callback):
-    handle.noepyExtractArc = callback
+    handle.extractArc = callback
 
 def setHandlerLoadModel(handle, callback):
-    handle.noepyLoadModel = callback
+    handle.loadModel = callback
 
 def setHandlerLoadRGBA(handle, callback):
-    handle.noepyLoadRGBA = callback
+    handle.loadRGBA = callback
 
 def setHandlerTypeCheck(handle, callback):
-    handle.noepyCheckType = callback
+    handle.checkType = callback
 
 def setHandlerWriteAnim(handle, callback):
-    handle.noepyWriteAnim = callback
+    handle.writeAnim = callback
 
 def setHandlerWriteModel(handle, callback):
-    handle.noepyWriteModel = callback
+    handle.writeModel = callback
 
 def setHandlerWriteRGBA(handle, callback):
-    handle.noepyWriteRGBA = callback
+    handle.writeRGBA = callback
 
 def setModuleRAPI(handle):
     logNotImplementedMethod('setModuleRAPI', locals())

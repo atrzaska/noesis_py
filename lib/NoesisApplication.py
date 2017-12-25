@@ -36,7 +36,7 @@ class NoesisApplication:
             with open(file, "rb") as f:
                 rapi.setLastCheckedName(file)
                 rapi.getLastCheckedName()
-                plugin[0].noepyLoadModel(f.read(), self.models)
+                plugin[0].loadModel(f.read(), self.models)
         else:
             print("File format not supported")
 
