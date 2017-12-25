@@ -6,8 +6,8 @@ import struct
 import itertools
 import sys
 from util import logNotImplementedMethod, last
-from pvr import pvr_decode
-from noesis import getFloat16
+import pvr
+import noesis
 
 # state
 
@@ -171,7 +171,7 @@ def imageDecodeDXT(data, width, height, format):
 
 def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
     # TODO: not working fully yet
-    return pvr_decode(data, width, height, bitsPerPixel)
+    return pvr.pvr_decode(data, width, height, bitsPerPixel)
 
 def imageDecodeRaw(data, width, height, paletteFormat):
     logNotImplementedMethod('imageDecodeRaw', locals())
@@ -724,4 +724,4 @@ def fixHalfFloats(values, type):
     if not type == 'RPGEODATA_HALFFLOAT':
         return values
 
-    return map(lambda touple: map(lambda y: getFloat16(y), touple), values)
+    return map(lambda touple: map(lambda y: noesis.getFloat16(y), touple), values)

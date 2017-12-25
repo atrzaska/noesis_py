@@ -3,7 +3,7 @@ from bitstring import ConstBitStream
 import PIL.Image
 import StringIO
 
-def scale_to_255(color, size):
+def scaleTo255(color, size):
     number = float(color) / 2**size
     return int(number * 255)
 
@@ -15,7 +15,7 @@ def compact(x):
     x = (x ^ (x >> 8)) & 0x0000ffff
     return x
 
-def decode_morton(i):
+def decodeMorton(i):
     x = compact(i)
     y = compact(i >> 1)
     return x, y
@@ -23,7 +23,7 @@ def decode_morton(i):
 IMG_SCALE = 8
 MOD_SCALE = 2
 
-def pvr_decode(pvrData, width, height, bpp):
+def decode(pvrData, width, height, bpp):
     mip = 1
     image_width = width/4/2**(mip)
     image_height = height/4/2**(mip)
@@ -38,7 +38,7 @@ def pvr_decode(pvrData, width, height, bpp):
     img_mod_data = img_mod.load()
 
     for i in xrange(image_width * image_height):
-        pixel, row = decode_morton(i)
+        pixel, row = decodeMorton(i)
         modulation_data = bit_stream.read('bits:32')
 
         byte0 = bit_stream.read('bits:8')
@@ -52,18 +52,18 @@ def pvr_decode(pvrData, width, height, bpp):
             r = byte3.read('uint:5')
             g = (byte3.read('bits:2') + byte2.read('bits:3')).read('uint:5')
             b = byte2.read('uint:5')
-            r = scale_to_255(r, 5)
-            g = scale_to_255(g, 5)
-            b = scale_to_255(b, 5)
+            r = scaleTo255(r, 5)
+            g = scaleTo255(g, 5)
+            b = scaleTo255(b, 5)
         else:
             a = byte3.read('uint:3')
             r = byte3.read('uint:4')
             g = byte2.read('uint:4')
             b = byte2.read('uint:4')
-            a = scale_to_255(a, 3)
-            r = scale_to_255(r, 4)
-            g = scale_to_255(g, 4)
-            b = scale_to_255(b, 4)
+            a = scaleTo255(a, 3)
+            r = scaleTo255(r, 4)
+            g = scaleTo255(g, 4)
+            b = scaleTo255(b, 4)
         img_b_data[row, pixel] = (r, g, b, a)
 
         color_mode = byte1.read('bool')
@@ -74,18 +74,18 @@ def pvr_decode(pvrData, width, height, bpp):
             r = byte1.read('uint:5')
             g = (byte1.read('bits:2') + byte0.read('bits:3')).read('uint:5')
             b = byte0.read('uint:4')
-            r = scale_to_255(r, 5)
-            g = scale_to_255(g, 5)
-            b = scale_to_255(b, 4)
+            r = scaleTo255(r, 5)
+            g = scaleTo255(g, 5)
+            b = scaleTo255(b, 4)
         else:
             a = byte1.read('uint:3')
             r = byte1.read('uint:4')
             g = byte0.read('uint:4')
             b = byte0.read('uint:3')
-            a = scale_to_255(a, 3)
-            r = scale_to_255(r, 4)
-            g = scale_to_255(g, 4)
-            b = scale_to_255(b, 3)
+            a = scaleTo255(a, 3)
+            r = scaleTo255(r, 4)
+            g = scaleTo255(g, 4)
+            b = scaleTo255(b, 3)
 
         img_a_data[row, pixel] = (r, g, b, a)
 
