@@ -1,6 +1,6 @@
 from util import last
 
-class RapiModel:
+class Model:
     def __init__(self):
         self.materials = []
         self.bones = []

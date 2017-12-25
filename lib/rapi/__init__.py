@@ -1,5 +1,5 @@
-from RapiModel import RapiModel
-from RapiContext import RapiContext
+from Model import Model
+from Context import Context
 from FaceBuffer import FaceBuffer
 import os
 import struct
@@ -558,7 +558,7 @@ def rpgCommitTriangles(data, type, numIdx, shape, usePlotMap):
     currentContext().commit()
 
 def rpgConstructModel():
-    model = RapiModel()
+    model = Model()
     currentContext().models.append(model)
     return model
 
@@ -566,7 +566,7 @@ def rpgConstructModelSlim():
     return rpgConstructModel()
 
 def rpgCreateContext():
-    context = RapiContext()
+    context = Context()
     this.contexts.append(context)
     return context
 

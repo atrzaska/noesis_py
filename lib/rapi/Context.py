@@ -1,7 +1,7 @@
-from RapiMeshPart import RapiMeshPart
+from MeshPart import MeshPart
 from util import last
 
-class RapiContext:
+class Context:
     def __init__(self):
         self.models = [] # TODO: not used yet
         self.vertexBuffers = []
@@ -20,7 +20,7 @@ class RapiContext:
         self.meshParts = []
 
     def commit(self):
-        meshPart = RapiMeshPart()
+        meshPart = MeshPart()
         meshPart.vertexBuffer = self.currentVertexBuffer()
         meshPart.normalBuffer = self.currentNormalBuffer()
         meshPart.uvBuffer = self.currentUvBuffer()

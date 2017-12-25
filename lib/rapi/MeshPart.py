@@ -1,4 +1,4 @@
-class RapiMeshPart:
+class MeshPart:
     def __init__(self):
         self.vertexBuffer = []
         self.normalBuffer = []
