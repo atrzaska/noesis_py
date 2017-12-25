@@ -1,6 +1,4 @@
-from Model import Model
 from Context import Context
-from FaceBuffer import FaceBuffer
 import os
 import struct
 import itertools
@@ -8,6 +6,7 @@ import sys
 from util import logNotImplementedMethod, last
 import pvr
 import noesis
+import inc_noesis
 
 # state
 
@@ -171,7 +170,7 @@ def imageDecodeDXT(data, width, height, format):
 
 def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
     # TODO: not working fully yet
-    return pvr.pvr_decode(data, width, height, bitsPerPixel)
+    return pvr.decode(data, width, height, bitsPerPixel)
 
 def imageDecodeRaw(data, width, height, paletteFormat):
     logNotImplementedMethod('imageDecodeRaw', locals())
@@ -475,35 +474,35 @@ def rpgBindBoneIndexBuffer(data, type, stride, count):
 
 def rpgBindBoneIndexBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
-    currentContext().boneIndexBuffers.append(unpackedBuffer)
+    currentContext().boneIndexBuffer = unpackedBuffer
 
 def rpgBindBoneWeightBuffer(data, type, stride, count):
     return rpgBindBoneWeightBufferOfs(data, type, stride, 0, count)
 
 def rpgBindBoneWeightBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
-    currentContext().boneWeightBuffers.append(unpackedBuffer)
+    currentContext().boneWeightBuffer = unpackedBuffer
 
 def rpgBindColorBuffer(data, type, stride, count):
     return rpgBindColorBufferOfs(data, type, stride, 0, count)
 
 def rpgBindColorBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
-    currentContext().colorBuffers.append(unpackedBuffer)
+    currentContext().colorBuffer = unpackedBuffer
 
 def rpgBindNormalBuffer(data, type, stride):
     return rpgBindNormalBufferOfs(data, type, stride, 0)
 
 def rpgBindNormalBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
-    currentContext().normalBuffers.append(unpackedBuffer)
+    currentContext().normalBuffer = unpackedBuffer
 
 def rpgBindPositionBuffer(data, type, stride):
     return rpgBindPositionBufferOfs(data, type, stride, 0)
 
 def rpgBindPositionBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
-    currentContext().vertexBuffers.append(unpackedBuffer)
+    currentContext().vertexBuffer = unpackedBuffer
 
 def rpgBindTangentBuffer(data, type, stride):
     return rpgBindTangentBufferOfs(data, type, stride, 0)
@@ -522,17 +521,17 @@ def rpgBindUV1Buffer(data, type, stride):
 
 def rpgBindUV1BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
-    currentContext().uvBuffers.append(unpackedBuffer)
+    currentContext().uvBuffer = unpackedBuffer
 
 def rpgBindUV2Buffer(data, type, stride):
     return rpgBindUV2BufferOfs(data, type, stride, 0)
 
 def rpgBindUV2BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
-    currentContext().uvBuffers.append(unpackedBuffer)
+    currentContext().uv2Buffer = unpackedBuffer
 
 def rpgClearBufferBinds():
-    logNotImplementedMethod('rpgClearBufferBinds', locals())
+    currentContext().clearBuffers()
 
 def rpgClearMaterials(*args):
     logNotImplementedMethod('rpgClearMaterials', locals())
@@ -552,13 +551,10 @@ def rpgCommitMorphFrameSet():
 def rpgCommitTriangles(data, type, numIdx, shape, usePlotMap):
     fmt = str(numIdx) + UNPACK_TYPES[type]
     unpackedBuffer = struct.unpack(fmt, data)
-    material = currentContext().currentMaterial()
-    faceBuffer = FaceBuffer(unpackedBuffer, type, numIdx, shape, usePlotMap, material)
-    currentContext().faceBuffers.append(faceBuffer)
-    currentContext().commit()
+    currentContext().commit(unpackedBuffer, type, numIdx, shape, usePlotMap)
 
 def rpgConstructModel():
-    model = Model()
+    model = inc_noesis.NoeModel()
     currentContext().models.append(model)
     return model
 
@@ -613,22 +609,22 @@ def rpgSetActiveContext(*args):
     logNotImplementedMethod('rpgSetActiveContext', locals())
 
 def rpgSetBoneMap(boneMap):
-    currentContext().boneMaps.append(boneMap)
+    currentContext().boneMap = boneMap
 
-def rpgSetEndian(*args):
+def rpgSetEndian(bigEndian):
     logNotImplementedMethod('rpgSetEndian', locals())
 
 def rpgSetLightmap(name):
-    currentContext().lightMaps.append(name)
+    currentContext().lightMap = name
 
 def rpgSetMaterial(material):
-    currentContext().materials.append(material)
+    currentContext().material = material
 
 def rpgSetMorphBase(*args):
     logNotImplementedMethod('rpgSetMorphBase', locals())
 
 def rpgSetName(name):
-    currentContext().names.append(name)
+    currentContext().name = name
 
 def rpgSetOption(key, value):
     logNotImplementedMethod('rpgSetOption', locals())
@@ -645,8 +641,8 @@ def rpgSetTransform(*args):
 def rpgSetTriWinding(*args):
     logNotImplementedMethod('rpgSetTriWinding', locals())
 
-def rpgSetUVScaleBias(vec1, vec2):
-    currentContext().uvScaleBiases.append({ "vec1": vec1, "vec2": vec2 })
+def rpgSetUVScaleBias(scale, bias):
+    currentContext().uvScaleBias = { "scale": scale, "bias": bias }
 
 def rpgSkinPreconstructedVertsToBones(bindCorrectionBones, numPreCommitVerts, numVertsToSkin):
     logNotImplementedMethod('rpgSkinPreconstructedVertsToBones', locals())

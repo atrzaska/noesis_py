@@ -612,7 +612,7 @@ def mat43Validate(noeMat43):
     mat43 = noeMat43.mat43
 
     if len(mat43) != 4:
-        doException("mat43Validate: validate failed")
+        doException('mat43Validate: validate failed')
 
     for vec in mat43:
         vec3Validate(vec)
@@ -740,7 +740,7 @@ def mat44Validate(noeMat44):
     mat44 = noeMat44.mat44
 
     if len(mat44) != 4:
-        doException("mat44Validate: validate failed")
+        doException('mat44Validate: validate failed')
 
     for vec in mat44:
         vec4Validate(vec)
@@ -832,7 +832,7 @@ def quatValidate(noeQuat):
     validateListType(quat, Number)
 
     if len(quat) != 4:
-        doException("quatValidate: validation failed")
+        doException('quatValidate: validation failed')
 
 def register(name, fileType):
     # TODO: fileType can be semicolon separated '.obj;.obc'
@@ -894,7 +894,7 @@ def userPrompt(userValType, title, prompt, defaultValue, validationHandler):
 def validateListType(list, types):
     for obj in list:
         if not isinstance(obj, types):
-            doException("validateListType: validation failed")
+            doException('validateListType: validation failed: expected ' + str(types) + ' but got ' + str(obj))
 
 def validateListTypes(list, types):
     return validateListType(list, types)
@@ -945,7 +945,7 @@ def vec3Validate(noeVec3):
     vec3 = noeVec3.vec3
 
     if len(vec3) != 3:
-        doException("vec3Validate: validate failed")
+        doException('vec3Validate: validate failed')
 
     validateListType(vec3, Number)
 
@@ -991,7 +991,7 @@ def vec4Validate(noeVec4):
     validateListType(vec4, Number)
 
     if len(vec4) != 4:
-        doException("vec4Validate: validation failed")
+        doException('vec4Validate: validation failed')
 
 # private
 

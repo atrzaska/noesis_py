@@ -27,6 +27,12 @@ INDEX_TYPES = {
     'rigidbody': { 1: 'b', 2: 'h', 4: 'i' },
 }
 
+INDICES_TYPES = {
+    1: noesis.RPGEODATA_UBYTE,
+    2: noesis.RPGEODATA_USHORT,
+    4: noesis.RPGEODATA_INT,
+}
+
 BONEFLAG_TAILPOS_IS_BONE = 0x0001
 BONEFLAG_CAN_ROTATE = 0x0002
 BONEFLAG_CAN_TRANSLATE = 0x0004
@@ -148,7 +154,7 @@ class PmxLoader:
         encodingId = bs.readByte() # 0 = UTF-16, 1 = UTF-8
         self.encoding = ENCODINGS[encodingId]
         self.appendixUVSize = bs.readByte() # 0-4
-        self.vertexIndexSize = bs.readByte() # 1 = byte, 2 = short, 4 = int
+        self.vertexIndexSize = bs.readByte() # 1 = ubyte, 2 = ushort, 4 = int
         self.textureIndexSize = bs.readByte() # 1 = byte, 2 = short, 4 = int
         self.materialIndexSize = bs.readByte() # 1 = byte, 2 = short, 4 = int
         self.boneIndexSize = bs.readByte() # 1 = byte, 2 = short, 4 = int
@@ -268,7 +274,7 @@ class PmxLoader:
             rapi.rpgBindNormalBufferOfs(normals, noesis.RPGEODATA_FLOAT, 12, 0)
             rapi.rpgBindUV1BufferOfs(uvs, noesis.RPGEODATA_FLOAT, 8, 0)
             rapi.rpgSetMaterial(name)
-            rapi.rpgCommitTriangles(currentFaces, self.vertexIndexSize, matFaceCount, noesis.RPGEO_TRIANGLE, 1)
+            rapi.rpgCommitTriangles(currentFaces, INDICES_TYPES[self.vertexIndexSize], matFaceCount, noesis.RPGEO_TRIANGLE, 1)
             startOffset += self.vertexIndexSize * matFaceCount
 
         # bones

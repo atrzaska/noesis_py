@@ -50,21 +50,19 @@ class NoesisLoader:
         glEnable(GL_TEXTURE_2D)
         glFrontFace(GL_CCW)
 
-        vertexBufferLength = len(self.rpgContext.vertexBuffers)
-        # TODO: vertexBuffers are model specific
-        # if you load multiple models they should be in a model scope
-        for meshPart in self.rpgContext.meshParts:
-            vertices = meshPart.vertexBuffer
-            normals = meshPart.normalBuffer
-            faces = meshPart.faceBuffer
-            uvs = meshPart.uvBuffer
+        for mesh in self.rpgContext.meshes:
+            vertices = mesh.positions
+            normals = mesh.normals
+            material = mesh.matName
+            faceBuffer = mesh.indices
+            shape = mesh.shape
+            uvs = mesh.uvs
 
             if self.loadTextures:
-                materialName = faces.material
-                noeMaterials = self.rpgContext.models[-1].materials
+                noeMaterials = self.rpgContext.models[-1].modelMats
                 materials = noeMaterials.matList
-                if materialName:
-                    material = next(x for x in materials if x.name == materialName)
+                if material:
+                    material = next(x for x in materials if x.name == material)
                     textures = noeMaterials.texList
                     textureName = material and material.texName
                     if textureName:
@@ -84,12 +82,12 @@ class NoesisLoader:
                         else:
                             print('Texture not found: ' + textureName)
 
-            glBegin(SHAPE_TO_GL_OBJECT[faces.shape])
+            glBegin(SHAPE_TO_GL_OBJECT[shape])
 
-            for face in faces.buff:
+            for face in faceBuffer:
                 if face == 65535: # TODO: handle other types
                     glEnd()
-                    glBegin(SHAPE_TO_GL_OBJECT[faces.shape])
+                    glBegin(SHAPE_TO_GL_OBJECT[shape])
                     continue
 
                 normal = normals[face]

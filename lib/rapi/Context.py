@@ -1,76 +1,42 @@
-from MeshPart import MeshPart
-from util import last
+from NoeMesh import NoeMesh
+import inc_noesis
 
 class Context:
     def __init__(self):
+        self.meshes = []
         self.models = [] # TODO: not used yet
-        self.vertexBuffers = []
-        self.normalBuffers = []
-        self.uvBuffers = []
-        self.faceBuffers = []
-        self.colorBuffers = [] # 0 # TODO: not used yet
-        self.boneWeightBuffers = [] # TODO: not used yet
-        self.boneIndexBuffers = []  # TODO: not used yet
-        self.materials = []
-        self.names = [] # TODO: not used yet
-        self.lightMaps = [] # 0  # TODO: not used yet
-        self.boneMaps = [] # TODO: not used yet
-        self.uvScaleBiases = [] # TODO: not used yet
+        self.material = None
+        self.name = None # TODO: not used yet
+        self.lightMap = None # 0  # TODO: not used yet
+        self.boneMap = [] # TODO: not used yet
+        self.uvScaleBias = None # TODO: not used yet
+        self.clearBuffers()
 
-        self.meshParts = []
+    def commit(self, faceBuffer, type, numIdx, shape, usePlotMap):
+        mesh = NoeMesh(faceBuffer, self.vertexBuffer)
+        mesh.setName(self.name)
+        mesh.setMaterial(self.material)
+        mesh.setLightmap(self.lightMap)
+        mesh.setNormals(self.normalBuffer)
+        mesh.setUVs(self.uvBuffer)
+        mesh.setUVs(self.uv2Buffer, 1)
+        mesh.setColors(self.colorBuffer)
+        mesh.setWeights(self.boneWeightBuffer)
+        mesh.setBoneMap(self.boneMap)
+        mesh.boneIndexBuffer = self.boneIndexBuffer
+        mesh.uvScaleBias = self.uvScaleBias
+        mesh.type = type
+        mesh.numIdx = numIdx
+        mesh.shape = shape
+        mesh.usePlotMap = usePlotMap
 
-    def commit(self):
-        meshPart = MeshPart()
-        meshPart.vertexBuffer = self.currentVertexBuffer()
-        meshPart.normalBuffer = self.currentNormalBuffer()
-        meshPart.uvBuffer = self.currentUvBuffer()
-        meshPart.faceBuffer = self.currentFaceBuffer()
-        meshPart.colorBuffer = self.currentColorBuffer()
-        meshPart.boneWeightBuffer = self.currentBoneWeightBuffer()
-        meshPart.boneIndexBuffer = self.currentBoneIndexBuffer()
-        meshPart.material = self.currentMaterial()
-        meshPart.name = self.currentName()
-        meshPart.lightMap = self.currentLightMap()
-        meshPart.boneMap = self.currentBoneMap()
-        meshPart.uvScaleBiase = self.currentUvScaleBias()
+        self.meshes.append(mesh)
 
-        self.meshParts.append(meshPart)
-
-    def currentModel(self):
-        return last(self.models)
-
-    def currentNormalBuffer(self):
-        return last(self.normalBuffers)
-
-    def currentVertexBuffer(self):
-        return last(self.vertexBuffers)
-
-    def currentUvBuffer(self):
-        return last(self.uvBuffers)
-
-    def currentFaceBuffer(self):
-        return last(self.faceBuffers)
-
-    def currentColorBuffer(self):
-        return last(self.colorBuffers)
-
-    def currentBoneWeightBuffer(self):
-        return last(self.boneWeightBuffers)
-
-    def currentBoneIndexBuffer(self):
-        return last(self.boneIndexBuffers)
-
-    def currentMaterial(self):
-        return last(self.materials)
-
-    def currentName(self):
-        return last(self.names)
-
-    def currentLightMap(self):
-        return last(self.lightMaps)
-
-    def currentBoneMap(self):
-        return last(self.boneMaps)
-
-    def currentUvScaleBias(self):
-        return last(self.uvScaleBiases)
+    def clearBuffers(self):
+        self.vertexBuffer = []
+        self.normalBuffer = []
+        self.uvBuffer = []
+        self.uv2Buffer = []
+        self.colorBuffer = [] # 0 # TODO: not used yet
+        self.boneWeightBuffer = [] # TODO: not used yet
+        self.boneIndexBuffer = []  # TODO: not used yet
