@@ -96,7 +96,6 @@ class PmxLoader:
         mdl.setBones(self.boneList)
         mdl.setAnims(self.animList)
         self.mdlList.append(mdl)
-        noesis.bsDumpMask(self.bs.h)
 
     def readText(self):
         size = self.bs.readInt()

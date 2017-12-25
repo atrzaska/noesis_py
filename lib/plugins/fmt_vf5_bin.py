@@ -631,9 +631,6 @@ class DreamyTheaterLoader:
                     boneName = bs.readString()
                     boneSection.boneNames.append(boneName)
 
-        # inspect
-        noesis.bsDumpMask(bs.h)
-
     def load_binTex(self):
         data = rapi.loadIntoByteArray(rapi.getDirForFilePath(rapi.getLastCheckedName()) + self.baseName + '_tex.bin')
         bs = NoeBitStream(data)
