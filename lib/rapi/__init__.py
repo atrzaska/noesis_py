@@ -1,17 +1,17 @@
-from Context import Context
 import os
 import struct
 import itertools
 import sys
-from util import logNotImplementedMethod, last
 import pvr
 import noesis
-import inc_noesis
+from NoeModel import NoeModel
+from Context import Context
+from util import logNotImplementedMethod
 
 # state
 
 this = sys.modules[__name__]
-this.contexts = []
+this.context = None
 this.lastCheckedName = None
 this.options = {}
 
@@ -474,35 +474,35 @@ def rpgBindBoneIndexBuffer(data, type, stride, count):
 
 def rpgBindBoneIndexBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
-    currentContext().boneIndexBuffer = unpackedBuffer
+    this.context.boneIndexBuffer = unpackedBuffer
 
 def rpgBindBoneWeightBuffer(data, type, stride, count):
     return rpgBindBoneWeightBufferOfs(data, type, stride, 0, count)
 
 def rpgBindBoneWeightBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
-    currentContext().boneWeightBuffer = unpackedBuffer
+    this.context.boneWeightBuffer = unpackedBuffer
 
 def rpgBindColorBuffer(data, type, stride, count):
     return rpgBindColorBufferOfs(data, type, stride, 0, count)
 
 def rpgBindColorBufferOfs(data, type, stride, offset, count):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
-    currentContext().colorBuffer = unpackedBuffer
+    this.context.colorBuffer = unpackedBuffer
 
 def rpgBindNormalBuffer(data, type, stride):
     return rpgBindNormalBufferOfs(data, type, stride, 0)
 
 def rpgBindNormalBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
-    currentContext().normalBuffer = unpackedBuffer
+    this.context.normalBuffer = unpackedBuffer
 
 def rpgBindPositionBuffer(data, type, stride):
     return rpgBindPositionBufferOfs(data, type, stride, 0)
 
 def rpgBindPositionBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
-    currentContext().vertexBuffer = unpackedBuffer
+    this.context.vertexBuffer = unpackedBuffer
 
 def rpgBindTangentBuffer(data, type, stride):
     return rpgBindTangentBufferOfs(data, type, stride, 0)
@@ -521,17 +521,17 @@ def rpgBindUV1Buffer(data, type, stride):
 
 def rpgBindUV1BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
-    currentContext().uvBuffer = unpackedBuffer
+    this.context.uvBuffer = unpackedBuffer
 
 def rpgBindUV2Buffer(data, type, stride):
     return rpgBindUV2BufferOfs(data, type, stride, 0)
 
 def rpgBindUV2BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
-    currentContext().uv2Buffer = unpackedBuffer
+    this.context.uv2Buffer = unpackedBuffer
 
 def rpgClearBufferBinds():
-    currentContext().clearBuffers()
+    this.context.clearBuffers()
 
 def rpgClearMaterials(*args):
     logNotImplementedMethod('rpgClearMaterials', locals())
@@ -551,11 +551,11 @@ def rpgCommitMorphFrameSet():
 def rpgCommitTriangles(data, type, numIdx, shape, usePlotMap):
     fmt = str(numIdx) + UNPACK_TYPES[type]
     unpackedBuffer = struct.unpack(fmt, data)
-    currentContext().commit(unpackedBuffer, type, numIdx, shape, usePlotMap)
+    this.context.commit(unpackedBuffer, type, numIdx, shape, usePlotMap)
 
 def rpgConstructModel():
-    model = inc_noesis.NoeModel()
-    currentContext().models.append(model)
+    meshes = this.context.meshes
+    model = NoeModel(meshes)
     return model
 
 def rpgConstructModelSlim():
@@ -563,7 +563,7 @@ def rpgConstructModelSlim():
 
 def rpgCreateContext():
     context = Context()
-    this.contexts.append(context)
+    this.context = context
     return context
 
 def rpgCreatePlaneSpaceUVs():
@@ -609,22 +609,22 @@ def rpgSetActiveContext(*args):
     logNotImplementedMethod('rpgSetActiveContext', locals())
 
 def rpgSetBoneMap(boneMap):
-    currentContext().boneMap = boneMap
+    this.context.boneMap = boneMap
 
 def rpgSetEndian(bigEndian):
     logNotImplementedMethod('rpgSetEndian', locals())
 
 def rpgSetLightmap(name):
-    currentContext().lightMap = name
+    this.context.lightMap = name
 
 def rpgSetMaterial(material):
-    currentContext().material = material
+    this.context.material = material
 
 def rpgSetMorphBase(*args):
     logNotImplementedMethod('rpgSetMorphBase', locals())
 
 def rpgSetName(name):
-    currentContext().name = name
+    this.context.name = name
 
 def rpgSetOption(key, value):
     logNotImplementedMethod('rpgSetOption', locals())
@@ -642,7 +642,7 @@ def rpgSetTriWinding(*args):
     logNotImplementedMethod('rpgSetTriWinding', locals())
 
 def rpgSetUVScaleBias(scale, bias):
-    currentContext().uvScaleBias = { "scale": scale, "bias": bias }
+    this.context.uvScaleBias = { "scale": scale, "bias": bias }
 
 def rpgSkinPreconstructedVertsToBones(bindCorrectionBones, numPreCommitVerts, numVertsToSkin):
     logNotImplementedMethod('rpgSkinPreconstructedVertsToBones', locals())
@@ -699,9 +699,6 @@ def writePCMWaveFile(*args):
 
 def setLastCheckedName(name):
     this.lastCheckedName = name
-
-def currentContext():
-    return last(this.contexts)
 
 def splitBuffer(data, stride):
     return [data[i:i + stride] for i in range(0, len(data), stride)]

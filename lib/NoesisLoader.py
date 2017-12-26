@@ -1,9 +1,9 @@
 import os
 import pygame
+import rapi
 from OpenGL.GL import *
 from OpenGL.GL.EXT.texture_compression_s3tc import *
 from OpenGL.GL.ARB.multisample import *
-import rapi
 
 SHAPE_TO_GL_OBJECT = {
     'RPGEO_TRIANGLE': GL_TRIANGLES,
@@ -20,8 +20,9 @@ PIXELFORMAT_TO_OPENGL_INTERNAL_TYPE = {
 }
 
 class NoesisLoader:
-    def __init__(self, rpgContext):
-        self.rpgContext = rpgContext
+    def __init__(self, model):
+        self.modelMats = model.modelMats
+        self.meshes = model.meshes
         self.loadedTextures = {}
         self.flipX = False
         self.flipY = False
@@ -38,10 +39,10 @@ class NoesisLoader:
             print('ERROR: glInitMultisampleARB not supported')
 
     def render(self):
-        self.gl_list = glGenLists(1)
+        self.glList = glGenLists(1)
         glEnable(GL_MULTISAMPLE_ARB)
 
-        glNewList(self.gl_list, GL_COMPILE)
+        glNewList(self.glList, GL_COMPILE)
 
         if self.blending:
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -50,7 +51,7 @@ class NoesisLoader:
         glEnable(GL_TEXTURE_2D)
         glFrontFace(GL_CCW)
 
-        for mesh in self.rpgContext.meshes:
+        for mesh in self.meshes:
             vertices = mesh.positions
             normals = mesh.normals
             material = mesh.matName
@@ -59,7 +60,7 @@ class NoesisLoader:
             uvs = mesh.uvs
 
             if self.loadTextures:
-                noeMaterials = self.rpgContext.models[-1].modelMats
+                noeMaterials = self.modelMats
                 materials = noeMaterials.matList
                 if material:
                     material = next(x for x in materials if x.name == material)
@@ -119,7 +120,6 @@ class NoesisLoader:
 
         glDisable(GL_TEXTURE_2D)
         glEndList()
-        return self
 
     def loadFileTexture(self, name):
         if name in self.loadedTextures:

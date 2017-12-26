@@ -1,10 +1,10 @@
+import sys
+import struct
 from Handler import Handler
 from NoeModule import NoeModule
 from AllocType import AllocType
 from numbers import Number
-import sys
 from util import logNotImplementedMethod
-import struct
 
 # constants
 

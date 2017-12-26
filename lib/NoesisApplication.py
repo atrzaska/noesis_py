@@ -1,11 +1,11 @@
 import glob
+import rapi
+import os
+import sys
 from os.path import dirname, basename, isfile
 from noesis import plugins
 from importlib import import_module
 from NoesisViewer import NoesisViewer
-import rapi
-import os
-import sys
 
 class NoesisApplication:
     def __init__(self):
@@ -24,8 +24,9 @@ class NoesisApplication:
         for file in files:
             self.loadFile(file)
 
-        NoesisViewer(rapi).call()
+        NoesisViewer(self.models).call()
 
+    # private
 
     def loadFile(self, file):
         filename, file_extension = os.path.splitext(file)
@@ -33,10 +34,11 @@ class NoesisApplication:
         plugin = [x for x in plugins if x.format == file_extension]
 
         if plugin:
+            plugin = plugin[0]
             with open(file, "rb") as f:
                 rapi.setLastCheckedName(file)
                 rapi.getLastCheckedName()
-                plugin[0].loadModel(f.read(), self.models)
+                plugin.loadModel(f.read(), self.models)
         else:
             print("File format not supported")
 

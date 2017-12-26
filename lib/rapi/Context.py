@@ -1,10 +1,9 @@
-from NoeMesh import NoeMesh
 import inc_noesis
+from NoeMesh import NoeMesh
 
 class Context:
     def __init__(self):
         self.meshes = []
-        self.models = [] # TODO: not used yet
         self.material = None
         self.name = None # TODO: not used yet
         self.lightMap = None # 0  # TODO: not used yet
@@ -29,7 +28,6 @@ class Context:
         mesh.numIdx = numIdx
         mesh.shape = shape
         mesh.usePlotMap = usePlotMap
-
         self.meshes.append(mesh)
 
     def clearBuffers(self):

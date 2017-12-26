@@ -7,14 +7,10 @@ from OpenGL.GLU import *
 from NoesisLoader import *
 
 class NoesisViewer:
-    def __init__(self, rpg):
-        self.rpg = rpg
+    def __init__(self, models):
+        self.models = models
         self.toon = True
-        self.loadedModels = []
-
-    @classmethod
-    def call(self, rpg):
-        return NoesisViewer(rpg).call()
+        self.loaders = []
 
     def call(self):
         pygame.init()
@@ -33,10 +29,10 @@ class NoesisViewer:
         glShadeModel(GL_SMOOTH)
         glClearColor(0.2, 0.2, 0.2, 0.2)
 
-        for context in self.rpg.contexts:
-            noesisLoader = NoesisLoader(context)
-            model = noesisLoader.render()
-            self.loadedModels.append(model)
+        for model in self.models:
+            loader = NoesisLoader(model)
+            loader.render()
+            self.loaders.append(loader)
 
         clock = pygame.time.Clock()
         glMatrixMode(GL_PROJECTION)
@@ -78,6 +74,6 @@ class NoesisViewer:
             glTranslate(tx/20., ty/20., - zpos)
             glRotate(ry, 1, 0, 0)
             glRotate(-rx, 0, 1, 0)
-            for model in self.loadedModels:
-                glCallList(model.gl_list)
+            for loader in self.loaders:
+                glCallList(loader.glList)
             pygame.display.flip()

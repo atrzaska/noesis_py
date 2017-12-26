@@ -1,7 +1,7 @@
 import sys
-from bitstring import ConstBitStream
 import PIL.Image
 import StringIO
+from bitstring import ConstBitStream
 
 def scaleTo255(color, size):
     number = float(color) / 2**size
