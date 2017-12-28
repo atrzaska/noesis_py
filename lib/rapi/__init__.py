@@ -13,30 +13,29 @@ from util import logNotImplementedMethod
 this = sys.modules[__name__]
 this.context = None
 this.lastCheckedName = None
-this.options = {}
 
 UNPACK_TYPES = {
-    'RPGEODATA_BYTE': 'b',
-    'RPGEODATA_FLOAT': 'f',
-    'RPGEODATA_HALFFLOAT': 'H', # need to convert half float to float
-    'RPGEODATA_INT': 'i',
-    'RPGEODATA_SHORT': 'h',
-    'RPGEODATA_UBYTE': 'B',
-    'RPGEODATA_UINT': 'I',
-    'RPGEODATA_USHORT': 'H',
-    'RPGEODATA_DOUBLE': 'd',
+    noesis.RPGEODATA_BYTE: 'b',
+    noesis.RPGEODATA_FLOAT: 'f',
+    noesis.RPGEODATA_HALFFLOAT: 'H', # need to convert half float to float
+    noesis.RPGEODATA_INT: 'i',
+    noesis.RPGEODATA_SHORT: 'h',
+    noesis.RPGEODATA_UBYTE: 'B',
+    noesis.RPGEODATA_UINT: 'I',
+    noesis.RPGEODATA_USHORT: 'H',
+    noesis.RPGEODATA_DOUBLE: 'd',
 }
 
 UNPACK_SIZES = {
-    'RPGEODATA_BYTE': 1,
-    'RPGEODATA_FLOAT': 4,
-    'RPGEODATA_HALFFLOAT': 2,
-    'RPGEODATA_INT': 4,
-    'RPGEODATA_SHORT': 2,
-    'RPGEODATA_UBYTE': 1,
-    'RPGEODATA_UINT': 4,
-    'RPGEODATA_USHORT': 2,
-    'RPGEODATA_DOUBLE': 8,
+    noesis.RPGEODATA_BYTE: 1,
+    noesis.RPGEODATA_FLOAT: 4,
+    noesis.RPGEODATA_HALFFLOAT: 2,
+    noesis.RPGEODATA_INT: 4,
+    noesis.RPGEODATA_SHORT: 2,
+    noesis.RPGEODATA_UBYTE: 1,
+    noesis.RPGEODATA_UINT: 4,
+    noesis.RPGEODATA_USHORT: 2,
+    noesis.RPGEODATA_DOUBLE: 8,
 }
 
 def callExtensionMethod(method, *args):
@@ -714,7 +713,7 @@ def unpackBuffer(data, type, stride, offset, count):
 
 # half float needs to mapped to normal float in python
 def fixHalfFloats(values, type):
-    if not type == 'RPGEODATA_HALFFLOAT':
+    if not type == noesis.RPGEODATA_HALFFLOAT:
         return values
 
     return map(lambda touple: map(lambda y: noesis.getFloat16(y), touple), values)
