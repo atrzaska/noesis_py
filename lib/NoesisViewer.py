@@ -1,10 +1,15 @@
 import pygame
 import sys
+import os
 from pygame.locals import *
 from pygame.constants import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from NoesisLoader import *
+
+SCALE = int(os.getenv('SCALE', '1'))
+WIDTH = 1280 * SCALE
+HEIGHT = 720 * SCALE
 
 class NoesisViewer:
     def __init__(self, models):
@@ -14,7 +19,7 @@ class NoesisViewer:
 
     def call(self):
         pygame.init()
-        viewport = (1280,720)
+        viewport = (WIDTH, HEIGHT)
         srf = pygame.display.set_mode(viewport, OPENGL | DOUBLEBUF)
 
         if not self.toon:

@@ -537,16 +537,36 @@ def logPopup():
     pass
 
 def mat43Add(noeMat43, other):
-    logNotImplementedMethod('mat43Add', locals())
-    return inc_noesis.NoeMat43()
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((
+            noeMat43[0][0] + other[0][0],
+            noeMat43[0][1] + other[0][1],
+            noeMat43[0][2] + other[0][2]
+        )),
+        inc_noesis.NoeVec3((
+            noeMat43[1][0] + other[1][0],
+            noeMat43[1][1] + other[1][1],
+            noeMat43[1][2] + other[1][2]
+        )),
+        inc_noesis.NoeVec3((
+            noeMat43[2][0] + other[2][0],
+            noeMat43[2][1] + other[2][1],
+            noeMat43[2][2] + other[2][2]
+        )),
+        inc_noesis.NoeVec3((
+            noeMat43[3][0] + other[3][0],
+            noeMat43[3][1] + other[3][1],
+            noeMat43[3][2] + other[3][2]
+        ))
+    ))
 
 def mat43FromBytes(data, bigEnd):
     logNotImplementedMethod('mat43FromBytes', locals())
     return inc_noesis.NoeMat43()
 
 def mat43Inverse(noeMat43):
-    logNotImplementedMethod('mat43Add', locals())
-    return inc_noesis.NoeMat43()
+    # TODO: wrong
+    return noeMat43.toMat44().inverse().toMat43()
 
 def mat43IsSkewed(noeMat43):
     logNotImplementedMethod('mat43IsSkewed', locals())
@@ -556,6 +576,7 @@ def mat43Lerp(noeMat43, other, fraction):
     logNotImplementedMethod('mat43Lerp', locals())
 
 def mat43Mul(noeMat43, other):
+    # TODO: wrong
     noeMat44 = noeMat43.toMat44()
     otherMat44 = other.toMat44()
     return (noeMat44 * otherMat44).toMat43()
@@ -571,8 +592,28 @@ def mat43SLerp(noeMat43, other, fraction):
     logNotImplementedMethod('mat43SLerp', locals())
 
 def mat43Sub(noeMat43, other):
-    logNotImplementedMethod('mat43Sub', locals())
-    return inc_noesis.NoeMat43()
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((
+            noeMat43[0][0] - other[0][0],
+            noeMat43[0][1] - other[0][1],
+            noeMat43[0][2] - other[0][2]
+        )),
+        inc_noesis.NoeVec3((
+            noeMat43[1][0] - other[1][0],
+            noeMat43[1][1] - other[1][1],
+            noeMat43[1][2] - other[1][2]
+        )),
+        inc_noesis.NoeVec3((
+            noeMat43[2][0] - other[2][0],
+            noeMat43[2][1] - other[2][1],
+            noeMat43[2][2] - other[2][2]
+        )),
+        inc_noesis.NoeVec3((
+            noeMat43[3][0] - other[3][0],
+            noeMat43[3][1] - other[3][1],
+            noeMat43[3][2] - other[3][2]
+        ))
+    ))
 
 def mat43SwapHandedness(noeMat43, axis):
     logNotImplementedMethod('mat43SwapHandedness', locals())
@@ -588,13 +629,13 @@ def mat43ToMat44(noeMat43):
     tmp = inc_noesis.NoeMat44()
 
     tmp[0][0] = noeMat43[0][0]
-    tmp[0][1] = noeMat43[0][1]
-    tmp[0][2] = noeMat43[0][2]
-    tmp[1][0] = noeMat43[1][0]
+    tmp[1][0] = noeMat43[0][1]
+    tmp[2][0] = noeMat43[0][2]
+    tmp[0][1] = noeMat43[1][0]
     tmp[1][1] = noeMat43[1][1]
-    tmp[1][2] = noeMat43[1][2]
-    tmp[2][0] = noeMat43[2][0]
-    tmp[2][1] = noeMat43[2][1]
+    tmp[2][1] = noeMat43[1][2]
+    tmp[0][2] = noeMat43[2][0]
+    tmp[1][2] = noeMat43[2][1]
     tmp[2][2] = noeMat43[2][2]
     tmp[3][0] = noeMat43[3][0]
     tmp[3][1] = noeMat43[3][1]
@@ -632,8 +673,32 @@ def mat43Validate(noeMat43):
         vec3Validate(vec)
 
 def mat44Add(noeMat44, other):
-    logNotImplementedMethod('mat44Add', locals())
-    return inc_noesis.NoeMat44()
+    return inc_noesis.NoeMat44((
+        inc_noesis.NoeVec4((
+            noeMat44[0][0] + other[0][0],
+            noeMat44[0][1] + other[0][1],
+            noeMat44[0][2] + other[0][2],
+            noeMat44[0][3] + other[0][3]
+        )),
+        inc_noesis.NoeVec4((
+            noeMat44[1][0] + other[1][0],
+            noeMat44[1][1] + other[1][1],
+            noeMat44[1][2] + other[1][2],
+            noeMat44[1][3] + other[1][3]
+        )),
+        inc_noesis.NoeVec4((
+            noeMat44[2][0] + other[2][0],
+            noeMat44[2][1] + other[2][1],
+            noeMat44[2][2] + other[2][2],
+            noeMat44[2][3] + other[2][3]
+        )),
+        inc_noesis.NoeVec4((
+            noeMat44[3][0] + other[3][0],
+            noeMat44[3][1] + other[3][1],
+            noeMat44[3][2] + other[3][2],
+            noeMat44[3][3] + other[3][3]
+        ))
+    ))
 
 def mat44FromBytes(data, bigEnd):
     logNotImplementedMethod('mat44FromBytes', locals())
@@ -717,8 +782,32 @@ def mat44Rotate(noeMat44, degrees, rotAngles):
     logNotImplementedMethod('mat44Rotate', locals())
 
 def mat44Sub(noeMat44, other):
-    logNotImplementedMethod('mat44Sub', locals())
-    return inc_noesis.NoeMat44()
+    return inc_noesis.NoeMat44((
+        inc_noesis.NoeVec4((
+            noeMat44[0][0] - other[0][0],
+            noeMat44[0][1] - other[0][1],
+            noeMat44[0][2] - other[0][2],
+            noeMat44[0][3] - other[0][3]
+        )),
+        inc_noesis.NoeVec4((
+            noeMat44[1][0] - other[1][0],
+            noeMat44[1][1] - other[1][1],
+            noeMat44[1][2] - other[1][2],
+            noeMat44[1][3] - other[1][3]
+        )),
+        inc_noesis.NoeVec4((
+            noeMat44[2][0] - other[2][0],
+            noeMat44[2][1] - other[2][1],
+            noeMat44[2][2] - other[2][2],
+            noeMat44[2][3] - other[2][3]
+        )),
+        inc_noesis.NoeVec4((
+            noeMat44[3][0] - other[3][0],
+            noeMat44[3][1] - other[3][1],
+            noeMat44[3][2] - other[3][2],
+            noeMat44[3][3] - other[3][3]
+        ))
+    ))
 
 def mat44SwapHandedness(noeMat44, axis):
     logNotImplementedMethod('mat44SwapHandedness', locals())
@@ -730,13 +819,13 @@ def mat44ToMat43(noeMat44):
     tmp = inc_noesis.NoeMat43()
 
     tmp[0][0] = noeMat44[0][0]
-    tmp[0][1] = noeMat44[0][1]
-    tmp[0][2] = noeMat44[0][2]
-    tmp[1][0] = noeMat44[1][0]
+    tmp[1][0] = noeMat44[0][1]
+    tmp[2][0] = noeMat44[0][2]
+    tmp[0][1] = noeMat44[1][0]
     tmp[1][1] = noeMat44[1][1]
-    tmp[1][2] = noeMat44[1][2]
-    tmp[2][0] = noeMat44[2][0]
-    tmp[2][1] = noeMat44[2][1]
+    tmp[2][1] = noeMat44[1][2]
+    tmp[0][2] = noeMat44[2][0]
+    tmp[1][2] = noeMat44[2][1]
     tmp[2][2] = noeMat44[2][2]
     tmp[3][0] = noeMat44[3][0]
     tmp[3][1] = noeMat44[3][1]
@@ -930,8 +1019,11 @@ def validateListTypes(list, types):
     return validateListType(list, types)
 
 def vec3Add(noeVec3, other):
-    logNotImplementedMethod('vec3Add', locals())
-    return inc_noesis.NoeVec3()
+    return inc_noesis.NoeVec3((
+        noeVec3[0] + other[0],
+        noeVec3[1] + other[1],
+        noeVec3[2] + other[2]
+    ))
 
 def vec3Cross(noeVec3, other):
     logNotImplementedMethod('vec3Cross', locals())
@@ -965,8 +1057,11 @@ def vec3Norm(noeVec3):
     return inc_noesis.NoeVec3()
 
 def vec3Sub(noeVec3, other):
-    logNotImplementedMethod('vec3Sub', locals())
-    return inc_noesis.NoeVec3()
+    return inc_noesis.NoeVec3((
+        noeVec3[0] - other[0],
+        noeVec3[1] - other[1],
+        noeVec3[2] - other[2]
+    ))
 
 def vec3ToAngles(noeVec3):
     logNotImplementedMethod('vec3ToAngles', locals())
@@ -992,8 +1087,12 @@ def vec3Validate(noeVec3):
     validateListType(vec3, Number)
 
 def vec4Add(noeVec4, other):
-    logNotImplementedMethod('vec4Add', locals())
-    return inc_noesis.NoeVec4()
+    return inc_noesis.NoeVec4((
+        noeVec4[0] + other[0],
+        noeVec4[1] + other[1],
+        noeVec4[2] + other[2],
+        noeVec4[3] + other[3]
+    ))
 
 def vec4Div(noeVec4, other):
     logNotImplementedMethod('vec4Div', locals())
@@ -1027,8 +1126,12 @@ def vec4Norm(noeVec4):
     return inc_noesis.NoeVec4()
 
 def vec4Sub(noeVec4, other):
-    logNotImplementedMethod('vec4Sub', locals())
-    return inc_noesis.NoeVec4()
+    return inc_noesis.NoeVec4((
+        noeVec4[0] - other[0],
+        noeVec4[1] - other[1],
+        noeVec4[2] - other[2],
+        noeVec4[3] - other[3]
+    ))
 
 def vec4ToBytes(noeVec4):
     logNotImplementedMethod('vec4ToBytes', locals())

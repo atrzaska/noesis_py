@@ -19,6 +19,8 @@ def noeassert(name, result, expected):
         print('OK ' + name)
     else:
         print('ERR ' + name)
+        print('    exptected: ' + str(expected))
+        print('          got: ' + str(result))
 
 def loadModel(data, mdlList):
     print('Constants')
@@ -350,7 +352,7 @@ def loadModel(data, mdlList):
 
     result = mat43ToBytes(noeMat43)
     expected = bytearray(b'\x00\x00 @fff@ff\x96@\x9a\x999@ffF@\x9a\x99\x89@\x00\x00 @fff@ff\x96@\xcd\xcc\x8c?\x9a\x99\x19@\xcd\xccL@')
-    noeassert('mat43ToAngles', result, expected)
+    noeassert('mat43ToBytes', result, expected)
 
     result = mat43ToMat44(noeMat43)
     expected = NoeMat44((

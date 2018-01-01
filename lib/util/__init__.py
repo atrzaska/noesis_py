@@ -1,7 +1,7 @@
 import os
 
 def logNotImplementedMethod(name, args):
-    if os.environ.get('DEBUG') == 'true':
+    if os.getenv('DEBUG') == 'true':
         print("Not implemented method called: " + name, args)
 
 def last(arr):

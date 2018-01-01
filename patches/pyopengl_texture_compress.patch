@@ -1,0 +1,13 @@
+diff --git a/GL/images.py b/GL/images.py
+index b94349c..547f895 100644
+--- a/GL/images.py
++++ b/GL/images.py
+@@ -497,7 +497,7 @@ class CompressedImageConverter( object ):
+     def __call__( self, pyArgs, index, wrappedOperation ):
+         """Create a data-size measurement for our image"""
+         arg = pyArgs[ self.dataIndex ]
+-        return arrays.ArrayType.arrayByteCount( arg )
++        return arrays.ArrayDatatype.arrayByteCount( arg )
+ 
+ 
+ 
