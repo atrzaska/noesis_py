@@ -1,5 +1,6 @@
 import sys
 import struct
+import math
 from Handler import Handler
 from NoeModule import NoeModule
 from AllocType import AllocType
@@ -238,12 +239,16 @@ def anglesMod(noeAngles, f):
     logNotImplementedMethod('anglesMod', locals())
 
 def anglesNormalize180(noeAngles):
-    logNotImplementedMethod('anglesNormalize180', locals())
-    return inc_noesis.NoeAngles()
+    x = noeAngles[0] % 180
+    y = noeAngles[1] % 180
+    z = noeAngles[2] % 180
+    return inc_noesis.NoeAngles((x, y, z))
 
 def anglesNormalize360(noeAngles):
-    logNotImplementedMethod('anglesNormalize360', locals())
-    return inc_noesis.NoeAngles()
+    x = noeAngles[0] % 360
+    y = noeAngles[1] % 360
+    z = noeAngles[2] % 360
+    return inc_noesis.NoeAngles((x, y, z))
 
 def anglesToMat43(noeAngles):
     logNotImplementedMethod('anglesToMat43', locals())
@@ -637,6 +642,10 @@ def mat43ToMat44(noeMat43):
     tmp[0][2] = noeMat43[2][0]
     tmp[1][2] = noeMat43[2][1]
     tmp[2][2] = noeMat43[2][2]
+    tmp[0][3] = 0.0
+    tmp[1][3] = 0.0
+    tmp[2][3] = 0.0
+    tmp[3][3] = 1.0
     tmp[3][0] = noeMat43[3][0]
     tmp[3][1] = noeMat43[3][1]
     tmp[3][2] = noeMat43[3][2]
@@ -884,8 +893,10 @@ def quat3ToBytes(noeQuat3):
     logNotImplementedMethod('quat3ToBytes', locals())
 
 def quat3ToQuat(noeQuat3):
-    logNotImplementedMethod('quat3ToQuat', locals())
-    return inc_noesis.NoeQuat((999.0, 999.0, 999.0, 999.0))
+    x = noeQuat3[0]
+    y = noeQuat3[1]
+    z = noeQuat3[2]
+    return inc_noesis.NoeQuat((x, y, z, 1.0))
 
 def quat3Validate(noeQuat3):
     vec3Validate(noeQuat3)
@@ -899,8 +910,8 @@ def quatFromBytes(data, bigEnd):
     return inc_noesis.NoeQuat()
 
 def quatLen(noeQuat):
-    logNotImplementedMethod('quatLen', locals())
-    return 9999.0
+    lenSquared = pow(noeQuat[0], 2) + pow(noeQuat[1], 2) + pow(noeQuat[2], 2) + pow(noeQuat[3], 2)
+    return math.sqrt(lenSquared)
 
 def quatLerp(noeQuat, other, fraction):
     logNotImplementedMethod('quatLerp', locals())
@@ -932,8 +943,10 @@ def quatToMat43(noeQuat, transposed):
     return inc_noesis.NoeMat43()
 
 def quatToQuat3(noeQuat):
-    logNotImplementedMethod('quatToQuat3', locals())
-    return inc_noesis.NoeQuat3()
+    x = noeQuat[0]
+    y = noeQuat[1]
+    z = noeQuat[2]
+    return inc_noesis.NoeQuat3((x, y, z))
 
 def quatTransformNormal(noeQuat, other):
     logNotImplementedMethod('quatTransformNormal', locals())
@@ -1038,12 +1051,10 @@ def vec3FromBytes(data, bigEnd):
     return inc_noesis.NoeVec3()
 
 def vec3Len(noeVec3):
-    logNotImplementedMethod('vec3Len', locals())
-    return 9999.0
+    return math.sqrt(vec3LenSq(noeVec3))
 
 def vec3LenSq(noeVec3):
-    logNotImplementedMethod('vec3LenSq', locals())
-    return 9999.0
+    return pow(noeVec3[0], 2) + pow(noeVec3[1], 2) + pow(noeVec3[2], 2)
 
 def vec3Lerp(noeVec3, other, fraction):
     logNotImplementedMethod('vec3Lerp', locals())
@@ -1053,8 +1064,11 @@ def vec3Mul(noeVec3, other):
     return inc_noesis.NoeVec3()
 
 def vec3Norm(noeVec3):
-    logNotImplementedMethod('vec3Norm', locals())
-    return inc_noesis.NoeVec3()
+    length = vec3Len(noeVec3)
+    x = noeVec3[0] / length
+    y = noeVec3[1] / length
+    z = noeVec3[2] / length
+    return inc_noesis.NoeVec3((x, y, z))
 
 def vec3Sub(noeVec3, other):
     return inc_noesis.NoeVec3((
@@ -1107,12 +1121,10 @@ def vec4FromBytes(bytes, bigEnd):
     return inc_noesis.NoeVec4()
 
 def vec4Len(noeVec4):
-    logNotImplementedMethod('vec4Len', locals())
-    return 9999.0
+    return math.sqrt(vec4LenSq(noeVec4))
 
 def vec4LenSq(noeVec4):
-    logNotImplementedMethod('vec4LenSq', locals())
-    return 9999.0
+    return pow(noeVec4[0], 2) + pow(noeVec4[1], 2) + pow(noeVec4[2], 2) + pow(noeVec4[3], 2)
 
 def vec4Lerp(noeVec4, other, fraction):
     logNotImplementedMethod('vec4Lerp', locals())
@@ -1122,8 +1134,12 @@ def vec4Mul(noeVec4, other):
     return inc_noesis.NoeVec4()
 
 def vec4Norm(noeVec4):
-    logNotImplementedMethod('vec4Norm', locals())
-    return inc_noesis.NoeVec4()
+    length = vec4Len(noeVec4)
+    x = noeVec4[0] / length
+    y = noeVec4[1] / length
+    z = noeVec4[2] / length
+    w = noeVec4[3] / length
+    return inc_noesis.NoeVec4((x, y, z, w))
 
 def vec4Sub(noeVec4, other):
     return inc_noesis.NoeVec4((
@@ -1137,8 +1153,7 @@ def vec4ToBytes(noeVec4):
     logNotImplementedMethod('vec4ToBytes', locals())
 
 def vec4ToVec3(noeVec4):
-    logNotImplementedMethod('vec4ToVec3', locals())
-    return inc_noesis.NoeVec3()
+    return inc_noesis.NoeVec3((noeVec4[0], noeVec4[1], noeVec4[2]))
 
 def vec4Validate(noeVec4):
     vec4 = noeVec4.vec4
