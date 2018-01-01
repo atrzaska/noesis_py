@@ -259,11 +259,11 @@ def loadModel(data, mdlList):
     noeassert('anglesAngleVectors', result, expected)
 
     result = anglesNormalize180(noeAngles)
-    expected = NoeAngles((2.5, 3.5999999046325684, 4.699999809265137))
+    expected = NoeAngles((2.5, 3.6, 4.7))
     noeassert('anglesNormalize180', result, expected)
 
     result = anglesNormalize360(noeAngles)
-    expected = NoeAngles((2.5, 3.5999999046325684, 4.699999809265137))
+    expected = NoeAngles((2.5, 3.6, 4.7))
     noeassert('anglesNormalize360', result, expected)
 
     result = anglesToMat43(noeAngles)
@@ -298,10 +298,10 @@ def loadModel(data, mdlList):
 
     result = mat43Add(noeMat43, other)
     expected = NoeMat43((
-        NoeVec3((5.0, 7.199999809265137, 9.399999618530273)),
-        NoeVec3((5.800000190734863, 6.199999809265137, 8.600000381469727)),
-        NoeVec3((13.0, 15.199999809265137, 17.399999618530273)),
-        NoeVec3((2.200000047683716, 18.799999237060547, 6.400000095367432))
+        NoeVec3((5.0, 7.2, 9.4)),
+        NoeVec3((5.8, 6.2, 8.6)),
+        NoeVec3((13.0, 15.2, 17.4)),
+        NoeVec3((2.2, 18.8, 6.4))
     ))
     noeassert('mat43Add', result, expected)
 
@@ -402,10 +402,10 @@ def loadModel(data, mdlList):
 
     result = mat43Mul(noeMat43, other)
     expected = NoeMat43((
-        NoeVec3((47.23999786376953, 55.87999725341797, 68.1199951171875)),
-        NoeVec3((44.19000244140625, 52.72999954223633, 64.37000274658203)),
-        NoeVec3((94.83999633789062, 113.07999420166016, 138.9199981689453)),
-        NoeVec3((52.72999572753906, 55.48999786376953, 109.62999725341797))
+        NoeVec3((47.239999999999995, 55.879999999999995, 68.12)),
+        NoeVec3((44.19, 52.730000000000004, 64.37)),
+        NoeVec3((94.84, 113.07999999999998, 138.92)),
+        NoeVec3((52.730000000000004, 55.489999999999995, 109.63000000000001))
     ))
     noeassert('mat43Mul', result, expected)
 
@@ -437,10 +437,10 @@ def loadModel(data, mdlList):
 
     result = mat43ToMat44(noeMat43)
     expected = NoeMat44((
-        NoeVec4((2.5, 2.9000000953674316, 6.5, 0.0)),
-        NoeVec4((3.5999999046325684, 3.0999999046325684, 7.599999904632568, 0.0)),
-        NoeVec4((4.699999809265137, 4.300000190734863, 8.699999809265137, 0.0)),
-        NoeVec4((1.100000023841858, 9.399999618530273, 3.200000047683716, 1.0))
+        NoeVec4((2.5, 2.9, 6.5, 0.0)),
+        NoeVec4((3.6, 3.1, 7.6, 0.0)),
+        NoeVec4((4.7, 4.3, 8.7, 0.0)),
+        NoeVec4((1.1, 9.4, 3.2, 1.0))
     ))
     noeassert('mat43ToMat44', result, expected)
 
@@ -450,10 +450,10 @@ def loadModel(data, mdlList):
 
     result = mat43Transpose(noeMat43)
     expected = NoeMat43((
-        NoeVec3((2.5, 2.9000000953674316, 6.5)),
-        NoeVec3((3.5999999046325684, 3.0999999046325684, 7.599999904632568)),
-        NoeVec3((4.699999809265137, 4.300000190734863, 8.699999809265137)),
-        NoeVec3((1.100000023841858, 9.399999618530273, 3.200000047683716))
+        NoeVec3((2.5, 2.9, 6.5)),
+        NoeVec3((3.6, 3.1, 7.6)),
+        NoeVec3((4.7, 4.3, 8.7)),
+        NoeVec3((1.1, 9.4, 3.2))
     ))
     noeassert('mat43Transpose', result, expected)
 
@@ -472,28 +472,29 @@ def loadModel(data, mdlList):
 
     result = mat44Add(noeMat44, other)
     expected = NoeMat44((
-        NoeVec4((5.0, 7.199999809265137, 9.399999618530273, 11.600000381469727)),
-        NoeVec4((5.800000190734863, 6.199999809265137, 8.600000381469727, 10.399999618530273)),
-        NoeVec4((13.0, 15.199999809265137, 17.399999618530273, 10.600000381469727)),
-        NoeVec4((2.200000047683716, 18.799999237060547, 6.400000095367432, 8.199999809265137))
+        NoeVec4((5.0, 7.2, 9.4, 11.6)),
+        NoeVec4((5.8, 6.2, 8.6, 10.4)),
+        NoeVec4((13.0, 15.2, 17.4, 10.6)),
+        NoeVec4((2.2, 18.8, 6.4, 8.2))
     ))
     noeassert('mat44Add', result, expected)
 
     result = mat44Inverse(noeMat44)
+
     expected = NoeMat44((
-        NoeVec4((-1.610483169555664, 1.787597894668579, -0.03347308188676834, 0.054317232221364975)),
-        NoeVec4((-0.2320033758878708, 0.1409837156534195, 0.0013440571492537856, 0.14765407145023346)),
-        NoeVec4((1.5607200860977173, -1.8485857248306274, 0.25772276520729065, -0.19645412266254425)),
-        NoeVec4((-0.2541317641735077, 0.6399680376052856, -0.1952504962682724, 0.044135697185993195))
+        NoeVec4((-1.6104822328660597, 1.787596860345559, -0.033472929257466394, 0.05431702485141782)),
+        NoeVec4((-0.23200341048724796, 0.14098352433733696, 0.0013441332096195096, 0.14765403616119602)),
+        NoeVec4((1.5607192115755923, -1.8485843970208353, 0.25772249667728225, -0.19645409634626437)),
+        NoeVec4((-0.25413145422173145, 0.6399679012964855, -0.19525039496451568, 0.04413571733079214))
     ))
     noeassert('mat44Inverse', result, expected)
 
     result = mat44Mul(noeMat44, other)
     expected = NoeMat44((
-        NoeVec4((53.619998931884766, 110.39999389648438, 86.68000030517578, 81.90999603271484)),
-        NoeVec4((49.90999984741211, 101.60999298095703, 81.01000213623047, 77.05000305175781)),
-        NoeVec4((100.66999816894531, 162.89999389648438, 155.8800048828125, 145.05999755859375)),
-        NoeVec4((55.31999969482422, 95.95999908447266, 86.55000305175781, 89.02999877929688))
+        NoeVec4((53.62, 110.4, 86.68, 81.91)),
+        NoeVec4((49.91, 101.61000000000001, 81.01, 77.05)),
+        NoeVec4((100.67, 162.89999999999998, 155.88, 145.05999999999997)),
+        NoeVec4((55.32, 95.96000000000001, 86.55000000000001, 89.03))
     ))
     noeassert('mat44Mul', result, expected)
 
@@ -512,42 +513,41 @@ def loadModel(data, mdlList):
 
     result = mat44ToMat43(noeMat44)
     expected = NoeMat43((
-        NoeVec3((2.5, 2.9000000953674316, 6.5)),
-        NoeVec3((3.5999999046325684, 3.0999999046325684, 7.599999904632568)),
-        NoeVec3((4.699999809265137, 4.300000190734863, 8.699999809265137)),
-        NoeVec3((1.100000023841858, 9.399999618530273, 3.200000047683716))
+        NoeVec3((2.5, 2.9, 6.5)),
+        NoeVec3((3.6, 3.1, 7.6)),
+        NoeVec3((4.7, 4.3, 8.7)),
+        NoeVec3((1.1, 9.4, 3.2))
     ))
     noeassert('mat44ToMat43', result, expected)
 
     result = mat44Transpose(noeMat44)
     expected = NoeMat44((
-        NoeVec4((2.5, 2.9000000953674316, 6.5, 1.100000023841858)),
-        NoeVec4((3.5999999046325684, 3.0999999046325684, 7.599999904632568, 9.399999618530273)),
-        NoeVec4((4.699999809265137, 4.300000190734863, 8.699999809265137, 3.200000047683716)),
-        NoeVec4((5.800000190734863, 5.199999809265137, 5.300000190734863, 4.099999904632568))
+        NoeVec4((2.5, 2.9, 6.5, 1.1)),
+        NoeVec4((3.6, 3.1, 7.6, 9.4)),
+        NoeVec4((4.7, 4.3, 8.7, 3.2)),
+        NoeVec4((5.8, 5.2, 5.3, 4.1))
     ))
     noeassert('mat44Transpose', result, expected)
 
     noeQuat3 = NoeQuat3((m11, m12, m13))
-    other = NoeQuat3((m21, m22, m23))
 
     result = quat3ToBytes(noeQuat3)
     expected = bytearray(b'\x00\x00 @fff@ff\x96@')
     noeassert('quat3ToBytes', result, expected)
 
     result = quat3ToQuat(noeQuat3)
-    expected = NoeQuat((2.5, 3.5999999046325684, 4.699999809265137, 6.3482279777526855))
+    expected = NoeQuat((2.5, 3.6, 4.7, 6.3482279777526855))
     noeassert('quat3ToQuat', result, expected)
 
     noeQuat = NoeQuat((m11, m12, m13, m14))
     other = NoeQuat((m21, m22, m23, m24))
 
     result = quatAdd(noeQuat, other)
-    expected = NoeQuat((5.400000095367432, 6.699999809265137, 9.0, 11.0))
+    expected = NoeQuat((5.4, 6.7, 9.0, 11.0))
     noeassert('quatAdd', result, expected)
 
     result = quatLen(noeQuat)
-    expected = 8.656789779663086
+    expected = 8.656789243131659
     noeassert('quatLen', result, expected)
 
     result = quatMul(noeQuat, other)
@@ -555,11 +555,11 @@ def loadModel(data, mdlList):
     noeassert('quatMul', result, expected)
 
     result = quatNormalize(noeQuat)
-    expected = NoeQuat((0.28879064321517944, 0.41585853695869446, 0.5429264307022095, 0.6699943542480469))
+    expected = NoeQuat((0.2887906739769035, 0.415858570526741, 0.5429264670765785, 0.6699943636264161))
     noeassert('quatNormalize', result, expected)
 
     result = quatSub(noeQuat, other)
-    expected = NoeQuat((-0.40000009536743164, 0.5, 0.39999961853027344, 0.6000003814697266))
+    expected = NoeQuat((-0.3999999999999999, 0.5, 0.40000000000000036, 0.5999999999999996))
     noeassert('quatSub', result, expected)
 
     result = quatToAngles(noeQuat)
@@ -571,7 +571,7 @@ def loadModel(data, mdlList):
     noeassert('quatToBytes', result, expected)
 
     result = quatToQuat3(noeQuat)
-    expected = NoeQuat3((2.5, 3.5999999046325684, 4.699999809265137))
+    expected = NoeQuat3((2.5, 3.6, 4.7))
     noeassert('quatToQuat3', result, expected)
 
     result = quatTranspose(noeQuat)
@@ -582,35 +582,35 @@ def loadModel(data, mdlList):
     other = NoeVec3((m21, m22, m23))
 
     result = vec3Add(noeVec3, other)
-    expected = NoeVec3((5.400000095367432, 6.699999809265137, 9.0))
+    expected = NoeVec3((5.4, 6.7, 9.0))
     noeassert('vec3Add', result, expected)
 
     result = vec3Cross(noeVec3, other)
-    expected = NoeVec3((0.9100013375282288, 2.8799993991851807, -2.690000295639038))
+    expected = NoeVec3((0.9100000000000001, 2.880000000000001, -2.6899999999999995))
     noeassert('vec3Cross', result, expected)
 
     result = vec3Div(noeVec3, other)
-    expected = NoeVec3((0.8620689511299133, 1.1612902879714966, 1.0930231809616089))
+    expected = NoeVec3((0.8620689655172414, 1.1612903225806452, 1.0930232558139537))
     noeassert('vec3Div', result, expected)
 
     result = vec3Len(noeVec3)
-    expected = 6.426507472991943
+    expected = 6.4265076052238514
     noeassert('vec3Len', result, expected)
 
     result = vec3LenSq(noeVec3)
-    expected = 41.29999923706055
+    expected = 41.300000000000004
     noeassert('vec3LenSq', result, expected)
 
     result = vec3Mul(noeVec3, other)
-    expected = NoeVec3((7.25, 11.159998893737793, 20.21000099182129))
+    expected = NoeVec3((7.25, 11.16, 20.21))
     noeassert('vec3Mul', result, expected)
 
     result = vec3Norm(noeVec3)
-    expected = NoeVec3((0.38901376724243164, 0.5601798295974731, 0.7313458919525146))
+    expected = NoeVec3((0.3890137775559232, 0.5601798396805294, 0.7313459018051356))
     noeassert('vec3Norm', result, expected)
 
     result = vec3Sub(noeVec3, other)
-    expected = NoeVec3((-0.40000009536743164, 0.5, 0.39999961853027344))
+    expected = NoeVec3((-0.3999999999999999, 0.5, 0.40000000000000036))
     noeassert('vec3Sub', result, expected)
 
     result = vec3ToAngles(noeVec3)
@@ -631,42 +631,42 @@ def loadModel(data, mdlList):
     noeassert('vec3ToMat43', result, expected)
 
     result = vec3ToVec4(noeVec3)
-    expected = NoeVec4((2.5, 3.5999999046325684, 4.699999809265137, 0.0))
+    expected = NoeVec4((2.5, 3.6, 4.7, 0.0))
     noeassert('vec3ToVec4', result, expected)
 
     noeVec4 = NoeVec4((m11, m12, m13, m14))
     other = NoeVec4((m21, m22, m23, m24))
 
     result = vec4Add(noeVec4, other)
-    expected = NoeVec4((5.400000095367432, 6.699999809265137, 9.0, 11.0))
+    expected = NoeVec4((5.4, 6.7, 9.0, 11.0))
     noeassert('vec4Add', result, expected)
 
     result = vec4Div(noeVec4, other)
-    expected = NoeVec4((0.8620689511299133, 1.1612902879714966, 1.0930231809616089, 1.34883713722229))
+    expected = NoeVec4((0.8620689655172414, 1.1612903225806452, 1.0930232558139537, 1.34883713722229))
     noeassert('vec4Div', result, expected)
 
     result = vec4Dot(noeVec4, other)
-    expected = 68.77999877929688
+    expected = 68.78
     noeassert('vec4Dot', result, expected)
 
     result = vec4Len(noeVec4)
-    expected = 8.656789779663086
+    expected = 8.656789243131659
     noeassert('vec4Len', result, expected)
 
     result = vec4LenSq(noeVec4)
-    expected = 74.94000244140625
+    expected = 74.94
     noeassert('vec4LenSq', result, expected)
 
     result = vec4Mul(noeVec4, other)
-    expected = NoeVec4((7.25, 11.159998893737793, 20.21000099182129, 30.15999984741211))
+    expected = NoeVec4((7.25, 11.16, 20.21, 30.16))
     noeassert('vec4Mul', result, expected)
 
     result = vec4Norm(noeVec4)
-    expected = NoeVec4((0.28879064321517944, 0.41585853695869446, 0.5429264307022095, 0.6699943542480469))
+    expected = NoeVec4((0.2887906739769035, 0.415858570526741, 0.5429264670765785, 0.6699943636264161))
     noeassert('vec4Norm', result, expected)
 
     result = vec4Sub(noeVec4, other)
-    expected = NoeVec4((-0.40000009536743164, 0.5, 0.39999961853027344, 0.6000003814697266))
+    expected = NoeVec4((-0.3999999999999999, 0.5, 0.40000000000000036, 0.5999999999999996))
     noeassert('vec4Sub', result, expected)
 
     result = vec4ToBytes(noeVec4)
@@ -674,7 +674,7 @@ def loadModel(data, mdlList):
     noeassert('vec4ToBytes', result, expected)
 
     result = vec4ToVec3(noeVec4)
-    expected = NoeVec3((2.5, 3.5999999046325684, 4.699999809265137))
+    expected = NoeVec3((2.5, 3.6, 4.7))
     noeassert('vec4ToVec3', result, expected)
 
     return 1
