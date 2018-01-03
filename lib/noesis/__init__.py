@@ -1113,7 +1113,12 @@ def vec3ToBytes(noeVec3):
 
 def vec3ToMat43(noeVec3):
     logNotImplementedMethod('vec3ToMat43', locals())
-    return inc_noesis.NoeMat43()
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((noeVec3[0], noeVec3[1], noeVec3[2])),
+        inc_noesis.NoeVec3((1.0, 1.0, 1.0)),
+        inc_noesis.NoeVec3((1.0, 1.0, 1.0)),
+        inc_noesis.NoeVec3((0.0, 0.0, 0.0))
+    ))
 
 def vec3ToVec4(noeVec3):
     x = noeVec3[0]
