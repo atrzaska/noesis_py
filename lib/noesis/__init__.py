@@ -542,22 +542,25 @@ def logPopup():
     pass
 
 def mat43Add(noeMat43, other):
-    tmp = inc_noesis.NoeMat43()
+    m00 = noeMat43[0][0] + other[0][0]
+    m01 = noeMat43[0][1] + other[0][1]
+    m02 = noeMat43[0][2] + other[0][2]
+    m10 = noeMat43[1][0] + other[1][0]
+    m11 = noeMat43[1][1] + other[1][1]
+    m12 = noeMat43[1][2] + other[1][2]
+    m20 = noeMat43[2][0] + other[2][0]
+    m21 = noeMat43[2][1] + other[2][1]
+    m22 = noeMat43[2][2] + other[2][2]
+    m30 = noeMat43[3][0] + other[3][0]
+    m31 = noeMat43[3][1] + other[3][1]
+    m32 = noeMat43[3][2] + other[3][2]
 
-    tmp[0][0] = noeMat43[0][0] + other[0][0]
-    tmp[0][1] = noeMat43[0][1] + other[0][1]
-    tmp[0][2] = noeMat43[0][2] + other[0][2]
-    tmp[1][0] = noeMat43[1][0] + other[1][0]
-    tmp[1][1] = noeMat43[1][1] + other[1][1]
-    tmp[1][2] = noeMat43[1][2] + other[1][2]
-    tmp[2][0] = noeMat43[2][0] + other[2][0]
-    tmp[2][1] = noeMat43[2][1] + other[2][1]
-    tmp[2][2] = noeMat43[2][2] + other[2][2]
-    tmp[3][0] = noeMat43[3][0] + other[3][0]
-    tmp[3][1] = noeMat43[3][1] + other[3][1]
-    tmp[3][2] = noeMat43[3][2] + other[3][2]
-
-    return tmp
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((m00, m01, m02)),
+        inc_noesis.NoeVec3((m10, m11, m12)),
+        inc_noesis.NoeVec3((m20, m21, m22)),
+        inc_noesis.NoeVec3((m30, m31, m32))
+    ))
 
 def mat43FromBytes(data, bigEnd):
     logNotImplementedMethod('mat43FromBytes', locals())
@@ -575,10 +578,7 @@ def mat43Lerp(noeMat43, other, fraction):
     logNotImplementedMethod('mat43Lerp', locals())
 
 def mat43Mul(noeMat43, other):
-    # TODO: wrong
-    noeMat44 = noeMat43.toMat44()
-    otherMat44 = other.toMat44()
-    return (noeMat44 * otherMat44).toMat43()
+    return (noeMat43.toMat44() * other.toMat44()).toMat43()
 
 def mat43Orthogonalize(noeMat43):
     logNotImplementedMethod('mat43Orthogonalize', locals())
@@ -591,22 +591,25 @@ def mat43SLerp(noeMat43, other, fraction):
     logNotImplementedMethod('mat43SLerp', locals())
 
 def mat43Sub(noeMat43, other):
-    tmp = inc_noesis.NoeMat43()
+    m00 = noeMat43[0][0] - other[0][0]
+    m01 = noeMat43[0][1] - other[0][1]
+    m02 = noeMat43[0][2] - other[0][2]
+    m10 = noeMat43[1][0] - other[1][0]
+    m11 = noeMat43[1][1] - other[1][1]
+    m12 = noeMat43[1][2] - other[1][2]
+    m20 = noeMat43[2][0] - other[2][0]
+    m21 = noeMat43[2][1] - other[2][1]
+    m22 = noeMat43[2][2] - other[2][2]
+    m30 = noeMat43[3][0] - other[3][0]
+    m31 = noeMat43[3][1] - other[3][1]
+    m32 = noeMat43[3][2] - other[3][2]
 
-    tmp[0][0] = noeMat43[0][0] - other[0][0]
-    tmp[0][1] = noeMat43[0][1] - other[0][1]
-    tmp[0][2] = noeMat43[0][2] - other[0][2]
-    tmp[1][0] = noeMat43[1][0] - other[1][0]
-    tmp[1][1] = noeMat43[1][1] - other[1][1]
-    tmp[1][2] = noeMat43[1][2] - other[1][2]
-    tmp[2][0] = noeMat43[2][0] - other[2][0]
-    tmp[2][1] = noeMat43[2][1] - other[2][1]
-    tmp[2][2] = noeMat43[2][2] - other[2][2]
-    tmp[3][0] = noeMat43[3][0] - other[3][0]
-    tmp[3][1] = noeMat43[3][1] - other[3][1]
-    tmp[3][2] = noeMat43[3][2] - other[3][2]
-
-    return tmp
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((m00, m01, m02)),
+        inc_noesis.NoeVec3((m10, m11, m12)),
+        inc_noesis.NoeVec3((m20, m21, m22)),
+        inc_noesis.NoeVec3((m30, m31, m32))
+    ))
 
 def mat43SwapHandedness(noeMat43, axis):
     logNotImplementedMethod('mat43SwapHandedness', locals())
@@ -619,26 +622,29 @@ def mat43ToBytes(noeMat43):
     logNotImplementedMethod('mat43ToBytes', locals())
 
 def mat43ToMat44(noeMat43):
-    tmp = inc_noesis.NoeMat44()
+    m00 = noeMat43[0][0]
+    m01 = noeMat43[1][0]
+    m02 = noeMat43[2][0]
+    m03 = 0.0
+    m10 = noeMat43[0][1]
+    m11 = noeMat43[1][1]
+    m12 = noeMat43[2][1]
+    m13 = 0.0
+    m20 = noeMat43[0][2]
+    m21 = noeMat43[1][2]
+    m22 = noeMat43[2][2]
+    m23 = 0.0
+    m30 = noeMat43[3][0]
+    m31 = noeMat43[3][1]
+    m32 = noeMat43[3][2]
+    m33 = 1.0
 
-    tmp[0][0] = noeMat43[0][0]
-    tmp[1][0] = noeMat43[0][1]
-    tmp[2][0] = noeMat43[0][2]
-    tmp[0][1] = noeMat43[1][0]
-    tmp[1][1] = noeMat43[1][1]
-    tmp[2][1] = noeMat43[1][2]
-    tmp[0][2] = noeMat43[2][0]
-    tmp[1][2] = noeMat43[2][1]
-    tmp[2][2] = noeMat43[2][2]
-    tmp[0][3] = 0.0
-    tmp[1][3] = 0.0
-    tmp[2][3] = 0.0
-    tmp[3][3] = 1.0
-    tmp[3][0] = noeMat43[3][0]
-    tmp[3][1] = noeMat43[3][1]
-    tmp[3][2] = noeMat43[3][2]
-
-    return tmp
+    return inc_noesis.NoeMat44((
+        inc_noesis.NoeVec4((m00, m01, m02, m03)),
+        inc_noesis.NoeVec4((m10, m11, m12, m13)),
+        inc_noesis.NoeVec4((m20, m21, m22, m23)),
+        inc_noesis.NoeVec4((m30, m31, m32, m33))
+    ))
 
 def mat43ToQuat(noeMat43):
     logNotImplementedMethod('mat43ToQuat', locals())
@@ -657,22 +663,25 @@ def mat43Translate(noeMat43, trnVector):
     logNotImplementedMethod('mat43Translate', locals())
 
 def mat43Transpose(noeMat43):
-    tmp = inc_noesis.NoeMat43()
+    m00 = noeMat43[0][0]
+    m01 = noeMat43[1][0]
+    m02 = noeMat43[2][0]
+    m10 = noeMat43[0][1]
+    m11 = noeMat43[1][1]
+    m12 = noeMat43[2][1]
+    m20 = noeMat43[0][2]
+    m21 = noeMat43[1][2]
+    m22 = noeMat43[2][2]
+    m30 = noeMat43[3][0]
+    m31 = noeMat43[3][1]
+    m32 = noeMat43[3][2]
 
-    tmp[0][0] = noeMat43[0][0]
-    tmp[0][1] = noeMat43[1][0]
-    tmp[0][2] = noeMat43[2][0]
-    tmp[1][0] = noeMat43[0][1]
-    tmp[1][1] = noeMat43[1][1]
-    tmp[1][2] = noeMat43[2][1]
-    tmp[2][0] = noeMat43[0][2]
-    tmp[2][1] = noeMat43[1][2]
-    tmp[2][2] = noeMat43[2][2]
-    tmp[3][0] = noeMat43[3][0]
-    tmp[3][1] = noeMat43[3][1]
-    tmp[3][2] = noeMat43[3][2]
-
-    return tmp
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((m00, m01, m02)),
+        inc_noesis.NoeVec3((m10, m11, m12)),
+        inc_noesis.NoeVec3((m20, m21, m22)),
+        inc_noesis.NoeVec3((m30, m31, m32))
+    ))
 
 def mat43Validate(noeMat43):
     mat43 = noeMat43.mat43
@@ -684,34 +693,35 @@ def mat43Validate(noeMat43):
         vec3Validate(vec)
 
 def mat44Add(noeMat44, other):
-    tmp = inc_noesis.NoeMat44()
+    m00 = noeMat44[0][0] + other[0][0]
+    m01 = noeMat44[0][1] + other[0][1]
+    m02 = noeMat44[0][2] + other[0][2]
+    m03 = noeMat44[0][3] + other[0][3]
+    m10 = noeMat44[1][0] + other[1][0]
+    m11 = noeMat44[1][1] + other[1][1]
+    m12 = noeMat44[1][2] + other[1][2]
+    m13 = noeMat44[1][3] + other[1][3]
+    m20 = noeMat44[2][0] + other[2][0]
+    m21 = noeMat44[2][1] + other[2][1]
+    m22 = noeMat44[2][2] + other[2][2]
+    m23 = noeMat44[2][3] + other[2][3]
+    m30 = noeMat44[3][0] + other[3][0]
+    m31 = noeMat44[3][1] + other[3][1]
+    m32 = noeMat44[3][2] + other[3][2]
+    m33 = noeMat44[3][3] + other[3][3]
 
-    tmp[0][0] = noeMat44[0][0] + other[0][0]
-    tmp[0][1] = noeMat44[0][1] + other[0][1]
-    tmp[0][2] = noeMat44[0][2] + other[0][2]
-    tmp[0][3] = noeMat44[0][3] + other[0][3]
-    tmp[1][0] = noeMat44[1][0] + other[1][0]
-    tmp[1][1] = noeMat44[1][1] + other[1][1]
-    tmp[1][2] = noeMat44[1][2] + other[1][2]
-    tmp[1][3] = noeMat44[1][3] + other[1][3]
-    tmp[2][0] = noeMat44[2][0] + other[2][0]
-    tmp[2][1] = noeMat44[2][1] + other[2][1]
-    tmp[2][2] = noeMat44[2][2] + other[2][2]
-    tmp[2][3] = noeMat44[2][3] + other[2][3]
-    tmp[3][0] = noeMat44[3][0] + other[3][0]
-    tmp[3][1] = noeMat44[3][1] + other[3][1]
-    tmp[3][2] = noeMat44[3][2] + other[3][2]
-    tmp[3][3] = noeMat44[3][3] + other[3][3]
-
-    return tmp
+    return inc_noesis.NoeMat44((
+        inc_noesis.NoeVec4((m00, m01, m02, m03)),
+        inc_noesis.NoeVec4((m10, m11, m12, m13)),
+        inc_noesis.NoeVec4((m20, m21, m22, m23)),
+        inc_noesis.NoeVec4((m30, m31, m32, m33))
+    ))
 
 def mat44FromBytes(data, bigEnd):
     logNotImplementedMethod('mat44FromBytes', locals())
     return inc_noesis.NoeMat44()
 
 def mat44Inverse(mtx):
-    tmp = inc_noesis.NoeMat44()
-
     det = (
           (mtx[0][0] * mtx[1][1] - mtx[1][0] * mtx[0][1])
         * (mtx[2][2] * mtx[3][3] - mtx[3][2] * mtx[2][3])
@@ -732,81 +742,83 @@ def mat44Inverse(mtx):
     else:
         det = 1.0 / det
 
-        tmp[0][0] = det * (mtx[1][1] * (mtx[2][2] * mtx[3][3] - mtx[3][2] * mtx[2][3]) + mtx[2][1] * (mtx[3][2] * mtx[1][3] - mtx[1][2] * mtx[3][3]) + mtx[3][1] * (mtx[1][2] * mtx[2][3] - mtx[2][2] * mtx[1][3]))
-        tmp[1][0] = det * (mtx[1][2] * (mtx[2][0] * mtx[3][3] - mtx[3][0] * mtx[2][3]) + mtx[2][2] * (mtx[3][0] * mtx[1][3] - mtx[1][0] * mtx[3][3]) + mtx[3][2] * (mtx[1][0] * mtx[2][3] - mtx[2][0] * mtx[1][3]))
-        tmp[2][0] = det * (mtx[1][3] * (mtx[2][0] * mtx[3][1] - mtx[3][0] * mtx[2][1]) + mtx[2][3] * (mtx[3][0] * mtx[1][1] - mtx[1][0] * mtx[3][1]) + mtx[3][3] * (mtx[1][0] * mtx[2][1] - mtx[2][0] * mtx[1][1]))
-        tmp[3][0] = det * (mtx[1][0] * (mtx[3][1] * mtx[2][2] - mtx[2][1] * mtx[3][2]) + mtx[2][0] * (mtx[1][1] * mtx[3][2] - mtx[3][1] * mtx[1][2]) + mtx[3][0] * (mtx[2][1] * mtx[1][2] - mtx[1][1] * mtx[2][2]))
+        m00 = det * (mtx[1][1] * (mtx[2][2] * mtx[3][3] - mtx[3][2] * mtx[2][3]) + mtx[2][1] * (mtx[3][2] * mtx[1][3] - mtx[1][2] * mtx[3][3]) + mtx[3][1] * (mtx[1][2] * mtx[2][3] - mtx[2][2] * mtx[1][3]))
+        m10 = det * (mtx[1][2] * (mtx[2][0] * mtx[3][3] - mtx[3][0] * mtx[2][3]) + mtx[2][2] * (mtx[3][0] * mtx[1][3] - mtx[1][0] * mtx[3][3]) + mtx[3][2] * (mtx[1][0] * mtx[2][3] - mtx[2][0] * mtx[1][3]))
+        m20 = det * (mtx[1][3] * (mtx[2][0] * mtx[3][1] - mtx[3][0] * mtx[2][1]) + mtx[2][3] * (mtx[3][0] * mtx[1][1] - mtx[1][0] * mtx[3][1]) + mtx[3][3] * (mtx[1][0] * mtx[2][1] - mtx[2][0] * mtx[1][1]))
+        m30 = det * (mtx[1][0] * (mtx[3][1] * mtx[2][2] - mtx[2][1] * mtx[3][2]) + mtx[2][0] * (mtx[1][1] * mtx[3][2] - mtx[3][1] * mtx[1][2]) + mtx[3][0] * (mtx[2][1] * mtx[1][2] - mtx[1][1] * mtx[2][2]))
+        m01 = det * (mtx[2][1] * (mtx[0][2] * mtx[3][3] - mtx[3][2] * mtx[0][3]) + mtx[3][1] * (mtx[2][2] * mtx[0][3] - mtx[0][2] * mtx[2][3]) + mtx[0][1] * (mtx[3][2] * mtx[2][3] - mtx[2][2] * mtx[3][3]))
+        m11 = det * (mtx[2][2] * (mtx[0][0] * mtx[3][3] - mtx[3][0] * mtx[0][3]) + mtx[3][2] * (mtx[2][0] * mtx[0][3] - mtx[0][0] * mtx[2][3]) + mtx[0][2] * (mtx[3][0] * mtx[2][3] - mtx[2][0] * mtx[3][3]))
+        m21 = det * (mtx[2][3] * (mtx[0][0] * mtx[3][1] - mtx[3][0] * mtx[0][1]) + mtx[3][3] * (mtx[2][0] * mtx[0][1] - mtx[0][0] * mtx[2][1]) + mtx[0][3] * (mtx[3][0] * mtx[2][1] - mtx[2][0] * mtx[3][1]))
+        m31 = det * (mtx[2][0] * (mtx[3][1] * mtx[0][2] - mtx[0][1] * mtx[3][2]) + mtx[3][0] * (mtx[0][1] * mtx[2][2] - mtx[2][1] * mtx[0][2]) + mtx[0][0] * (mtx[2][1] * mtx[3][2] - mtx[3][1] * mtx[2][2]))
+        m02 = det * (mtx[3][1] * (mtx[0][2] * mtx[1][3] - mtx[1][2] * mtx[0][3]) + mtx[0][1] * (mtx[1][2] * mtx[3][3] - mtx[3][2] * mtx[1][3]) + mtx[1][1] * (mtx[3][2] * mtx[0][3] - mtx[0][2] * mtx[3][3]))
+        m12 = det * (mtx[3][2] * (mtx[0][0] * mtx[1][3] - mtx[1][0] * mtx[0][3]) + mtx[0][2] * (mtx[1][0] * mtx[3][3] - mtx[3][0] * mtx[1][3]) + mtx[1][2] * (mtx[3][0] * mtx[0][3] - mtx[0][0] * mtx[3][3]))
+        m22 = det * (mtx[3][3] * (mtx[0][0] * mtx[1][1] - mtx[1][0] * mtx[0][1]) + mtx[0][3] * (mtx[1][0] * mtx[3][1] - mtx[3][0] * mtx[1][1]) + mtx[1][3] * (mtx[3][0] * mtx[0][1] - mtx[0][0] * mtx[3][1]))
+        m32 = det * (mtx[3][0] * (mtx[1][1] * mtx[0][2] - mtx[0][1] * mtx[1][2]) + mtx[0][0] * (mtx[3][1] * mtx[1][2] - mtx[1][1] * mtx[3][2]) + mtx[1][0] * (mtx[0][1] * mtx[3][2] - mtx[3][1] * mtx[0][2]))
+        m03 = det * (mtx[0][1] * (mtx[2][2] * mtx[1][3] - mtx[1][2] * mtx[2][3]) + mtx[1][1] * (mtx[0][2] * mtx[2][3] - mtx[2][2] * mtx[0][3]) + mtx[2][1] * (mtx[1][2] * mtx[0][3] - mtx[0][2] * mtx[1][3]))
+        m13 = det * (mtx[0][2] * (mtx[2][0] * mtx[1][3] - mtx[1][0] * mtx[2][3]) + mtx[1][2] * (mtx[0][0] * mtx[2][3] - mtx[2][0] * mtx[0][3]) + mtx[2][2] * (mtx[1][0] * mtx[0][3] - mtx[0][0] * mtx[1][3]))
+        m23 = det * (mtx[0][3] * (mtx[2][0] * mtx[1][1] - mtx[1][0] * mtx[2][1]) + mtx[1][3] * (mtx[0][0] * mtx[2][1] - mtx[2][0] * mtx[0][1]) + mtx[2][3] * (mtx[1][0] * mtx[0][1] - mtx[0][0] * mtx[1][1]))
+        m33 = det * (mtx[0][0] * (mtx[1][1] * mtx[2][2] - mtx[2][1] * mtx[1][2]) + mtx[1][0] * (mtx[2][1] * mtx[0][2] - mtx[0][1] * mtx[2][2]) + mtx[2][0] * (mtx[0][1] * mtx[1][2] - mtx[1][1] * mtx[0][2]))
 
-        tmp[0][1] = det * (mtx[2][1] * (mtx[0][2] * mtx[3][3] - mtx[3][2] * mtx[0][3]) + mtx[3][1] * (mtx[2][2] * mtx[0][3] - mtx[0][2] * mtx[2][3]) + mtx[0][1] * (mtx[3][2] * mtx[2][3] - mtx[2][2] * mtx[3][3]))
-        tmp[1][1] = det * (mtx[2][2] * (mtx[0][0] * mtx[3][3] - mtx[3][0] * mtx[0][3]) + mtx[3][2] * (mtx[2][0] * mtx[0][3] - mtx[0][0] * mtx[2][3]) + mtx[0][2] * (mtx[3][0] * mtx[2][3] - mtx[2][0] * mtx[3][3]))
-        tmp[2][1] = det * (mtx[2][3] * (mtx[0][0] * mtx[3][1] - mtx[3][0] * mtx[0][1]) + mtx[3][3] * (mtx[2][0] * mtx[0][1] - mtx[0][0] * mtx[2][1]) + mtx[0][3] * (mtx[3][0] * mtx[2][1] - mtx[2][0] * mtx[3][1]))
-        tmp[3][1] = det * (mtx[2][0] * (mtx[3][1] * mtx[0][2] - mtx[0][1] * mtx[3][2]) + mtx[3][0] * (mtx[0][1] * mtx[2][2] - mtx[2][1] * mtx[0][2]) + mtx[0][0] * (mtx[2][1] * mtx[3][2] - mtx[3][1] * mtx[2][2]))
+        return inc_noesis.NoeMat44((
+            inc_noesis.NoeVec4((m00, m01, m02, m03)),
+            inc_noesis.NoeVec4((m10, m11, m12, m13)),
+            inc_noesis.NoeVec4((m20, m21, m22, m23)),
+            inc_noesis.NoeVec4((m30, m31, m32, m33))
+        ))
 
-        tmp[0][2] = det * (mtx[3][1] * (mtx[0][2] * mtx[1][3] - mtx[1][2] * mtx[0][3]) + mtx[0][1] * (mtx[1][2] * mtx[3][3] - mtx[3][2] * mtx[1][3]) + mtx[1][1] * (mtx[3][2] * mtx[0][3] - mtx[0][2] * mtx[3][3]))
-        tmp[1][2] = det * (mtx[3][2] * (mtx[0][0] * mtx[1][3] - mtx[1][0] * mtx[0][3]) + mtx[0][2] * (mtx[1][0] * mtx[3][3] - mtx[3][0] * mtx[1][3]) + mtx[1][2] * (mtx[3][0] * mtx[0][3] - mtx[0][0] * mtx[3][3]))
-        tmp[2][2] = det * (mtx[3][3] * (mtx[0][0] * mtx[1][1] - mtx[1][0] * mtx[0][1]) + mtx[0][3] * (mtx[1][0] * mtx[3][1] - mtx[3][0] * mtx[1][1]) + mtx[1][3] * (mtx[3][0] * mtx[0][1] - mtx[0][0] * mtx[3][1]))
-        tmp[3][2] = det * (mtx[3][0] * (mtx[1][1] * mtx[0][2] - mtx[0][1] * mtx[1][2]) + mtx[0][0] * (mtx[3][1] * mtx[1][2] - mtx[1][1] * mtx[3][2]) + mtx[1][0] * (mtx[0][1] * mtx[3][2] - mtx[3][1] * mtx[0][2]))
 
-        tmp[0][3] = det * (mtx[0][1] * (mtx[2][2] * mtx[1][3] - mtx[1][2] * mtx[2][3]) + mtx[1][1] * (mtx[0][2] * mtx[2][3] - mtx[2][2] * mtx[0][3]) + mtx[2][1] * (mtx[1][2] * mtx[0][3] - mtx[0][2] * mtx[1][3]))
-        tmp[1][3] = det * (mtx[0][2] * (mtx[2][0] * mtx[1][3] - mtx[1][0] * mtx[2][3]) + mtx[1][2] * (mtx[0][0] * mtx[2][3] - mtx[2][0] * mtx[0][3]) + mtx[2][2] * (mtx[1][0] * mtx[0][3] - mtx[0][0] * mtx[1][3]))
-        tmp[2][3] = det * (mtx[0][3] * (mtx[2][0] * mtx[1][1] - mtx[1][0] * mtx[2][1]) + mtx[1][3] * (mtx[0][0] * mtx[2][1] - mtx[2][0] * mtx[0][1]) + mtx[2][3] * (mtx[1][0] * mtx[0][1] - mtx[0][0] * mtx[1][1]))
-        tmp[3][3] = det * (mtx[0][0] * (mtx[1][1] * mtx[2][2] - mtx[2][1] * mtx[1][2]) + mtx[1][0] * (mtx[2][1] * mtx[0][2] - mtx[0][1] * mtx[2][2]) + mtx[2][0] * (mtx[0][1] * mtx[1][2] - mtx[1][1] * mtx[0][2]))
+def mat44Mul(a, b):
+    m00 = a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0] + a[0][3] * b[3][0]
+    m01 = a[0][0] * b[0][1] + a[0][1] * b[1][1] + a[0][2] * b[2][1] + a[0][3] * b[3][1]
+    m02 = a[0][0] * b[0][2] + a[0][1] * b[1][2] + a[0][2] * b[2][2] + a[0][3] * b[3][2]
+    m03 = a[0][0] * b[0][3] + a[0][1] * b[1][3] + a[0][2] * b[2][3] + a[0][3] * b[3][3]
+    m10 = a[1][0] * b[0][0] + a[1][1] * b[1][0] + a[1][2] * b[2][0] + a[1][3] * b[3][0]
+    m11 = a[1][0] * b[0][1] + a[1][1] * b[1][1] + a[1][2] * b[2][1] + a[1][3] * b[3][1]
+    m12 = a[1][0] * b[0][2] + a[1][1] * b[1][2] + a[1][2] * b[2][2] + a[1][3] * b[3][2]
+    m13 = a[1][0] * b[0][3] + a[1][1] * b[1][3] + a[1][2] * b[2][3] + a[1][3] * b[3][3]
+    m20 = a[2][0] * b[0][0] + a[2][1] * b[1][0] + a[2][2] * b[2][0] + a[2][3] * b[3][0]
+    m21 = a[2][0] * b[0][1] + a[2][1] * b[1][1] + a[2][2] * b[2][1] + a[2][3] * b[3][1]
+    m22 = a[2][0] * b[0][2] + a[2][1] * b[1][2] + a[2][2] * b[2][2] + a[2][3] * b[3][2]
+    m23 = a[2][0] * b[0][3] + a[2][1] * b[1][3] + a[2][2] * b[2][3] + a[2][3] * b[3][3]
+    m30 = a[3][0] * b[0][0] + a[3][1] * b[1][0] + a[3][2] * b[2][0] + a[3][3] * b[3][0]
+    m31 = a[3][0] * b[0][1] + a[3][1] * b[1][1] + a[3][2] * b[2][1] + a[3][3] * b[3][1]
+    m32 = a[3][0] * b[0][2] + a[3][1] * b[1][2] + a[3][2] * b[2][2] + a[3][3] * b[3][2]
+    m33 = a[3][0] * b[0][3] + a[3][1] * b[1][3] + a[3][2] * b[2][3] + a[3][3] * b[3][3]
 
-        return tmp
-
-def mat44Mul(mtx, rhs):
-    tmp = inc_noesis.NoeMat44()
-
-    # Row 1
-    tmp[0][0] = (mtx[0][0] * rhs[0][0]) + (mtx[0][1] * rhs[1][0]) + (mtx[0][2] * rhs[2][0]) + (mtx[0][3] * rhs[3][0])
-    tmp[0][1] = (mtx[0][0] * rhs[0][1]) + (mtx[0][1] * rhs[1][1]) + (mtx[0][2] * rhs[2][1]) + (mtx[0][3] * rhs[3][1])
-    tmp[0][2] = (mtx[0][0] * rhs[0][2]) + (mtx[0][1] * rhs[1][2]) + (mtx[0][2] * rhs[2][2]) + (mtx[0][3] * rhs[3][2])
-    tmp[0][3] = (mtx[0][0] * rhs[0][3]) + (mtx[0][1] * rhs[1][3]) + (mtx[0][2] * rhs[2][3]) + (mtx[0][3] * rhs[3][3])
-
-    # Row 2
-    tmp[1][0] = (mtx[1][0] * rhs[0][0]) + (mtx[1][1] * rhs[1][0]) + (mtx[1][2] * rhs[2][0]) + (mtx[1][3] * rhs[3][0])
-    tmp[1][1] = (mtx[1][0] * rhs[0][1]) + (mtx[1][1] * rhs[1][1]) + (mtx[1][2] * rhs[2][1]) + (mtx[1][3] * rhs[3][1])
-    tmp[1][2] = (mtx[1][0] * rhs[0][2]) + (mtx[1][1] * rhs[1][2]) + (mtx[1][2] * rhs[2][2]) + (mtx[1][3] * rhs[3][2])
-    tmp[1][3] = (mtx[1][0] * rhs[0][3]) + (mtx[1][1] * rhs[1][3]) + (mtx[1][2] * rhs[2][3]) + (mtx[1][3] * rhs[3][3])
-
-    # Row 3
-    tmp[2][0] = (mtx[2][0] * rhs[0][0]) + (mtx[2][1] * rhs[1][0]) + (mtx[2][2] * rhs[2][0]) + (mtx[2][3] * rhs[3][0])
-    tmp[2][1] = (mtx[2][0] * rhs[0][1]) + (mtx[2][1] * rhs[1][1]) + (mtx[2][2] * rhs[2][1]) + (mtx[2][3] * rhs[3][1])
-    tmp[2][2] = (mtx[2][0] * rhs[0][2]) + (mtx[2][1] * rhs[1][2]) + (mtx[2][2] * rhs[2][2]) + (mtx[2][3] * rhs[3][2])
-    tmp[2][3] = (mtx[2][0] * rhs[0][3]) + (mtx[2][1] * rhs[1][3]) + (mtx[2][2] * rhs[2][3]) + (mtx[2][3] * rhs[3][3])
-
-    # Row 4
-    tmp[3][0] = (mtx[3][0] * rhs[0][0]) + (mtx[3][1] * rhs[1][0]) + (mtx[3][2] * rhs[2][0]) + (mtx[3][3] * rhs[3][0])
-    tmp[3][1] = (mtx[3][0] * rhs[0][1]) + (mtx[3][1] * rhs[1][1]) + (mtx[3][2] * rhs[2][1]) + (mtx[3][3] * rhs[3][1])
-    tmp[3][2] = (mtx[3][0] * rhs[0][2]) + (mtx[3][1] * rhs[1][2]) + (mtx[3][2] * rhs[2][2]) + (mtx[3][3] * rhs[3][2])
-    tmp[3][3] = (mtx[3][0] * rhs[0][3]) + (mtx[3][1] * rhs[1][3]) + (mtx[3][2] * rhs[2][3]) + (mtx[3][3] * rhs[3][3])
-
-    return tmp
+    return inc_noesis.NoeMat44((
+        inc_noesis.NoeVec4((m00, m01, m02, m03)),
+        inc_noesis.NoeVec4((m10, m11, m12, m13)),
+        inc_noesis.NoeVec4((m20, m21, m22, m23)),
+        inc_noesis.NoeVec4((m30, m31, m32, m33))
+    ))
 
 def mat44Rotate(noeMat44, degrees, rotAngles):
     logNotImplementedMethod('mat44Rotate', locals())
 
 def mat44Sub(noeMat44, other):
-    tmp = inc_noesis.NoeMat44()
+    m00 = noeMat44[0][0] - other[0][0]
+    m01 = noeMat44[0][1] - other[0][1]
+    m02 = noeMat44[0][2] - other[0][2]
+    m03 = noeMat44[0][3] - other[0][3]
+    m10 = noeMat44[1][0] - other[1][0]
+    m11 = noeMat44[1][1] - other[1][1]
+    m12 = noeMat44[1][2] - other[1][2]
+    m13 = noeMat44[1][3] - other[1][3]
+    m20 = noeMat44[2][0] - other[2][0]
+    m21 = noeMat44[2][1] - other[2][1]
+    m22 = noeMat44[2][2] - other[2][2]
+    m23 = noeMat44[2][3] - other[2][3]
+    m30 = noeMat44[3][0] - other[3][0]
+    m31 = noeMat44[3][1] - other[3][1]
+    m32 = noeMat44[3][2] - other[3][2]
+    m33 = noeMat44[3][3] - other[3][3]
 
-    tmp[0][0] = noeMat44[0][0] - other[0][0]
-    tmp[0][1] = noeMat44[0][1] - other[0][1]
-    tmp[0][2] = noeMat44[0][2] - other[0][2]
-    tmp[0][3] = noeMat44[0][3] - other[0][3]
-    tmp[1][0] = noeMat44[1][0] - other[1][0]
-    tmp[1][1] = noeMat44[1][1] - other[1][1]
-    tmp[1][2] = noeMat44[1][2] - other[1][2]
-    tmp[1][3] = noeMat44[1][3] - other[1][3]
-    tmp[2][0] = noeMat44[2][0] - other[2][0]
-    tmp[2][1] = noeMat44[2][1] - other[2][1]
-    tmp[2][2] = noeMat44[2][2] - other[2][2]
-    tmp[2][3] = noeMat44[2][3] - other[2][3]
-    tmp[3][0] = noeMat44[3][0] - other[3][0]
-    tmp[3][1] = noeMat44[3][1] - other[3][1]
-    tmp[3][2] = noeMat44[3][2] - other[3][2]
-    tmp[3][3] = noeMat44[3][3] - other[3][3]
-
-    return tmp
+    return inc_noesis.NoeMat44((
+        inc_noesis.NoeVec4((m00, m01, m02, m03)),
+        inc_noesis.NoeVec4((m10, m11, m12, m13)),
+        inc_noesis.NoeVec4((m20, m21, m22, m23)),
+        inc_noesis.NoeVec4((m30, m31, m32, m33))
+    ))
 
 def mat44SwapHandedness(noeMat44, axis):
     logNotImplementedMethod('mat44SwapHandedness', locals())
@@ -815,22 +827,25 @@ def mat44ToBytes(noeMat44):
     logNotImplementedMethod('mat44ToBytes', locals())
 
 def mat44ToMat43(noeMat44):
-    tmp = inc_noesis.NoeMat43()
+    m00 = noeMat44[0][0]
+    m10 = noeMat44[0][1]
+    m20 = noeMat44[0][2]
+    m01 = noeMat44[1][0]
+    m11 = noeMat44[1][1]
+    m21 = noeMat44[1][2]
+    m02 = noeMat44[2][0]
+    m12 = noeMat44[2][1]
+    m22 = noeMat44[2][2]
+    m30 = noeMat44[3][0]
+    m31 = noeMat44[3][1]
+    m32 = noeMat44[3][2]
 
-    tmp[0][0] = noeMat44[0][0]
-    tmp[1][0] = noeMat44[0][1]
-    tmp[2][0] = noeMat44[0][2]
-    tmp[0][1] = noeMat44[1][0]
-    tmp[1][1] = noeMat44[1][1]
-    tmp[2][1] = noeMat44[1][2]
-    tmp[0][2] = noeMat44[2][0]
-    tmp[1][2] = noeMat44[2][1]
-    tmp[2][2] = noeMat44[2][2]
-    tmp[3][0] = noeMat44[3][0]
-    tmp[3][1] = noeMat44[3][1]
-    tmp[3][2] = noeMat44[3][2]
-
-    return tmp
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((m00, m01, m02)),
+        inc_noesis.NoeVec3((m10, m11, m12)),
+        inc_noesis.NoeVec3((m20, m21, m22)),
+        inc_noesis.NoeVec3((m30, m31, m32))
+    ))
 
 def mat44TransformVec4(noeMat44, other):
     logNotImplementedMethod('mat44TransformVec4', locals())
@@ -839,26 +854,29 @@ def mat44Translate(noeMat44, trnVector):
     logNotImplementedMethod('mat44Translate', locals())
 
 def mat44Transpose(noeMat44):
-    tmp = inc_noesis.NoeMat44()
+    m00 = noeMat44[0][0]
+    m01 = noeMat44[1][0]
+    m02 = noeMat44[2][0]
+    m03 = noeMat44[3][0]
+    m10 = noeMat44[0][1]
+    m11 = noeMat44[1][1]
+    m12 = noeMat44[2][1]
+    m13 = noeMat44[3][1]
+    m20 = noeMat44[0][2]
+    m21 = noeMat44[1][2]
+    m22 = noeMat44[2][2]
+    m23 = noeMat44[3][2]
+    m30 = noeMat44[0][3]
+    m31 = noeMat44[1][3]
+    m32 = noeMat44[2][3]
+    m33 = noeMat44[3][3]
 
-    tmp[0][0] = noeMat44[0][0]
-    tmp[0][1] = noeMat44[1][0]
-    tmp[0][2] = noeMat44[2][0]
-    tmp[0][3] = noeMat44[3][0]
-    tmp[1][0] = noeMat44[0][1]
-    tmp[1][1] = noeMat44[1][1]
-    tmp[1][2] = noeMat44[2][1]
-    tmp[1][3] = noeMat44[3][1]
-    tmp[2][0] = noeMat44[0][2]
-    tmp[2][1] = noeMat44[1][2]
-    tmp[2][2] = noeMat44[2][2]
-    tmp[2][3] = noeMat44[3][2]
-    tmp[3][0] = noeMat44[0][3]
-    tmp[3][1] = noeMat44[1][3]
-    tmp[3][2] = noeMat44[2][3]
-    tmp[3][3] = noeMat44[3][3]
-
-    return tmp
+    return inc_noesis.NoeMat44((
+        inc_noesis.NoeVec4((m00, m01, m02, m03)),
+        inc_noesis.NoeVec4((m10, m11, m12, m13)),
+        inc_noesis.NoeVec4((m20, m21, m22, m23)),
+        inc_noesis.NoeVec4((m30, m31, m32, m33))
+    ))
 
 def mat44Validate(noeMat44):
     mat44 = noeMat44.mat44
