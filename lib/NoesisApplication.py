@@ -16,7 +16,7 @@ class NoesisApplication:
             plugin.registerNoesisTypes()
 
         if (len(sys.argv) == 1):
-            print("Please provide a model file")
+            print("Usage: noesis <file1> <file2> ...")
             return
 
         files = sys.argv[1:len(sys.argv)]

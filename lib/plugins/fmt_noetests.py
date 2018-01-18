@@ -305,14 +305,96 @@ def loadModel(data, mdlList):
     ))
     noeassert('mat43Add', result, expected)
 
-    result = mat43Inverse(noeMat43)
+    input = NoeMat43((
+        NoeVec3((1, 0, 0)),
+        NoeVec3((0, 1, 0)),
+        NoeVec3((0, 0, 1)),
+        NoeVec3((0, 0, 0))
+    ))
+
+    expected = NoeMat43((
+        NoeVec3((1.0, 0.0, 0.0)),
+        NoeVec3((0.0, 1.0, 0.0)),
+        NoeVec3((0.0, 0.0, 1.0)),
+        NoeVec3((0.0, 0.0, 0.0))
+    ))
+    noeassert('mat43Inverse 1', input.inverse(), expected)
+
+
+    input = NoeMat43((
+        NoeVec3((0.0, 0.0, 1.0)),
+        NoeVec3((0.0, 1.0, 0.0)),
+        NoeVec3((-1.0, 0.0, 0.0)),
+        NoeVec3((0.0, 32.29199981689453, -3.2665998935699463))
+    ))
+
+    expected = NoeMat43((
+        NoeVec3((0.0, 0.0, -1.0)),
+        NoeVec3((0.0, 1.0, 0.0)),
+        NoeVec3((1.0, 0.0, 0.0)),
+        NoeVec3((-3.2665998935699463, -32.29199981689453, 0.0))
+    ))
+    noeassert('mat43Inverse 2', input.inverse(), expected)
+
+    input = NoeMat43((
+        NoeVec3((0.0, 0.0, 2.0)),
+        NoeVec3((0.0, 2.0, 0.0)),
+        NoeVec3((-2.0, 0.0, 0.0)),
+        NoeVec3((0.0, 32.29199981689453, -3.2665998935699463))
+    ))
+
+    expected = NoeMat43((
+        NoeVec3((0.0, 0.0, -0.5)),
+        NoeVec3((0.0, 0.5, 0.0)),
+        NoeVec3((0.5, 0.0, 0.0)),
+        NoeVec3((-1.6332999467849731, -16.145999908447266, 0.0))
+    ))
+    noeassert('mat43Inverse 3', input.inverse(), expected)
+
+    input = NoeMat43((
+        NoeVec3((2.0, 0.0, 2.0)),
+        NoeVec3((0.0, 2.0, 0.0)),
+        NoeVec3((-2.0, 0.0, 0.0)),
+        NoeVec3((0.0, 32.29199981689453, -3.2665998935699463))
+    ))
+
+    expected = NoeMat43((
+        NoeVec3((0.2499999850988388, 0.0, -0.2499999850988388)),
+        NoeVec3((0.0, 0.5, 0.0)),
+        NoeVec3((0.5, 0.0, 0.0)),
+        NoeVec3((-0.8166499137878418, -16.145999908447266, 0.0))
+    ))
+    noeassert('mat43Inverse 4', input.inverse(), expected)
+
+    input = NoeMat43((
+        NoeVec3((2.5, 3.6, 4.7)),
+        NoeVec3((2.9, 3.1, 4.3)),
+        NoeVec3((6.5, 7.6, 8.7)),
+        NoeVec3((1.1, 9.4, 3.2))
+    ))
+
     expected = NoeMat43((
         NoeVec3((0.04392901062965393, 0.05095765367150307, 0.1142154261469841)),
         NoeVec3((0.044815145432949066, 0.038590818643569946, 0.09460975229740143)),
         NoeVec3((0.04042314738035202, 0.036982882767915726, 0.07482582330703735)),
         NoeVec3((-0.8928132057189941, -0.714801549911499, -0.6315471529960632))
     ))
-    noeassert('mat43Inverse', result, expected)
+    noeassert('mat43Inverse 5', input.inverse(), expected)
+
+    input = NoeMat43((
+        NoeVec3((0.1, 0.2, 0.3)),
+        NoeVec3((0.4, 0.5, 0.6)),
+        NoeVec3((0.7, 0.8, 0.9)),
+        NoeVec3((0.0, 0.5, 0.2))
+    ))
+
+    expected = NoeMat43((
+        NoeVec3((0.1515151709318161, 0.6060606837272644, 1.0606061220169067)),
+        NoeVec3((0.2150537520647049, 0.5376343727111816, 0.8602150082588196)),
+        NoeVec3((0.2380952537059784, 0.4761905074119568, 0.7142857313156128)),
+        NoeVec3((-0.5151515603065491, -0.44086018204689026, -0.380952388048172))
+    ))
+    noeassert('mat43Inverse 6', input.inverse(), expected)
 
     result = mat43IsSkewed(noeMat43)
     expected = 1
