@@ -21,6 +21,13 @@ Noesis implementation that works on Linux and MacOS
 
 List of models loaded depends on available plugins.
 
+# Configuration
+
+Supported environement variables that can be manipulated
+
+DEBUG=true # turns on debug logging, default false
+SCALE=2 # scale of the window by 2, default 1
+
 # Licence
 
 MIT
