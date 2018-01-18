@@ -1,17 +1,7 @@
-import all methods from readme
 mikitm008 displays skirt weirdly
 implement #rapi.setPreviewOption("setAngOfs", "0 180 0") to have default rotation
-load textures from model directory
-go over tmp unimplemented methods
-finish writting test and run it on original noesis
-implement write methods
-finish allocType methods
 handle different face breaks 0xFFFF
-add missing constants
-read rgb or rgba format from texture file directly
 fromBytes methods don't have @staticmethod in inc_noesis
-DONE: imported all conts from readme
-TODO: verify if no method name is missing in noesis module and rapi module
 TODO: noesis module methods have missing arguments, review arguments!
 for example noesis.setToolVisibleCallback has no args defined but should have 2
 
