@@ -1,3 +1,4 @@
+# TODO: remove this once rapi.rpgConstructModel is rewoked to use NoeVec3 classes
 class NoeMesh:
     def __init__(self, triList, posList, name = "default", materialName = "default", glbVertIdx = -1, glbTriIdx = -1):
         self.setIndices(triList)

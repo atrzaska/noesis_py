@@ -2,6 +2,7 @@ import inc_noesis
 import noesis
 from NoeMesh import NoeMesh
 
+# TODO: remove this once rapi.rpgConstructModel is rewoked to use NoeVec3 classes
 class NoeModel:
     def __init__(self, meshes = [], bones = [], anims = [], modelMats = None):
         self.setMeshes(meshes)
