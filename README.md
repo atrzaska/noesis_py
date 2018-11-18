@@ -21,6 +21,17 @@ Noesis implementation that works on Linux and MacOS
 
 List of models loaded depends on available plugins.
 
+# Work In Progress
+
+This project is a work in progress. At the moment it only allows basic viewing of noesis supported models.
+
+There are currently many methods not implemented yet.
+
+To view a list of not implemented methods please run (`ag` program is required):
+
+    ag logNotImplementedMethod
+    ag "\*args"
+
 # Configuration
 
 Supported environement variables that can be manipulated
