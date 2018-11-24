@@ -567,7 +567,7 @@ def mat43FromBytes(data, bigEnd):
     return inc_noesis.NoeMat43()
 
 def mat43Inverse(noeMat43):
-    # TODO: wrong
+    # TODO: this logic gives wrong results
     return noeMat43.toMat44().inverse().toMat43()
 
 def mat43IsSkewed(noeMat43):
@@ -1014,10 +1014,10 @@ def quatTranspose(noeQuat):
 def quatValidate(noeQuat):
     quat = noeQuat.quat
 
-    validateListType(quat, Number)
-
     if len(quat) != 4:
         doException('quatValidate: validation failed')
+
+    validateListType(quat, Number)
 
 def register(name, fileType):
     # TODO: fileType can be semicolon separated '.obj;.obc'
@@ -1230,10 +1230,10 @@ def vec4ToVec3(noeVec4):
 def vec4Validate(noeVec4):
     vec4 = noeVec4.vec4
 
-    validateListType(vec4, Number)
-
     if len(vec4) != 4:
         doException('vec4Validate: validation failed')
+
+    validateListType(vec4, Number)
 
 # private
 

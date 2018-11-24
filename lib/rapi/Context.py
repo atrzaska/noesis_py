@@ -1,5 +1,4 @@
 import inc_noesis
-from NoeMesh import NoeMesh
 
 class Context:
     def __init__(self):
@@ -12,7 +11,7 @@ class Context:
         self.clearBuffers()
 
     def commit(self, faceBuffer, type, numIdx, shape, usePlotMap):
-        mesh = NoeMesh(faceBuffer, self.vertexBuffer)
+        mesh = inc_noesis.NoeMesh(faceBuffer, self.vertexBuffer)
         mesh.setName(self.name)
         mesh.setMaterial(self.material)
         mesh.setLightmap(self.lightMap)

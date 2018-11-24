@@ -4,7 +4,7 @@ import itertools
 import sys
 import pvr
 import noesis
-from NoeModel import NoeModel
+import inc_noesis
 from Context import Context
 from util import logNotImplementedMethod
 
@@ -17,7 +17,7 @@ this.lastCheckedName = None
 UNPACK_TYPES = {
     noesis.RPGEODATA_BYTE: 'b',
     noesis.RPGEODATA_FLOAT: 'f',
-    noesis.RPGEODATA_HALFFLOAT: 'H', # need to convert half float to float
+    noesis.RPGEODATA_HALFFLOAT: 'H', # half float is converted to float
     noesis.RPGEODATA_INT: 'i',
     noesis.RPGEODATA_SHORT: 'h',
     noesis.RPGEODATA_UBYTE: 'B',
@@ -486,7 +486,11 @@ def rpgBindColorBuffer(data, type, stride, count):
     return rpgBindColorBufferOfs(data, type, stride, 0, count)
 
 def rpgBindColorBufferOfs(data, type, stride, offset, count):
+    if count >= 1 and count <= 4:
+        doException('rpgBindColorBufferOfs, count argument must be one of 1, 2, 3, 4')
+
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
+    unpackedBuffer = map(lambda x: inc_noesis.NoeVec4(x), unpackedBuffer)
     this.context.colorBuffer = unpackedBuffer
 
 def rpgBindNormalBuffer(data, type, stride):
@@ -494,6 +498,7 @@ def rpgBindNormalBuffer(data, type, stride):
 
 def rpgBindNormalBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
+    unpackedBuffer = map(lambda x: inc_noesis.NoeVec3(x), unpackedBuffer)
     this.context.normalBuffer = unpackedBuffer
 
 def rpgBindPositionBuffer(data, type, stride):
@@ -501,6 +506,7 @@ def rpgBindPositionBuffer(data, type, stride):
 
 def rpgBindPositionBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
+    unpackedBuffer = map(lambda x: inc_noesis.NoeVec3(x), unpackedBuffer)
     this.context.vertexBuffer = unpackedBuffer
 
 def rpgBindTangentBuffer(data, type, stride):
@@ -520,6 +526,7 @@ def rpgBindUV1Buffer(data, type, stride):
 
 def rpgBindUV1BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
+    unpackedBuffer = map(lambda x: inc_noesis.NoeVec3((x[0], x[1], 0)), unpackedBuffer)
     this.context.uvBuffer = unpackedBuffer
 
 def rpgBindUV2Buffer(data, type, stride):
@@ -554,7 +561,7 @@ def rpgCommitTriangles(data, type, numIdx, shape, usePlotMap):
 
 def rpgConstructModel():
     meshes = this.context.meshes
-    model = NoeModel(meshes)
+    model = inc_noesis.NoeModel(meshes)
     return model
 
 def rpgConstructModelSlim():
@@ -705,8 +712,9 @@ def splitBuffer(data, stride):
 def unpackBuffer(data, type, stride, offset, count):
     splitted = splitBuffer(data, stride)
     typeSize = UNPACK_SIZES[type]
+    unpackType = UNPACK_TYPES[type]
+    fmt = str(count) + unpackType
     mapped = map(lambda x: x[offset:offset + typeSize * count], splitted)
-    fmt = str(count) + UNPACK_TYPES[type]
     mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     mapped = fixHalfFloats(mapped, type)
     return mapped
