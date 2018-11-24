@@ -45,8 +45,8 @@ To view a list of not implemented methods please run (`ag` program is required):
 
 Supported environement variables that can be manipulated
 
-DEBUG=true # turns on debug logging, default false
-SCALE=2 # scale of the window by 2, default 1
+    DEBUG=true # turns on debug logging, default false
+    SCALE=2 # scale of the window by 2, default 1
 
 # Problems
 
