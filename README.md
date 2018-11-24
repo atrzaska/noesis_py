@@ -2,6 +2,10 @@
 
 Noesis implementation that works on Linux and MacOS
 
+http://richwhitehouse.com/index.php?content=inc_projects.php&showproject=91
+
+Noesis is a tool for previewing and converting between hundreds of model, image, and animation formats. It utilizes a robust plugin system, with support for native extension modules and Python scripts. The plugin/script API features hundreds of functions and interfaces which assist in developing new formats, tools, and visualization aids. Noesis also features processing, conversion, and visualization options for many different types of volume data, including medical imaging formats such as Analyze 7.5, NifTI-1, and DICOM.
+
 # Dependencies
 
 - cpython2
