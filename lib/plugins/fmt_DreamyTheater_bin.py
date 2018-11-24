@@ -6,7 +6,6 @@ import noesis
 import rapi
 
 def registerNoesisTypes():
-   pass # TODO remove this
    handle = noesis.register("Project Diva Dreamy Theater Model", ".bin")
    noesis.setHandlerTypeCheck(handle, objBinCheckType)
    noesis.setHandlerLoadModel(handle, objBinLoadModel)

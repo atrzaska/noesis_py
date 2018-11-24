@@ -160,8 +160,7 @@ class NoeBitStream(NoeUnpacker):
     def fromUnpacker(self):
         self.setOffset(self.byteOfs)
     def read(self, fmtStr):
-        # self.toUnpacker(); r = noeSuper(self).read(fmtStr); self.fromUnpacker(); return r
-        return noesis.bsReadAndUnpack(self.h, fmtStr) # TODO :remove
+        self.toUnpacker(); r = noeSuper(self).read(fmtStr); self.fromUnpacker(); return r
     def seek(self, addr, isRelative = NOESEEK_ABS):
         self.toUnpacker(); r = noeSuper(self).seek(addr, isRelative); self.fromUnpacker(); return r
     def tell(self):
