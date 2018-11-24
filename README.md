@@ -85,6 +85,6 @@ Loading of the models is currently very slow due to fact that each buffer value 
 
 MIT
 
-`inc_noesis.py` rights belong to Rich Whitehouse
+`inc_noesis.py` rights belong to Rich Whitehouse.
 
 `lib/plugins` plugin rights belong to original authors.
