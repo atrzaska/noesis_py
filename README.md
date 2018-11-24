@@ -1,10 +1,13 @@
 # Noesis-Py
 
-Noesis implementation that works on Linux and MacOS
+Noesis implementation that works on Linux and MacOS. Goal of this project is to provide a working open source implementation of noesis software which provides ability to load plugins written for original noesis. That said, plugins written once for noesis should work with this project without any changes. API should be consistent with official noesis implementation.
 
 http://richwhitehouse.com/index.php?content=inc_projects.php&showproject=91
 
 Noesis is a tool for previewing and converting between hundreds of model, image, and animation formats. It utilizes a robust plugin system, with support for native extension modules and Python scripts. The plugin/script API features hundreds of functions and interfaces which assist in developing new formats, tools, and visualization aids. Noesis also features processing, conversion, and visualization options for many different types of volume data, including medical imaging formats such as Analyze 7.5, NifTI-1, and DICOM.
+
+![Screenshot](/screenshots/screenshot.png?raw=true)
+On a screenshot you can see a PMX model loaded with `fmt_MikuMikuDance_pmx.py` noesis plugin.
 
 # Dependencies
 
