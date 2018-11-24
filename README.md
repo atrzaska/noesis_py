@@ -54,7 +54,7 @@ To view a list of not implemented methods please run (`ag` program is required):
 # Not implemented features
 
 - morphs
-- bone weights
+- bones
 - quaternions
 - animations
 - noesis tools
@@ -63,6 +63,11 @@ To view a list of not implemented methods please run (`ag` program is required):
 - some matrix 4x4 operations
 - full pvr support
 - from/to byte operations
+- vertex colors
+- tangents
+- user data buffer
+- light uv map
+
 
 # Configuration
 
