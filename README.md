@@ -30,6 +30,15 @@ On a screenshot you can see a PMX model loaded with `fmt_MikuMikuDance_pmx.py` n
 
 List of models loaded depends on available plugins.
 
+# 3D Navigation
+
+3D OpenGL window has following navigation features:
+
+- hold left mouse button and move the mouse to rotate
+- hold right mouse button and move the mouse to pan
+- scroll up to zoom in
+- scoll down to zoom out
+
 # Work In Progress
 
 This project is a work in progress. At the moment it only allows basic viewing of noesis supported models.
