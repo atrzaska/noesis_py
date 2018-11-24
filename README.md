@@ -49,6 +49,20 @@ To view a list of not implemented methods please run (`ag` program is required):
 
     ag logNotImplementedMethod
     ag "\*args"
+    
+
+# Not implemented features
+
+- morphs
+- bone weights
+- quaternions
+- animations
+- noesis tools
+- bit operations
+- some matrix 4x3 operations
+- some matrix 4x4 operations
+- full pvr support
+- from/to byte operations
 
 # Configuration
 
