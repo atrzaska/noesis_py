@@ -490,7 +490,6 @@ def rpgBindColorBufferOfs(data, type, stride, offset, count):
         doException('rpgBindColorBufferOfs, count argument must be one of 1, 2, 3, 4')
 
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
-    unpackedBuffer = map(lambda x: inc_noesis.NoeVec4(x), unpackedBuffer)
     this.context.colorBuffer = unpackedBuffer
 
 def rpgBindNormalBuffer(data, type, stride):
@@ -498,7 +497,6 @@ def rpgBindNormalBuffer(data, type, stride):
 
 def rpgBindNormalBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
-    unpackedBuffer = map(lambda x: inc_noesis.NoeVec3(x), unpackedBuffer)
     this.context.normalBuffer = unpackedBuffer
 
 def rpgBindPositionBuffer(data, type, stride):
@@ -506,7 +504,6 @@ def rpgBindPositionBuffer(data, type, stride):
 
 def rpgBindPositionBufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 3)
-    unpackedBuffer = map(lambda x: inc_noesis.NoeVec3(x), unpackedBuffer)
     this.context.vertexBuffer = unpackedBuffer
 
 def rpgBindTangentBuffer(data, type, stride):
@@ -526,7 +523,6 @@ def rpgBindUV1Buffer(data, type, stride):
 
 def rpgBindUV1BufferOfs(data, type, stride, offset):
     unpackedBuffer = unpackBuffer(data, type, stride, offset, 2)
-    unpackedBuffer = map(lambda x: inc_noesis.NoeVec3((x[0], x[1], 0)), unpackedBuffer)
     this.context.uvBuffer = unpackedBuffer
 
 def rpgBindUV2Buffer(data, type, stride):
