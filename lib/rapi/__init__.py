@@ -180,13 +180,13 @@ def imageDecodeRawPal(data, palette, width, height, unk8, paletteFormat):
 def imageDXTRemoveFlatFractionBlocks(*args):
     logNotImplementedMethod('imageDXTRemoveFlatFractionBlocks', locals())
 
-def imageEncodeDXT(data, unk4, width, height, encodeFormat):
+def imageEncodeDXT(data, sourcePixelStrideInBytes, width, height, encodeFormat):
     logNotImplementedMethod('imageEncodeDXT', locals())
 
 def imageEncodeRaw(data, width, height, paletteFormat):
     logNotImplementedMethod('imageEncodeRaw', locals())
 
-def imageFlipRGBA32(data, width, height, unk0, unk1):
+def imageFlipRGBA32(data, width, height, horizontalFlip, verticalFlip):
     logNotImplementedMethod('imageFlipRGBA32', locals())
 
 def imageFromMortonOrder(data, width, height, dxtBlockBytes):
