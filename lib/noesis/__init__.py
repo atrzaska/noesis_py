@@ -1,9 +1,9 @@
 import sys
 import struct
 import math
-from Handler import Handler
-from NoeModule import NoeModule
-from AllocType import AllocType
+from noesis.Handler import Handler
+from noesis.NoeModule import NoeModule
+from noesis.AllocType import AllocType
 from numbers import Number
 from util import logNotImplementedMethod
 

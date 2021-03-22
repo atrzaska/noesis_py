@@ -1,1 +1,1 @@
-from SanaeObject import SanaeObject
+from Sanae3D.Sanae.SanaeObject import SanaeObject

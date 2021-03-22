@@ -1,6 +1,6 @@
 import sys
 import PIL.Image
-import StringIO
+import io
 from bitstring import ConstBitStream
 
 def scaleTo255(color, size):

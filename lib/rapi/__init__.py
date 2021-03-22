@@ -2,10 +2,10 @@ import os
 import struct
 import itertools
 import sys
-import pvr
 import noesis
 import inc_noesis
-from Context import Context
+import rapi.pvr
+from rapi.Context import Context
 from util import logNotImplementedMethod
 
 # state
@@ -713,6 +713,7 @@ def unpackBuffer(data, type, stride, offset, count):
     mapped = map(lambda x: x[offset:offset + typeSize * count], splitted)
     mapped = map(lambda x: struct.unpack(fmt, x), mapped)
     mapped = fixHalfFloats(mapped, type)
+    mapped = list(mapped)
     return mapped
 
 # half float needs to mapped to normal float in python

@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
-pip2 install -r requirements.txt -t pip
+pip3 install -r requirements.txt -t pip
 patch pip/OpenGL/GL/images.py patches/pyopengl_texture_compress.patch

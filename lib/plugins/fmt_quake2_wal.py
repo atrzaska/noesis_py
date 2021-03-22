@@ -1,5 +1,5 @@
 from inc_noesis import *
-import data_quake2
+# import data_quake2
 
 def registerNoesisTypes():
     handle = noesis.register("Quake II WAL Texture", ".wal")

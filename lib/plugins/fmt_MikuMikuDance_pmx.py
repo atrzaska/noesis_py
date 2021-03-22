@@ -167,9 +167,9 @@ class PmxLoader:
         englishComment = self.readText()
 
         # vertices
-        vertices = ''
-        normals = ''
-        uvs = ''
+        vertices = b''
+        normals = b''
+        uvs = b''
 
         vertexCount = bs.readInt()
 
