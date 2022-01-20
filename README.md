@@ -11,8 +11,8 @@ On a screenshot you can see a PMX model loaded with `fmt_MikuMikuDance_pmx.py` n
 
 # Dependencies
 
-- cpython2
-- pip2
+- cpython3
+- pip3
 - direnv
 
 # Installation
