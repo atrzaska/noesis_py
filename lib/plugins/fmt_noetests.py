@@ -702,17 +702,140 @@ def loadModel(data, mdlList):
     expected = NoeVec3((2.5, 3.5999999046325684, 4.699999809265137))
     noeassert('vec4ToVec3', result, expected)
 
-    # --- Not yet reproduced against real Noesis -------------------------------
-    # The following assertions still fail because their inputs are degenerate
-    # (non-rotation matrices / non-unit quaternions) or the recorded value looks
-    # inconsistent, so the exact native output cannot be derived from these
-    # cases alone. The implementations above are correct for proper rotations /
-    # unit quaternions. To finish them, re-run each on real Noesis and update the
-    # expected value (or add a rotation-based case):
-    #   - mat43ToAngles   (line ~430)
-    #   - mat43ToQuat     (line ~447)
-    #   - quatToAngles    (line ~565)
-    #   - quatTranspose   (line ~577)
-    #   - vec4Div         (line ~644; expected w looks like 5.8/4.3, not 5.8/5.2)
+    verificationCases()
 
     return 1
+
+
+# =============================================================================
+# Verification against real Noesis
+# -----------------------------------------------------------------------------
+# The 'expected' values below were produced by this open-source reimplementation
+# using well-conditioned inputs (proper rotation matrices, a unit quaternion,
+# general vectors) where the algorithms are expected to be exact.
+#
+# HOW TO USE: run this .test file in REAL Noesis. For every case:
+#   * "OK <name>"  -> the reimplementation already matches real Noesis. Good.
+#   * "ERR <name>" -> a mismatch. The "got:" line printed by real Noesis IS the
+#                     ground-truth value; send that line back and the
+#                     reimplementation will be corrected to match it.
+#
+# These cases specifically exercise the functions that the fixed test data above
+# could not pin down (degenerate inputs / a suspicious vec4Div value):
+#   mat43ToAngles, mat43ToQuat, quatToAngles, quatTranspose, quatToMat43,
+#   mat43IsSkewed (both branches), vec4Div, plus the forward angle/vector ops.
+# =============================================================================
+def verificationCases():
+    print('Verification (run in real Noesis; ERR "got:" lines are ground truth)')
+
+    A = NoeAngles((30.0, 45.0, 60.0))
+    Qn = quatNormalize(NoeQuat((0.1, 0.2, 0.3, 0.9)))
+    M = anglesToMat43(A)
+    V = NoeVec3((1.0, 2.0, 3.0))
+    skewM = NoeMat43((NoeVec3((1.0, 0.5, 0.0)), NoeVec3((0.0, 1.0, 0.0)), NoeVec3((0.0, 0.0, 1.0)), NoeVec3((0.0, 0.0, 0.0))))
+    D1 = NoeVec4((6.0, 8.0, 9.0, 10.0))
+    D2 = NoeVec4((2.0, 4.0, 3.0, 5.0))
+    D3 = NoeVec3((6.0, 8.0, 9.0))
+    D4 = NoeVec3((2.0, 4.0, 3.0))
+
+    result = anglesToMat43(A)
+    expected = NoeMat43((
+        NoeVec3((0.3535533845424652, -0.918558657169342, 0.1767766922712326)),
+        NoeVec3((0.3535533845424652, 0.3061862289905548, 0.8838834762573242)),
+        NoeVec3((-0.8660253882408142, -0.25, 0.4330126941204071)),
+        NoeVec3((0.0, 0.0, 0.0))
+    ))
+    noeassert('anglesToMat43(rot)', result, expected)
+
+    result = anglesToQuat(A)
+    expected = NoeQuat((0.3919038474559784, -0.36042341589927673, -0.43967974185943604, 0.7233173847198486))
+    noeassert('anglesToQuat(rot)', result, expected)
+
+    result = anglesToVec3(A)
+    expected = NoeVec3((0.6123723983764648, 0.6123723983764648, -0.5))
+    noeassert('anglesToVec3(rot)', result, expected)
+
+    result = anglesAngleVectors(A)
+    expected = NoeMat43((
+        NoeVec3((0.6123723983764648, 0.6123723983764648, -0.5)),
+        NoeVec3((0.04736712574958801, -0.65973961353302, -0.75)),
+        NoeVec3((0.7891491651535034, -0.4355957806110382, 0.4330126643180847)),
+        NoeVec3((0.0, 0.0, 0.0))
+    ))
+    noeassert('anglesAngleVectors(rot)', result, expected)
+
+    result = mat43ToAngles(M)
+    expected = NoeAngles((30.0, 71.56504821777344, 60.0))
+    noeassert('mat43ToAngles(rot)', result, expected)
+
+    result = mat43ToQuat(M)
+    expected = NoeQuat((-0.3919038474559784, 0.36042338609695435, 0.43967974185943604, 0.7233173847198486))
+    noeassert('mat43ToQuat(rot)', result, expected)
+
+    result = mat43Inverse(M)
+    expected = NoeMat43((
+        NoeVec3((0.3535534143447876, 0.3535534143447876, -0.8660255074501038)),
+        NoeVec3((-0.918558657169342, 0.3061862289905548, -0.25)),
+        NoeVec3((0.1767766922712326, 0.8838834762573242, 0.4330126941204071)),
+        NoeVec3((0.0, 0.0, 0.0))
+    ))
+    noeassert('mat43Inverse(rot)', result, expected)
+
+    result = mat43Orthogonalize(M)
+    expected = NoeMat43((
+        NoeVec3((0.3535533845424652, -0.918558657169342, 0.1767766922712326)),
+        NoeVec3((0.3535533845424652, 0.3061861991882324, 0.8838834762573242)),
+        NoeVec3((-0.8660255074501038, -0.25, 0.4330127537250519)),
+        NoeVec3((0.0, 0.0, 0.0))
+    ))
+    noeassert('mat43Orthogonalize(rot)', result, expected)
+
+    result = mat43IsSkewed(M)
+    expected = 0
+    noeassert('mat43IsSkewed(rot)', result, expected)
+
+    result = mat43IsSkewed(skewM)
+    expected = 1
+    noeassert('mat43IsSkewed(skew)', result, expected)
+
+    result = quatToAngles(Qn)
+    expected = NoeAngles((4.037710666656494, -37.715972900390625, -26.23828125))
+    noeassert('quatToAngles(unit)', result, expected)
+
+    result = quatToMat43(Qn, 0)
+    expected = NoeMat43((
+        NoeVec3((0.7263157963752747, 0.6105262637138367, -0.31578946113586426)),
+        NoeVec3((-0.5263157486915588, 0.7894737124443054, 0.31578946113586426)),
+        NoeVec3((0.442105233669281, -0.06315789371728897, 0.8947368264198303)),
+        NoeVec3((0.0, 0.0, 0.0))
+    ))
+    noeassert('quatToMat43(unit)', result, expected)
+
+    result = quatTranspose(Qn)
+    expected = NoeQuat((-0.10259783267974854, -0.20519566535949707, -0.3077934980392456, 0.9233804941177368))
+    noeassert('quatTranspose(unit)', result, expected)
+
+    result = quatNormalize(NoeQuat((0.1, 0.2, 0.3, 0.9)))
+    expected = NoeQuat((0.10259783267974854, 0.20519566535949707, 0.3077934980392456, 0.9233804941177368))
+    noeassert('quatNormalize(unit)', result, expected)
+
+    result = vec3ToAngles(V)
+    expected = NoeAngles((-53.30077362060547, 63.4349479675293, 0.0))
+    noeassert('vec3ToAngles(gen)', result, expected)
+
+    result = vec3ToMat43(V)
+    expected = NoeMat43((
+        NoeVec3((1.0, 2.0, 3.0)),
+        NoeVec3((-0.8944271802902222, 0.4472135901451111, 0.0)),
+        NoeVec3((-1.3416407108306885, -2.683281421661377, 2.2360680103302)),
+        NoeVec3((0.0, 0.0, 0.0))
+    ))
+    noeassert('vec3ToMat43(gen)', result, expected)
+
+    result = vec4Div(D1, D2)
+    expected = NoeVec4((3.0, 2.0, 3.0, 2.0))
+    noeassert('vec4Div(clean)', result, expected)
+
+    result = vec3Div(D3, D4)
+    expected = NoeVec3((3.0, 2.0, 3.0))
+    noeassert('vec3Div(clean)', result, expected)
