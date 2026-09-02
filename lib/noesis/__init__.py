@@ -7,6 +7,12 @@ from noesis.AllocType import AllocType
 from numbers import Number
 from util import logNotImplementedMethod
 
+# Noesis stores all vector/matrix/quaternion components as 32-bit floats.
+# Coerce Python floats (64-bit) through single-precision so arithmetic results
+# match the native Noesis module bit-for-bit.
+def toFloat32(value):
+    return struct.unpack('<f', struct.pack('<f', value))[0]
+
 # constants
 
 BITSTREAMFL_BIGENDIAN = 65536
@@ -232,8 +238,29 @@ def anglesALerp(noeAngles, other, degrees):
     logNotImplementedMethod('anglesALerp', locals())
 
 def anglesAngleVectors(noeAngles):
-    logNotImplementedMethod('anglesAngleVectors', locals())
-    return inc_noesis.NoeMat43()
+    # Quake-style AngleVectors. Angles are (pitch, yaw, roll) in degrees.
+    # Returns a NoeMat43 whose rows are the forward, right and up vectors.
+    # Noesis evaluates this in 32-bit float; round every step to match exactly.
+    f = toFloat32
+    pitch = f(noeAngles[0] * g_flDegToRad)
+    yaw = f(noeAngles[1] * g_flDegToRad)
+    roll = f(noeAngles[2] * g_flDegToRad)
+    sp, cp = f(math.sin(pitch)), f(math.cos(pitch))
+    sy, cy = f(math.sin(yaw)), f(math.cos(yaw))
+    sr, cr = f(math.sin(roll)), f(math.cos(roll))
+
+    forward = inc_noesis.NoeVec3((f(cp * cy), f(cp * sy), f(-sp)))
+    right = inc_noesis.NoeVec3((
+        f(f(f(-sr * sp) * cy) + f(cr * sy)),
+        f(f(f(-sr * sp) * sy) - f(cr * cy)),
+        f(-sr * cp)
+    ))
+    up = inc_noesis.NoeVec3((
+        f(f(f(cr * sp) * cy) + f(sr * sy)),
+        f(f(f(cr * sp) * sy) - f(sr * cy)),
+        f(cr * cp)
+    ))
+    return inc_noesis.NoeMat43((forward, right, up, inc_noesis.NoeVec3((0.0, 0.0, 0.0))))
 
 def anglesMod(noeAngles, f):
     logNotImplementedMethod('anglesMod', locals())
@@ -263,8 +290,8 @@ def anglesToQuat(noeAngles):
     return inc_noesis.NoeQuat()
 
 def anglesToVec3(noeAngles):
-    logNotImplementedMethod('anglesToVec3', locals())
-    return inc_noesis.NoeVec3()
+    # The forward vector from AngleVectors (row 0 of anglesAngleVectors).
+    return anglesAngleVectors(noeAngles)[0]
 
 def anglesValidate(noeAngles):
     vec3Validate(noeAngles)
@@ -619,7 +646,10 @@ def mat43ToAngles(noeMat43):
     return inc_noesis.NoeAngles()
 
 def mat43ToBytes(noeMat43):
-    logNotImplementedMethod('mat43ToBytes', locals())
+    data = bytearray()
+    for row in noeMat43:
+        data += struct.pack('<fff', row[0], row[1], row[2])
+    return data
 
 def mat43ToMat44(noeMat43):
     m00 = noeMat43[0][0]
@@ -841,7 +871,10 @@ def mat44SwapHandedness(noeMat44, axis):
     logNotImplementedMethod('mat44SwapHandedness', locals())
 
 def mat44ToBytes(noeMat44):
-    logNotImplementedMethod('mat44ToBytes', locals())
+    data = bytearray()
+    for row in noeMat44:
+        data += struct.pack('<ffff', row[0], row[1], row[2], row[3])
+    return data
 
 def mat44ToMat43(noeMat44):
     m00 = noeMat44[0][0]
@@ -933,13 +966,16 @@ def quat3FromBytes(data, bigEnd):
     return inc_noesis.NoeQuat3()
 
 def quat3ToBytes(noeQuat3):
-    logNotImplementedMethod('quat3ToBytes', locals())
+    return bytearray(struct.pack('<fff', noeQuat3[0], noeQuat3[1], noeQuat3[2]))
 
 def quat3ToQuat(noeQuat3):
+    # quat3 stores (x, y, z); reconstruct w for a unit quaternion.
     x = noeQuat3[0]
     y = noeQuat3[1]
     z = noeQuat3[2]
-    return inc_noesis.NoeQuat((x, y, z, 1.0))
+    lenSq = toFloat32(x * x + y * y + z * z)
+    w = toFloat32(math.sqrt(abs(1.0 - lenSq)))
+    return inc_noesis.NoeQuat((x, y, z, w))
 
 def quat3Validate(noeQuat3):
     vec3Validate(noeQuat3)
@@ -956,22 +992,29 @@ def quatFromBytes(data, bigEnd):
     return inc_noesis.NoeQuat()
 
 def quatLen(noeQuat):
-    lenSquared = pow(noeQuat[0], 2) + pow(noeQuat[1], 2) + pow(noeQuat[2], 2) + pow(noeQuat[3], 2)
-    return math.sqrt(lenSquared)
+    x, y, z, w = noeQuat[0], noeQuat[1], noeQuat[2], noeQuat[3]
+    lenSquared = toFloat32(x * x + y * y + z * z + w * w)
+    return toFloat32(math.sqrt(lenSquared))
 
 def quatLerp(noeQuat, other, fraction):
     logNotImplementedMethod('quatLerp', locals())
 
 def quatMul(noeQuat, other):
-    logNotImplementedMethod('quatMul', locals())
-    return inc_noesis.NoeQuat()
+    ax, ay, az, aw = noeQuat[0], noeQuat[1], noeQuat[2], noeQuat[3]
+    bx, by, bz, bw = other[0], other[1], other[2], other[3]
+    x = aw * bx + ax * bw + ay * bz - az * by
+    y = aw * by - ax * bz + ay * bw + az * bx
+    z = aw * bz + ax * by - ay * bx + az * bw
+    w = aw * bw - ax * bx - ay * by - az * bz
+    return inc_noesis.NoeQuat((x, y, z, w))
 
 def quatNormalize(noeQuat):
-    length = quatLen(noeQuat)
-    x = noeQuat[0] / length
-    y = noeQuat[1] / length
-    z = noeQuat[2] / length
-    w = noeQuat[3] / length
+    f = toFloat32
+    invLength = f(1.0 / quatLen(noeQuat))
+    x = f(noeQuat[0] * invLength)
+    y = f(noeQuat[1] * invLength)
+    z = f(noeQuat[2] * invLength)
+    w = f(noeQuat[3] * invLength)
     return inc_noesis.NoeQuat((x, y, z, w))
 
 def quatSLerp(noeQuat, other, fraction):
@@ -989,7 +1032,7 @@ def quatToAngles(noeQuat):
     return inc_noesis.NoeAngles()
 
 def quatToBytes(noeQuat):
-    logNotImplementedMethod('quatToBytes', locals())
+    return bytearray(struct.pack('<ffff', noeQuat[0], noeQuat[1], noeQuat[2], noeQuat[3]))
 
 def quatToMat43(noeQuat, transposed):
     logNotImplementedMethod('quatToMat43', locals())
@@ -1018,6 +1061,7 @@ def quatValidate(noeQuat):
         doException('quatValidate: validation failed')
 
     validateListType(quat, Number)
+    noeQuat.quat = tuple(toFloat32(v) for v in quat)
 
 def register(name, fileType):
     # TODO: fileType can be semicolon separated '.obj;.obc'
@@ -1111,10 +1155,11 @@ def vec3FromBytes(data, bigEnd):
     return inc_noesis.NoeVec3()
 
 def vec3Len(noeVec3):
-    return math.sqrt(vec3LenSq(noeVec3))
+    return toFloat32(math.sqrt(vec3LenSq(noeVec3)))
 
 def vec3LenSq(noeVec3):
-    return pow(noeVec3[0], 2) + pow(noeVec3[1], 2) + pow(noeVec3[2], 2)
+    x, y, z = noeVec3[0], noeVec3[1], noeVec3[2]
+    return toFloat32(x * x + y * y + z * z)
 
 def vec3Lerp(noeVec3, other, fraction):
     logNotImplementedMethod('vec3Lerp', locals())
@@ -1126,10 +1171,11 @@ def vec3Mul(noeVec3, other):
     return inc_noesis.NoeVec3((x, y, z))
 
 def vec3Norm(noeVec3):
-    length = vec3Len(noeVec3)
-    x = noeVec3[0] / length
-    y = noeVec3[1] / length
-    z = noeVec3[2] / length
+    f = toFloat32
+    invLength = f(1.0 / vec3Len(noeVec3))
+    x = f(noeVec3[0] * invLength)
+    y = f(noeVec3[1] * invLength)
+    z = f(noeVec3[2] * invLength)
     return inc_noesis.NoeVec3((x, y, z))
 
 def vec3Sub(noeVec3, other):
@@ -1144,7 +1190,7 @@ def vec3ToAngles(noeVec3):
     return inc_noesis.NoeAngles()
 
 def vec3ToBytes(noeVec3):
-    logNotImplementedMethod('vec3ToBytes', locals())
+    return bytearray(struct.pack('<fff', noeVec3[0], noeVec3[1], noeVec3[2]))
 
 def vec3ToMat43(noeVec3):
     logNotImplementedMethod('vec3ToMat43', locals())
@@ -1168,6 +1214,7 @@ def vec3Validate(noeVec3):
         doException('vec3Validate: validate failed')
 
     validateListType(vec3, Number)
+    noeVec3.vec3 = tuple(toFloat32(v) for v in vec3)
 
 def vec4Add(noeVec4, other):
     x = noeVec4[0] + other[0]
@@ -1184,17 +1231,18 @@ def vec4Div(noeVec4, other):
     return inc_noesis.NoeVec4((x, y, z, w))
 
 def vec4Dot(noeVec4, other):
-    return noeVec4[0] * other[0] + noeVec4[1] * other[1] + noeVec4[2] * other[2] + noeVec4[3] * other[3]
+    return toFloat32(noeVec4[0] * other[0] + noeVec4[1] * other[1] + noeVec4[2] * other[2] + noeVec4[3] * other[3])
 
 def vec4FromBytes(bytes, bigEnd):
     logNotImplementedMethod('vec4FromBytes', locals())
     return inc_noesis.NoeVec4()
 
 def vec4Len(noeVec4):
-    return math.sqrt(vec4LenSq(noeVec4))
+    return toFloat32(math.sqrt(vec4LenSq(noeVec4)))
 
 def vec4LenSq(noeVec4):
-    return pow(noeVec4[0], 2) + pow(noeVec4[1], 2) + pow(noeVec4[2], 2) + pow(noeVec4[3], 2)
+    x, y, z, w = noeVec4[0], noeVec4[1], noeVec4[2], noeVec4[3]
+    return toFloat32(x * x + y * y + z * z + w * w)
 
 def vec4Lerp(noeVec4, other, fraction):
     logNotImplementedMethod('vec4Lerp', locals())
@@ -1207,11 +1255,12 @@ def vec4Mul(noeVec4, other):
     return inc_noesis.NoeVec4((x, y, z, w))
 
 def vec4Norm(noeVec4):
-    length = vec4Len(noeVec4)
-    x = noeVec4[0] / length
-    y = noeVec4[1] / length
-    z = noeVec4[2] / length
-    w = noeVec4[3] / length
+    f = toFloat32
+    invLength = f(1.0 / vec4Len(noeVec4))
+    x = f(noeVec4[0] * invLength)
+    y = f(noeVec4[1] * invLength)
+    z = f(noeVec4[2] * invLength)
+    w = f(noeVec4[3] * invLength)
     return inc_noesis.NoeVec4((x, y, z, w))
 
 def vec4Sub(noeVec4, other):
@@ -1222,7 +1271,7 @@ def vec4Sub(noeVec4, other):
     return inc_noesis.NoeVec4((x, y, z, w))
 
 def vec4ToBytes(noeVec4):
-    logNotImplementedMethod('vec4ToBytes', locals())
+    return bytearray(struct.pack('<ffff', noeVec4[0], noeVec4[1], noeVec4[2], noeVec4[3]))
 
 def vec4ToVec3(noeVec4):
     return inc_noesis.NoeVec3((noeVec4[0], noeVec4[1], noeVec4[2]))
@@ -1234,6 +1283,7 @@ def vec4Validate(noeVec4):
         doException('vec4Validate: validation failed')
 
     validateListType(vec4, Number)
+    noeVec4.vec4 = tuple(toFloat32(v) for v in vec4)
 
 # private
 
