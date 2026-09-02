@@ -311,8 +311,28 @@ def anglesToMat43_XYZ(noeAngles, yFlip):
     return inc_noesis.NoeMat43()
 
 def anglesToQuat(noeAngles):
-    logNotImplementedMethod('anglesToQuat', locals())
-    return inc_noesis.NoeQuat()
+    # Euler (pitch, yaw, roll) -> quaternion as qx(pitch) * qy(-roll) * qz(-yaw).
+    p = math.radians(noeAngles[0])
+    y = math.radians(noeAngles[1])
+    r = math.radians(noeAngles[2])
+
+    def axisQuat(axis, angle):
+        half = angle * 0.5
+        q = [0.0, 0.0, 0.0, math.cos(half)]
+        q[axis] = math.sin(half)
+        return q
+    def qmul(a, b):
+        ax, ay, az, aw = a
+        bx, by, bz, bw = b
+        return [
+            aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw,
+            aw * bw - ax * bx - ay * by - az * bz
+        ]
+
+    q = qmul(qmul(axisQuat(0, p), axisQuat(1, -r)), axisQuat(2, -y))
+    return inc_noesis.NoeQuat(tuple(q))
 
 def anglesToVec3(noeAngles):
     # The forward vector from AngleVectors (row 0 of anglesAngleVectors).
@@ -1256,18 +1276,25 @@ def vec3Sub(noeVec3, other):
     ))
 
 def vec3ToAngles(noeVec3):
-    logNotImplementedMethod('vec3ToAngles', locals())
-    return inc_noesis.NoeAngles()
+    # Inverse of anglesToVec3: recover (pitch, yaw, 0) from a direction vector.
+    x, y, z = noeVec3[0], noeVec3[1], noeVec3[2]
+    pitch = math.degrees(math.atan2(-z, math.hypot(x, y)))
+    yaw = math.degrees(math.atan2(y, x))
+    return inc_noesis.NoeAngles((pitch, yaw, 0.0))
 
 def vec3ToBytes(noeVec3):
     return bytearray(struct.pack('<fff', noeVec3[0], noeVec3[1], noeVec3[2]))
 
 def vec3ToMat43(noeVec3):
-    logNotImplementedMethod('vec3ToMat43', locals())
+    # Build a frame whose primary axis is the (unnormalized) vector: the second
+    # axis is a normalized perpendicular in the XY plane, the third their cross.
+    forward = inc_noesis.NoeVec3((noeVec3[0], noeVec3[1], noeVec3[2]))
+    right = vec3Norm(inc_noesis.NoeVec3((-noeVec3[1], noeVec3[0], 0.0)))
+    up = vec3Cross(forward, right)
     return inc_noesis.NoeMat43((
-        inc_noesis.NoeVec3((noeVec3[0], noeVec3[1], noeVec3[2])),
-        inc_noesis.NoeVec3((1.0, 1.0, 1.0)),
-        inc_noesis.NoeVec3((1.0, 1.0, 1.0)),
+        forward,
+        right,
+        up,
         inc_noesis.NoeVec3((0.0, 0.0, 0.0))
     ))
 
