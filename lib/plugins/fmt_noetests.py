@@ -703,8 +703,19 @@ def loadModel(data, mdlList):
     noeassert('vec4ToVec3', result, expected)
 
     verificationCases()
+    cornerCases()
 
     return 1
+
+
+def noeprobe(name, fn):
+    # Corner cases where the native result is unknown (and where this pure-Python
+    # port may raise instead of returning inf/nan). Just dump what real Noesis
+    # produces so the value can be captured and asserted / matched afterwards.
+    try:
+        print('PROBE ' + name + ' = ' + repr(fn()))
+    except Exception as e:
+        print('PROBE ' + name + ' EXCEPTION ' + repr(e))
 
 
 # =============================================================================
@@ -839,3 +850,66 @@ def verificationCases():
     result = vec3Div(D3, D4)
     expected = NoeVec3((3.0, 2.0, 3.0))
     noeassert('vec3Div(clean)', result, expected)
+
+
+# =============================================================================
+# Corner cases (run in real Noesis, then report the PROBE lines back)
+# -----------------------------------------------------------------------------
+# These exercise the edges where a reimplementation is most likely to diverge:
+#   * gimbal lock (pitch = +/-90) and angle wrapping (>360, negative)
+#   * quaternion branch coverage: identity + 180-degree rotations about X/Y/Z
+#     drive mat43ToQuat through each of its trace<=0 cases
+#   * degenerate inputs -- normalize / divide / invert with a zero magnitude.
+#     Native C returns inf/nan (or a guarded value); this port currently RAISES.
+#     The PROBE output from real Noesis is the ground truth for how each should
+#     behave, after which they can be hardened + asserted.
+# =============================================================================
+def cornerCases():
+    print('Corner cases (send the PROBE lines from real Noesis back)')
+
+    ident = NoeMat43((NoeVec3((1.0, 0.0, 0.0)), NoeVec3((0.0, 1.0, 0.0)), NoeVec3((0.0, 0.0, 1.0)), NoeVec3((0.0, 0.0, 0.0))))
+    rot180x = NoeMat43((NoeVec3((1.0, 0.0, 0.0)), NoeVec3((0.0, -1.0, 0.0)), NoeVec3((0.0, 0.0, -1.0)), NoeVec3((0.0, 0.0, 0.0))))
+    rot180y = NoeMat43((NoeVec3((-1.0, 0.0, 0.0)), NoeVec3((0.0, 1.0, 0.0)), NoeVec3((0.0, 0.0, -1.0)), NoeVec3((0.0, 0.0, 0.0))))
+    rot180z = NoeMat43((NoeVec3((-1.0, 0.0, 0.0)), NoeVec3((0.0, -1.0, 0.0)), NoeVec3((0.0, 0.0, 1.0)), NoeVec3((0.0, 0.0, 0.0))))
+    zerocol = NoeMat43((NoeVec3((0.0, 0.0, 0.0)), NoeVec3((0.0, 1.0, 0.0)), NoeVec3((0.0, 0.0, 1.0)), NoeVec3((0.0, 0.0, 0.0))))
+    singular = NoeMat44((NoeVec4((1.0, 2.0, 3.0, 4.0)), NoeVec4((1.0, 2.0, 3.0, 4.0)), NoeVec4((5.0, 6.0, 7.0, 8.0)), NoeVec4((9.0, 8.0, 7.0, 6.0))))
+
+    # angle conversions: gimbal lock and wrapping
+    noeprobe('anglesToMat43 gimbal+90', lambda: anglesToMat43(NoeAngles((90.0, 0.0, 0.0))))
+    noeprobe('anglesToMat43 zero', lambda: anglesToMat43(NoeAngles((0.0, 0.0, 0.0))))
+    noeprobe('anglesToMat43 wrap360', lambda: anglesToMat43(NoeAngles((360.0, 0.0, 0.0))))
+    noeprobe('anglesToQuat gimbal+90', lambda: anglesToQuat(NoeAngles((90.0, 0.0, 0.0))))
+    noeprobe('anglesToQuat 180', lambda: anglesToQuat(NoeAngles((180.0, 0.0, 0.0))))
+    noeprobe('anglesToVec3 gimbal+90', lambda: anglesToVec3(NoeAngles((90.0, 0.0, 0.0))))
+    noeprobe('anglesNormalize180 wrap', lambda: anglesNormalize180(NoeAngles((270.0, -90.0, 540.0))))
+    noeprobe('anglesNormalize180 bound', lambda: anglesNormalize180(NoeAngles((180.0, -180.0, 0.0))))
+    noeprobe('anglesNormalize360 wrap', lambda: anglesNormalize360(NoeAngles((-45.0, 720.0, 400.0))))
+
+    # matrix/quat extraction: gimbal + branch coverage
+    noeprobe('mat43ToAngles ident', lambda: mat43ToAngles(ident))
+    noeprobe('mat43ToAngles gimbal', lambda: mat43ToAngles(anglesToMat43(NoeAngles((90.0, 0.0, 0.0)))))
+    noeprobe('mat43ToQuat ident', lambda: mat43ToQuat(ident))
+    noeprobe('mat43ToQuat 180x', lambda: mat43ToQuat(rot180x))
+    noeprobe('mat43ToQuat 180y', lambda: mat43ToQuat(rot180y))
+    noeprobe('mat43ToQuat 180z', lambda: mat43ToQuat(rot180z))
+    noeprobe('quatToAngles ident', lambda: quatToAngles(NoeQuat((0.0, 0.0, 0.0, 1.0))))
+    noeprobe('quatTranspose ident', lambda: quatTranspose(NoeQuat((0.0, 0.0, 0.0, 1.0))))
+
+    # quat3 reconstruction: at, below and above the unit sphere
+    noeprobe('quat3ToQuat zero', lambda: quat3ToQuat(NoeQuat3((0.0, 0.0, 0.0))))
+    noeprobe('quat3ToQuat sub-unit', lambda: quat3ToQuat(NoeQuat3((0.5, 0.5, 0.5))))
+    noeprobe('quat3ToQuat over-unit', lambda: quat3ToQuat(NoeQuat3((1.0, 1.0, 1.0))))
+
+    # degenerate: zero-magnitude normalize / divide / invert (native gives inf/nan)
+    noeprobe('quatNormalize zero', lambda: quatNormalize(NoeQuat((0.0, 0.0, 0.0, 0.0))))
+    noeprobe('vec3Norm zero', lambda: vec3Norm(NoeVec3((0.0, 0.0, 0.0))))
+    noeprobe('vec3ToAngles up', lambda: vec3ToAngles(NoeVec3((0.0, 0.0, 1.0))))
+    noeprobe('vec3ToAngles down', lambda: vec3ToAngles(NoeVec3((0.0, 0.0, -1.0))))
+    noeprobe('vec3ToAngles zero', lambda: vec3ToAngles(NoeVec3((0.0, 0.0, 0.0))))
+    noeprobe('vec3ToMat43 zaxis', lambda: vec3ToMat43(NoeVec3((0.0, 0.0, 1.0))))
+    noeprobe('vec3Div byzero', lambda: vec3Div(NoeVec3((6.0, 8.0, 9.0)), NoeVec3((2.0, 0.0, 3.0))))
+    noeprobe('vec4Div byzero', lambda: vec4Div(NoeVec4((6.0, 8.0, 9.0, 10.0)), NoeVec4((1.0, 0.0, 1.0, 1.0))))
+    noeprobe('mat43Inverse ident', lambda: mat43Inverse(ident))
+    noeprobe('mat43Inverse zerocol', lambda: mat43Inverse(zerocol))
+    noeprobe('mat44Inverse singular', lambda: mat44Inverse(singular))
+    noeprobe('mat43IsSkewed ident', lambda: mat43IsSkewed(ident))
