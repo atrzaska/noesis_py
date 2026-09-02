@@ -240,11 +240,12 @@ def anglesALerp(noeAngles, other, degrees):
 def anglesAngleVectors(noeAngles):
     # Quake-style AngleVectors. Angles are (pitch, yaw, roll) in degrees.
     # Returns a NoeMat43 whose rows are the forward, right and up vectors.
-    # Noesis evaluates this in 32-bit float; round every step to match exactly.
+    # Noesis evaluates this in 32-bit float, but converts degrees to radians
+    # using full double-precision pi/180 (not the exposed f32 g_flDegToRad).
     f = toFloat32
-    pitch = f(noeAngles[0] * g_flDegToRad)
-    yaw = f(noeAngles[1] * g_flDegToRad)
-    roll = f(noeAngles[2] * g_flDegToRad)
+    pitch = f(math.radians(noeAngles[0]))
+    yaw = f(math.radians(noeAngles[1]))
+    roll = f(math.radians(noeAngles[2]))
     sp, cp = f(math.sin(pitch)), f(math.cos(pitch))
     sy, cy = f(math.sin(yaw)), f(math.cos(yaw))
     sr, cr = f(math.sin(roll)), f(math.cos(roll))
@@ -598,8 +599,19 @@ def mat43Inverse(noeMat43):
     return noeMat43.toMat44().inverse().toMat43()
 
 def mat43IsSkewed(noeMat43):
-    logNotImplementedMethod('mat43IsSkewed', locals())
-    return 9999 # should be 0 or 1
+    # A matrix is "skewed" when its three axis vectors are not mutually
+    # orthonormal (i.e. it carries scale or shear beyond a pure rotation).
+    # NOTE: exact epsilon confirmed only against one oracle case (skewed -> 1);
+    # identity/orthogonal cases are needed to pin the non-skewed threshold.
+    x, y, z = noeMat43[0], noeMat43[1], noeMat43[2]
+    epsilon = 0.0001
+    lengths = (vec3LenSq(x), vec3LenSq(y), vec3LenSq(z))
+    if any(abs(l - 1.0) > epsilon for l in lengths):
+        return 1
+    dots = (vec3Dot(x, y), vec3Dot(x, z), vec3Dot(y, z))
+    if any(abs(d) > epsilon for d in dots):
+        return 1
+    return 0
 
 def mat43Lerp(noeMat43, other, fraction):
     logNotImplementedMethod('mat43Lerp', locals())
@@ -1134,6 +1146,9 @@ def vec3Add(noeVec3, other):
         noeVec3[1] + other[1],
         noeVec3[2] + other[2]
     ))
+
+def vec3Dot(noeVec3, other):
+    return toFloat32(noeVec3[0] * other[0] + noeVec3[1] * other[1] + noeVec3[2] * other[2])
 
 def vec3Cross(noeVec3, other):
     a1 = noeVec3[0]
