@@ -860,9 +860,9 @@ def verificationCases():
 #   * quaternion branch coverage: identity + 180-degree rotations about X/Y/Z
 #     drive mat43ToQuat through each of its trace<=0 cases
 #   * degenerate inputs -- normalize / divide / invert with a zero magnitude.
-#     Native C returns inf/nan (or a guarded value); this port currently RAISES.
-#     The PROBE output from real Noesis is the ground truth for how each should
-#     behave, after which they can be hardened + asserted.
+#     This port now mirrors C by returning inf/nan (see cDiv in noesis), instead
+#     of raising. The PROBE output from real Noesis confirms whether Noesis does
+#     the same or guards these; the values can then be asserted.
 # =============================================================================
 def cornerCases():
     print('Corner cases (send the PROBE lines from real Noesis back)')

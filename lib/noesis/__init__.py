@@ -13,6 +13,18 @@ from util import logNotImplementedMethod
 def toFloat32(value):
     return struct.unpack('<f', struct.pack('<f', value))[0]
 
+# Native Noesis does IEEE (C) float division: x/0 -> +/-inf, 0/0 -> nan, rather
+# than raising like Python. Use this wherever a denominator may be zero so a
+# degenerate input (zero-length vector, singular matrix) behaves like Noesis
+# instead of crashing the caller.
+def cDiv(numerator, denominator):
+    try:
+        return numerator / denominator
+    except ZeroDivisionError:
+        if numerator == 0.0:
+            return float('nan')
+        return math.copysign(float('inf'), numerator) * math.copysign(1.0, denominator)
+
 # constants
 
 BITSTREAMFL_BIGENDIAN = 65536
@@ -646,7 +658,7 @@ def mat43Inverse(noeMat43):
     rows = []
     for i in range(3):
         cx, cy, cz = noeMat43[0][i], noeMat43[1][i], noeMat43[2][i]
-        invLenSq = f(1.0 / f(cx * cx + cy * cy + cz * cz))
+        invLenSq = f(cDiv(1.0, f(cx * cx + cy * cy + cz * cz)))
         rows.append((f(cx * invLenSq), f(cy * invLenSq), f(cz * invLenSq)))
     t = noeMat43[3]
     trn = tuple(f(-(rows[k][0] * t[0] + rows[k][1] * t[1] + rows[k][2] * t[2])) for k in range(3))
@@ -780,26 +792,26 @@ def mat43ToQuat(noeMat43):
     if trace > 0.0:
         s = math.sqrt(trace + 1.0) * 2.0
         w = 0.25 * s
-        x = (m21 - m12) / s
-        y = (m02 - m20) / s
-        z = (m10 - m01) / s
+        x = cDiv(m21 - m12, s)
+        y = cDiv(m02 - m20, s)
+        z = cDiv(m10 - m01, s)
     elif m00 > m11 and m00 > m22:
         s = math.sqrt(1.0 + m00 - m11 - m22) * 2.0
-        w = (m21 - m12) / s
+        w = cDiv(m21 - m12, s)
         x = 0.25 * s
-        y = (m01 + m10) / s
-        z = (m02 + m20) / s
+        y = cDiv(m01 + m10, s)
+        z = cDiv(m02 + m20, s)
     elif m11 > m22:
         s = math.sqrt(1.0 + m11 - m00 - m22) * 2.0
-        w = (m02 - m20) / s
-        x = (m01 + m10) / s
+        w = cDiv(m02 - m20, s)
+        x = cDiv(m01 + m10, s)
         y = 0.25 * s
-        z = (m12 + m21) / s
+        z = cDiv(m12 + m21, s)
     else:
         s = math.sqrt(1.0 + m22 - m00 - m11) * 2.0
-        w = (m10 - m01) / s
-        x = (m02 + m20) / s
-        y = (m12 + m21) / s
+        w = cDiv(m10 - m01, s)
+        x = cDiv(m02 + m20, s)
+        y = cDiv(m12 + m21, s)
         z = 0.25 * s
     return inc_noesis.NoeQuat((x, y, z, w))
 
@@ -1133,7 +1145,7 @@ def quatMul(noeQuat, other):
 
 def quatNormalize(noeQuat):
     f = toFloat32
-    invLength = f(1.0 / quatLen(noeQuat))
+    invLength = f(cDiv(1.0, quatLen(noeQuat)))
     x = f(noeQuat[0] * invLength)
     y = f(noeQuat[1] * invLength)
     z = f(noeQuat[2] * invLength)
@@ -1290,9 +1302,9 @@ def vec3Cross(noeVec3, other):
     return inc_noesis.NoeVec3((a2 * b3 - a3 * b2,  a3 * b1 - a1 * b3,  a1 * b2 - a2 * b1))
 
 def vec3Div(noeVec3, other):
-    x = noeVec3[0] / other[0]
-    y = noeVec3[1] / other[1]
-    z = noeVec3[2] / other[2]
+    x = cDiv(noeVec3[0], other[0])
+    y = cDiv(noeVec3[1], other[1])
+    z = cDiv(noeVec3[2], other[2])
     return inc_noesis.NoeVec3((x, y, z))
 
 def vec3FromBytes(data, bigEnd):
@@ -1317,7 +1329,7 @@ def vec3Mul(noeVec3, other):
 
 def vec3Norm(noeVec3):
     f = toFloat32
-    invLength = f(1.0 / vec3Len(noeVec3))
+    invLength = f(cDiv(1.0, vec3Len(noeVec3)))
     x = f(noeVec3[0] * invLength)
     y = f(noeVec3[1] * invLength)
     z = f(noeVec3[2] * invLength)
@@ -1376,10 +1388,10 @@ def vec4Add(noeVec4, other):
     return inc_noesis.NoeVec4((x, y, z, w))
 
 def vec4Div(noeVec4, other):
-    x = noeVec4[0] / other[0]
-    y = noeVec4[1] / other[1]
-    z = noeVec4[2] / other[2]
-    w = noeVec4[3] / other[3]
+    x = cDiv(noeVec4[0], other[0])
+    y = cDiv(noeVec4[1], other[1])
+    z = cDiv(noeVec4[2], other[2])
+    w = cDiv(noeVec4[3], other[3])
     return inc_noesis.NoeVec4((x, y, z, w))
 
 def vec4Dot(noeVec4, other):
@@ -1408,7 +1420,7 @@ def vec4Mul(noeVec4, other):
 
 def vec4Norm(noeVec4):
     f = toFloat32
-    invLength = f(1.0 / vec4Len(noeVec4))
+    invLength = f(cDiv(1.0, vec4Len(noeVec4)))
     x = f(noeVec4[0] * invLength)
     y = f(noeVec4[1] * invLength)
     z = f(noeVec4[2] * invLength)
