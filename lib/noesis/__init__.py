@@ -729,8 +729,14 @@ def mat43SwapHandedness(noeMat43, axis):
     logNotImplementedMethod('mat43SwapHandedness', locals())
 
 def mat43ToAngles(noeMat43):
-    logNotImplementedMethod('mat43ToAngles', locals())
-    return inc_noesis.NoeAngles()
+    # Inverse of anglesToMat43 for a proper rotation matrix. NOTE: the noetests
+    # case feeds a non-rotation matrix, whose exact Noesis output depends on
+    # internal edge-case handling not reproduced here; correct for real rotations.
+    m = noeMat43
+    yaw = math.degrees(math.atan2(-m[0][1], m[1][1]))
+    pitch = math.degrees(math.atan2(-m[2][1], m[2][2]))
+    roll = math.degrees(math.atan2(-m[2][0], math.hypot(m[0][0], m[1][0])))
+    return inc_noesis.NoeAngles((pitch, yaw, roll))
 
 def mat43ToBytes(noeMat43):
     data = bytearray()
@@ -764,8 +770,38 @@ def mat43ToMat44(noeMat43):
     ))
 
 def mat43ToQuat(noeMat43):
-    logNotImplementedMethod('mat43ToQuat', locals())
-    return inc_noesis.NoeQuat()
+    # Standard matrix-to-quaternion (Shoemake). Correct for proper rotation
+    # matrices; the noetests case uses a non-rotation matrix whose exact Noesis
+    # output is not reproduced here.
+    m00, m01, m02 = noeMat43[0][0], noeMat43[0][1], noeMat43[0][2]
+    m10, m11, m12 = noeMat43[1][0], noeMat43[1][1], noeMat43[1][2]
+    m20, m21, m22 = noeMat43[2][0], noeMat43[2][1], noeMat43[2][2]
+    trace = m00 + m11 + m22
+    if trace > 0.0:
+        s = math.sqrt(trace + 1.0) * 2.0
+        w = 0.25 * s
+        x = (m21 - m12) / s
+        y = (m02 - m20) / s
+        z = (m10 - m01) / s
+    elif m00 > m11 and m00 > m22:
+        s = math.sqrt(1.0 + m00 - m11 - m22) * 2.0
+        w = (m21 - m12) / s
+        x = 0.25 * s
+        y = (m01 + m10) / s
+        z = (m02 + m20) / s
+    elif m11 > m22:
+        s = math.sqrt(1.0 + m11 - m00 - m22) * 2.0
+        w = (m02 - m20) / s
+        x = (m01 + m10) / s
+        y = 0.25 * s
+        z = (m12 + m21) / s
+    else:
+        s = math.sqrt(1.0 + m22 - m00 - m11) * 2.0
+        w = (m10 - m01) / s
+        x = (m02 + m20) / s
+        y = (m12 + m21) / s
+        z = 0.25 * s
+    return inc_noesis.NoeQuat((x, y, z, w))
 
 def mat43TransformNormal(noeMat43, other):
     logNotImplementedMethod('mat43TransformNormal', locals())
@@ -1115,15 +1151,32 @@ def quatSub(noeQuat, other):
     return inc_noesis.NoeQuat((x, y, z, w))
 
 def quatToAngles(noeQuat):
-    logNotImplementedMethod('quatToAngles', locals())
-    return inc_noesis.NoeAngles()
+    # Convert via the rotation matrix. Correct for unit quaternions; the noetests
+    # case uses a non-unit quaternion whose exact Noesis output is not reproduced.
+    return mat43ToAngles(quatToMat43(noeQuat))
 
 def quatToBytes(noeQuat):
     return bytearray(struct.pack('<ffff', noeQuat[0], noeQuat[1], noeQuat[2], noeQuat[3]))
 
-def quatToMat43(noeQuat, transposed):
-    logNotImplementedMethod('quatToMat43', locals())
-    return inc_noesis.NoeMat43()
+def quatToMat43(noeQuat, transposed=0):
+    # Standard unit-quaternion to rotation matrix.
+    x, y, z, w = noeQuat[0], noeQuat[1], noeQuat[2], noeQuat[3]
+    xx, yy, zz = x * x, y * y, z * z
+    xy, xz, yz = x * y, x * z, y * z
+    wx, wy, wz = w * x, w * y, w * z
+    rows = [
+        (1.0 - 2.0 * (yy + zz), 2.0 * (xy + wz), 2.0 * (xz - wy)),
+        (2.0 * (xy - wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz + wx)),
+        (2.0 * (xz + wy), 2.0 * (yz - wx), 1.0 - 2.0 * (xx + yy))
+    ]
+    if transposed:
+        rows = [(rows[0][i], rows[1][i], rows[2][i]) for i in range(3)]
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3(rows[0]),
+        inc_noesis.NoeVec3(rows[1]),
+        inc_noesis.NoeVec3(rows[2]),
+        inc_noesis.NoeVec3((0.0, 0.0, 0.0))
+    ))
 
 def quatToQuat3(noeQuat):
     x = noeQuat[0]
@@ -1138,8 +1191,10 @@ def quatTransformPoint(noeQuat, other):
     logNotImplementedMethod('quatTransformPoint', locals())
 
 def quatTranspose(noeQuat):
-    logNotImplementedMethod('quatTranspose', locals())
-    return inc_noesis.NoeQuat()
+    # Inverse rotation: the conjugate (negated vector part). Correct for unit
+    # quaternions; the noetests case uses a non-unit quaternion whose exact
+    # Noesis output is not reproduced here.
+    return inc_noesis.NoeQuat((-noeQuat[0], -noeQuat[1], -noeQuat[2], noeQuat[3]))
 
 def quatValidate(noeQuat):
     quat = noeQuat.quat
