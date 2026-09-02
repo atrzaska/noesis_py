@@ -702,4 +702,17 @@ def loadModel(data, mdlList):
     expected = NoeVec3((2.5, 3.5999999046325684, 4.699999809265137))
     noeassert('vec4ToVec3', result, expected)
 
+    # --- Not yet reproduced against real Noesis -------------------------------
+    # The following assertions still fail because their inputs are degenerate
+    # (non-rotation matrices / non-unit quaternions) or the recorded value looks
+    # inconsistent, so the exact native output cannot be derived from these
+    # cases alone. The implementations above are correct for proper rotations /
+    # unit quaternions. To finish them, re-run each on real Noesis and update the
+    # expected value (or add a rotation-based case):
+    #   - mat43ToAngles   (line ~430)
+    #   - mat43ToQuat     (line ~447)
+    #   - quatToAngles    (line ~565)
+    #   - quatTranspose   (line ~577)
+    #   - vec4Div         (line ~644; expected w looks like 5.8/4.3, not 5.8/5.2)
+
     return 1
