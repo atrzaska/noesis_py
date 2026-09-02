@@ -279,8 +279,32 @@ def anglesNormalize360(noeAngles):
     return inc_noesis.NoeAngles((x, y, z))
 
 def anglesToMat43(noeAngles):
-    logNotImplementedMethod('anglesToMat43', locals())
-    return inc_noesis.NoeMat43()
+    # Rotation matrix for Noesis euler angles (pitch, yaw, roll) in degrees,
+    # composed as transpose(Rx(-pitch) * Ry(roll) * Rz(yaw)).
+    p = math.radians(noeAngles[0])
+    y = math.radians(noeAngles[1])
+    r = math.radians(noeAngles[2])
+
+    def rx(a):
+        s, c = math.sin(a), math.cos(a)
+        return [[1, 0, 0], [0, c, s], [0, -s, c]]
+    def ry(a):
+        s, c = math.sin(a), math.cos(a)
+        return [[c, 0, -s], [0, 1, 0], [s, 0, c]]
+    def rz(a):
+        s, c = math.sin(a), math.cos(a)
+        return [[c, s, 0], [-s, c, 0], [0, 0, 1]]
+    def mul(A, B):
+        return [[sum(A[i][k] * B[k][j] for k in range(3)) for j in range(3)] for i in range(3)]
+
+    m = mul(mul(rx(-p), ry(r)), rz(y))
+    # transpose into the Noesis row layout
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3((m[0][0], m[1][0], m[2][0])),
+        inc_noesis.NoeVec3((m[0][1], m[1][1], m[2][1])),
+        inc_noesis.NoeVec3((m[0][2], m[1][2], m[2][2])),
+        inc_noesis.NoeVec3((0.0, 0.0, 0.0))
+    ))
 
 def anglesToMat43_XYZ(noeAngles, yFlip):
     logNotImplementedMethod('anglesToMat43_XYZ', locals())
@@ -595,8 +619,23 @@ def mat43FromBytes(data, bigEnd):
     return inc_noesis.NoeMat43()
 
 def mat43Inverse(noeMat43):
-    # TODO: this logic gives wrong results
-    return noeMat43.toMat44().inverse().toMat43()
+    # Noesis' fast affine inverse: each inverse row is column i of the 3x3 part
+    # divided by that column's squared length (an exact inverse when the axes
+    # are orthogonal), and the translation is -(inverse * originalTranslation).
+    f = toFloat32
+    rows = []
+    for i in range(3):
+        cx, cy, cz = noeMat43[0][i], noeMat43[1][i], noeMat43[2][i]
+        invLenSq = f(1.0 / f(cx * cx + cy * cy + cz * cz))
+        rows.append((f(cx * invLenSq), f(cy * invLenSq), f(cz * invLenSq)))
+    t = noeMat43[3]
+    trn = tuple(f(-(rows[k][0] * t[0] + rows[k][1] * t[1] + rows[k][2] * t[2])) for k in range(3))
+    return inc_noesis.NoeMat43((
+        inc_noesis.NoeVec3(rows[0]),
+        inc_noesis.NoeVec3(rows[1]),
+        inc_noesis.NoeVec3(rows[2]),
+        inc_noesis.NoeVec3(trn)
+    ))
 
 def mat43IsSkewed(noeMat43):
     # A matrix is "skewed" when its three axis vectors are not mutually
@@ -620,8 +659,24 @@ def mat43Mul(noeMat43, other):
     return (noeMat43.toMat44() * other.toMat44()).toMat43()
 
 def mat43Orthogonalize(noeMat43):
-    logNotImplementedMethod('mat43Orthogonalize', locals())
-    return noeMat43
+    # Normalize the primary axis, then orthogonalize the other two against it
+    # (Gram-Schmidt against row 0). The translation row is left untouched.
+    f = toFloat32
+    row0 = noeMat43[0]
+    r0 = vec3Norm(row0)
+
+    def orthoAgainst(row):
+        d = vec3Dot(row, r0)
+        v = inc_noesis.NoeVec3((
+            f(row[0] - f(d * r0[0])),
+            f(row[1] - f(d * r0[1])),
+            f(row[2] - f(d * r0[2]))
+        ))
+        return vec3Norm(v)
+
+    r1 = orthoAgainst(noeMat43[1])
+    r2 = orthoAgainst(noeMat43[2])
+    return inc_noesis.NoeMat43((r0, r1, r2, noeMat43[3]))
 
 def mat43Rotate(noeMat43, degrees, rotAngles, transposeRot):
     logNotImplementedMethod('mat43Rotate', locals())

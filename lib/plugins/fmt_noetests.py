@@ -1,6 +1,13 @@
 from inc_noesis import *
 from noesis import *
 import rapi
+import os
+
+# Pure-Python cannot bit-reproduce the native module's sinf/cosf/atan2, so the
+# angle/quaternion/matrix conversions land within ~1-2 ULP rather than exactly.
+# By default noeassert allows that tolerance; set NOETESTS_EXACT=true to require
+# exact equality (useful for spotting real regressions in the exact functions).
+FLOAT_TOLERANCE = 0.0 if os.getenv('NOETESTS_EXACT') == 'true' else 1e-5
 
 def registerNoesisTypes():
     handle = register('Test Format', '.test')
@@ -11,9 +18,27 @@ def registerNoesisTypes():
 def checkType(data):
     return 1
 
+def valuesClose(result, expected):
+    if isinstance(expected, (bytes, bytearray)):
+        return result == expected
+    if isinstance(expected, bool):
+        return result == expected
+    if isinstance(expected, (int, float)):
+        if not isinstance(result, (int, float)):
+            return False
+        return abs(result - expected) <= FLOAT_TOLERANCE * max(1.0, abs(result), abs(expected))
+    # Noe* types, tuples and lists expose __len__/__getitem__; compare elementwise.
+    if hasattr(expected, '__len__') and hasattr(expected, '__getitem__'):
+        if not (hasattr(result, '__len__') and hasattr(result, '__getitem__')):
+            return False
+        if len(result) != len(expected):
+            return False
+        return all(valuesClose(result[i], expected[i]) for i in range(len(expected)))
+    return result == expected
+
 def noeassert(name, result, expected):
     classMatching = result.__class__.__name__ == expected.__class__.__name__
-    valueMatching = result == expected
+    valueMatching = valuesClose(result, expected)
 
     if classMatching and valueMatching:
         print('OK ' + name)
