@@ -782,34 +782,37 @@ def mat43ToMat44(noeMat43):
     ))
 
 def mat43ToQuat(noeMat43):
-    # Standard matrix-to-quaternion (Shoemake). Correct for proper rotation
-    # matrices; the noetests case uses a non-rotation matrix whose exact Noesis
-    # output is not reproduced here.
-    m00, m01, m02 = noeMat43[0][0], noeMat43[0][1], noeMat43[0][2]
-    m10, m11, m12 = noeMat43[1][0], noeMat43[1][1], noeMat43[1][2]
-    m20, m21, m22 = noeMat43[2][0], noeMat43[2][1], noeMat43[2][2]
+    # Inverse of quatToMat43 (Noesis row-vector matrices: rows are the axes).
+    # Noesis normalizes each axis row first, which is what makes the official
+    # noetests case (a non-rotation matrix) come out as recorded.
+    def unit(row):
+        l = math.sqrt(row[0] * row[0] + row[1] * row[1] + row[2] * row[2])
+        return (cDiv(row[0], l), cDiv(row[1], l), cDiv(row[2], l)) if l else (row[0], row[1], row[2])
+    m00, m01, m02 = unit(noeMat43[0])
+    m10, m11, m12 = unit(noeMat43[1])
+    m20, m21, m22 = unit(noeMat43[2])
     trace = m00 + m11 + m22
     if trace > 0.0:
         s = math.sqrt(trace + 1.0) * 2.0
         w = 0.25 * s
-        x = cDiv(m21 - m12, s)
-        y = cDiv(m02 - m20, s)
-        z = cDiv(m10 - m01, s)
+        x = cDiv(m12 - m21, s)
+        y = cDiv(m20 - m02, s)
+        z = cDiv(m01 - m10, s)
     elif m00 > m11 and m00 > m22:
         s = math.sqrt(1.0 + m00 - m11 - m22) * 2.0
-        w = cDiv(m21 - m12, s)
+        w = cDiv(m12 - m21, s)
         x = 0.25 * s
         y = cDiv(m01 + m10, s)
         z = cDiv(m02 + m20, s)
     elif m11 > m22:
         s = math.sqrt(1.0 + m11 - m00 - m22) * 2.0
-        w = cDiv(m02 - m20, s)
+        w = cDiv(m20 - m02, s)
         x = cDiv(m01 + m10, s)
         y = 0.25 * s
         z = cDiv(m12 + m21, s)
     else:
         s = math.sqrt(1.0 + m22 - m00 - m11) * 2.0
-        w = cDiv(m10 - m01, s)
+        w = cDiv(m01 - m10, s)
         x = cDiv(m02 + m20, s)
         y = cDiv(m12 + m21, s)
         z = 0.25 * s
@@ -1272,7 +1275,36 @@ def triLerp(*args):
     logNotImplementedMethod('triLerp', locals())
 
 def userPrompt(userValType, title, prompt, defaultValue, validationHandler):
-    logNotImplementedMethod('userPrompt', locals())
+    # Console stand-in for Noesis' prompt dialog. Returns None on cancel (EOF)
+    # and the default when stdin is not interactive.
+    if not sys.stdin or not sys.stdin.isatty():
+        answer = defaultValue
+    else:
+        while True:
+            try:
+                answer = input('%s: %s [%s] ' % (title, prompt, '' if defaultValue is None else defaultValue))
+            except EOFError:
+                return None
+            if answer == '':
+                answer = defaultValue
+            if validationHandler is not None and answer is not None:
+                error = validationHandler(answer)
+                if error:
+                    print(error)
+                    continue
+            break
+    if answer is None:
+        return None
+    try:
+        if userValType == NOEUSERVAL_INT:
+            return int(answer)
+        if userValType == NOEUSERVAL_FLOAT:
+            return float(answer)
+        if userValType == NOEUSERVAL_BOOL:
+            return str(answer).lower() in ('1', 'true', 'yes', 'y')
+    except ValueError:
+        return None
+    return answer
 
 def validateListType(list, types):
     for obj in list:

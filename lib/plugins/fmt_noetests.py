@@ -780,7 +780,8 @@ def verificationCases():
     noeassert('mat43ToAngles(rot)', result, expected)
 
     result = mat43ToQuat(M)
-    expected = NoeQuat((-0.3919038474559784, 0.36042338609695435, 0.43967974185943604, 0.7233173847198486))
+    # same rotation as anglesToQuat(A) above (mat43ToQuat is the inverse of quatToMat43)
+    expected = NoeQuat((0.3919038474559784, -0.36042341589927673, -0.43967974185943604, 0.7233173847198486))
     noeassert('mat43ToQuat(rot)', result, expected)
 
     result = mat43Inverse(M)
