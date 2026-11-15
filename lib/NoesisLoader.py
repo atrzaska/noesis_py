@@ -7,6 +7,7 @@ from OpenGL.GL import *
 from OpenGL.GL.EXT.texture_compression_s3tc import *
 from OpenGL.GL.ARB.multisample import *
 from NoesisAnimator import Animator
+from rapi.Context import meshArray
 
 PIXELFORMAT_TO_OPENGL_INTERNAL_TYPE = {
     noesis.NOESISTEX_DXT1: GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
@@ -53,29 +54,32 @@ class MeshBuffers:
 
     def __init__(self, mesh, boneCount):
         self.material = mesh.matName
-        self.positions = np.array(mesh.positions, dtype=np.float32).reshape(-1, 3)
+        positions = meshArray(mesh, "positions")
+        self.positions = (positions.astype(np.float32).reshape(-1, 3) if positions is not None
+                          else np.zeros((0, 3), dtype=np.float32))
         n = len(self.positions)
-        normals = getattr(mesh, "normals", None)
-        self.normals = (np.array(normals, dtype=np.float32).reshape(-1, 3) if normals and len(normals) == n
+        normals = meshArray(mesh, "normals")
+        self.normals = (normals.astype(np.float32).reshape(-1, 3) if normals is not None and len(normals) == n
                         else np.zeros((n, 3), dtype=np.float32))
-        uvs = getattr(mesh, "uvs", None)
-        self.uvs = (np.array([uv[:2] for uv in uvs], dtype=np.float32) if uvs and len(uvs) == n
+        uvs = meshArray(mesh, "uvs")
+        self.uvs = (np.ascontiguousarray(uvs[:, :2], dtype=np.float32) if uvs is not None and len(uvs) == n
                     else np.zeros((n, 2), dtype=np.float32))
-        colors = getattr(mesh, "colors", None)
+        colors = meshArray(mesh, "colors")
         self.colors = None
-        if colors and len(colors) == n:
-            c = np.array([tuple(x)[:4] for x in colors], dtype=np.float32)
+        if colors is not None and len(colors) == n:
+            c = colors[:, :4].astype(np.float32)
             if c.shape[1] == 3:
                 c = np.hstack([c, np.ones((n, 1), np.float32)])
             self.colors = c
-        self.triangles = triangulate(mesh.indices, mesh.shape)
+        indices = meshArray(mesh, "indices")
+        self.triangles = triangulate(indices if indices is not None else [], mesh.shape)
         self.skinned = False
-        weights = getattr(mesh, "weights", None)
-        indices = getattr(mesh, "boneIndexBuffer", None)
-        if boneCount and weights and indices and len(weights) == n and len(indices) == n:
+        weights = meshArray(mesh, "weights")
+        boneIndices = meshArray(mesh, "boneIndexBuffer")
+        if boneCount and weights is not None and boneIndices is not None and len(weights) == n and len(boneIndices) == n:
             boneMap = list(mesh.boneMap) if getattr(mesh, "boneMap", None) else None
-            local = np.array(indices, dtype=np.int64).reshape(n, -1)
-            w = np.array(weights, dtype=np.float32).reshape(n, -1)
+            local = boneIndices.astype(np.int64).reshape(n, -1)
+            w = weights.astype(np.float32).reshape(n, -1)
             k = min(local.shape[1], w.shape[1])
             local, w = local[:, :k], w[:, :k]
             if boneMap:

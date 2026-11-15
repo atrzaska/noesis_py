@@ -1,6 +1,7 @@
 import os
 import struct
 import itertools
+import numpy as np
 import sys
 import noesis
 import inc_noesis
@@ -15,28 +16,16 @@ this.context = None
 this.lastCheckedName = None
 this.previewOptions = {}
 
-UNPACK_TYPES = {
-    noesis.RPGEODATA_BYTE: 'b',
-    noesis.RPGEODATA_FLOAT: 'f',
-    noesis.RPGEODATA_HALFFLOAT: 'H', # half float is converted to float
-    noesis.RPGEODATA_INT: 'i',
-    noesis.RPGEODATA_SHORT: 'h',
-    noesis.RPGEODATA_UBYTE: 'B',
-    noesis.RPGEODATA_UINT: 'I',
-    noesis.RPGEODATA_USHORT: 'H',
-    noesis.RPGEODATA_DOUBLE: 'd',
-}
-
-UNPACK_SIZES = {
-    noesis.RPGEODATA_BYTE: 1,
-    noesis.RPGEODATA_FLOAT: 4,
-    noesis.RPGEODATA_HALFFLOAT: 2,
-    noesis.RPGEODATA_INT: 4,
-    noesis.RPGEODATA_SHORT: 2,
-    noesis.RPGEODATA_UBYTE: 1,
-    noesis.RPGEODATA_UINT: 4,
-    noesis.RPGEODATA_USHORT: 2,
-    noesis.RPGEODATA_DOUBLE: 8,
+UNPACK_DTYPES = {
+    noesis.RPGEODATA_BYTE: '<i1',
+    noesis.RPGEODATA_FLOAT: '<f4',
+    noesis.RPGEODATA_HALFFLOAT: '<f2',
+    noesis.RPGEODATA_INT: '<i4',
+    noesis.RPGEODATA_SHORT: '<i2',
+    noesis.RPGEODATA_UBYTE: '<u1',
+    noesis.RPGEODATA_UINT: '<u4',
+    noesis.RPGEODATA_USHORT: '<u2',
+    noesis.RPGEODATA_DOUBLE: '<f8',
 }
 
 def callExtensionMethod(method, *args):
@@ -561,8 +550,7 @@ def rpgCommitMorphFrameSet():
     logNotImplementedMethod('rpgCommitMorphFrameSet', locals())
 
 def rpgCommitTriangles(data, type, numIdx, shape, usePlotMap):
-    fmt = str(numIdx) + UNPACK_TYPES[type]
-    unpackedBuffer = struct.unpack(fmt, data)
+    unpackedBuffer = np.frombuffer(data, dtype=UNPACK_DTYPES[type], count=numIdx).copy()
     this.context.commit(unpackedBuffer, type, numIdx, shape, usePlotMap)
 
 def rpgConstructModel():
@@ -717,23 +705,13 @@ def writePCMWaveFile(*args):
 def setLastCheckedName(name):
     this.lastCheckedName = name
 
-def splitBuffer(data, stride):
-    return [data[i:i + stride] for i in range(0, len(data), stride)]
-
 def unpackBuffer(data, type, stride, offset, count):
-    splitted = splitBuffer(data, stride)
-    typeSize = UNPACK_SIZES[type]
-    unpackType = UNPACK_TYPES[type]
-    fmt = str(count) + unpackType
-    mapped = map(lambda x: x[offset:offset + typeSize * count], splitted)
-    mapped = map(lambda x: struct.unpack(fmt, x), mapped)
-    mapped = fixHalfFloats(mapped, type)
-    mapped = list(mapped)
-    return mapped
-
-# half float needs to mapped to normal float in python
-def fixHalfFloats(values, type):
-    if not type == noesis.RPGEODATA_HALFFLOAT:
-        return values
-
-    return map(lambda touple: map(lambda y: noesis.getFloat16(y), touple), values)
+    """(vertices, count) numpy array of the `count` values at `offset` in every `stride`
+    bytes of `data`; vertices whose values would run past the end are dropped."""
+    dtype = np.dtype(UNPACK_DTYPES[type])
+    data = memoryview(data).cast('B')
+    need = offset + dtype.itemsize * count
+    n = (len(data) - need) // stride + 1 if len(data) >= need else 0
+    view = np.ndarray((n, count), dtype=dtype, buffer=data, offset=offset,
+                      strides=(stride, dtype.itemsize))
+    return view.copy()

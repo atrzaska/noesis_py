@@ -1,5 +1,42 @@
 import inc_noesis
 
+# NoeMesh attributes filled from the bound buffers. Context.commit keeps the buffers (numpy
+# arrays from rapi.unpackBuffer) in ARRAYS and NoeMesh.__getattr__ turns one into the usual
+# list of tuples (a tuple for indices) the first time it is read; the viewer reads the arrays
+# directly. inc_noesis.py itself is not changed: the hook is installed on the class from here.
+ARRAYS = "_rapiArrays"
+LAZY = ("indices", "positions", "normals", "uvs", "lmUVs", "weights", "colors", "boneIndexBuffer")
+
+
+def toPython(name, value):
+    if not hasattr(value, "tolist"):
+        return value
+    if name == "indices":
+        return tuple(value.tolist())
+    return [tuple(row) for row in value.tolist()]
+
+
+def _noeMeshGetattr(self, name):
+    arrays = self.__dict__.get(ARRAYS)
+    if arrays is None or name not in arrays:
+        raise AttributeError("'NoeMesh' object has no attribute '%s'" % name)
+    value = toPython(name, arrays[name])
+    self.__dict__[name] = value
+    return value
+
+
+inc_noesis.NoeMesh.__getattr__ = _noeMeshGetattr
+
+
+def meshArray(mesh, name):
+    """A mesh attribute as a numpy array (None when empty), without building Python lists for
+    values that are still lazy."""
+    import numpy as np
+    value = mesh.__dict__[name] if name in mesh.__dict__ else mesh.__dict__.get(ARRAYS, {}).get(name)
+    if value is None or not len(value):
+        return None
+    return np.asarray(value)
+
 class Context:
     def __init__(self):
         self.meshes = []
@@ -36,18 +73,22 @@ class Context:
 
     def commit(self, faceBuffer, type, numIdx, shape, usePlotMap):
         mesh = inc_noesis.NoeMesh([], [])
-        mesh.indices = faceBuffer
-        mesh.positions = self.vertexBuffer
-        mesh.normals = self.normalBuffer
-        mesh.uvs = self.uvBuffer
-        mesh.lmUVs = self.uv2Buffer
-        mesh.weights = self.boneWeightBuffer
-        mesh.colors = self.colorBuffer  # raw tuples, like positions/normals (setColors wants NoeVec4)
+        for name in LAZY:
+            mesh.__dict__.pop(name, None)
+        mesh.__dict__[ARRAYS] = {
+            "indices": faceBuffer,
+            "positions": self.vertexBuffer,
+            "normals": self.normalBuffer,
+            "uvs": self.uvBuffer,
+            "lmUVs": self.uv2Buffer,
+            "weights": self.boneWeightBuffer,
+            "colors": self.colorBuffer,  # raw values, like positions/normals (setColors wants NoeVec4)
+            "boneIndexBuffer": self.boneIndexBuffer,
+        }
         mesh.setName(self.name)
         mesh.setMaterial(self.material)
         mesh.setLightmap(self.lightMap)
         mesh.setBoneMap(self.boneMap)
-        mesh.boneIndexBuffer = self.boneIndexBuffer
         mesh.uvScaleBias = self.uvScaleBias
         mesh.type = type
         mesh.numIdx = numIdx
