@@ -90,7 +90,24 @@ class MeshBuffers:
             total[total == 0] = 1.0
             self.boneIndices, self.boneWeights = local, w / total
             self.skinned = True
+        self.compact()
         self.drawPositions, self.drawNormals = self.positions, self.normals
+
+    def compact(self):
+        """Keep only the vertices the triangles use: rapi meshes share every buffer bound for
+        the commit, so without this each mesh would skin the whole buffer every frame."""
+        n = len(self.positions)
+        if not len(self.triangles) or self.triangles.max() >= n:
+            return
+        used, remap = np.unique(self.triangles, return_inverse=True)
+        if len(used) == n:
+            return
+        self.triangles = remap.reshape(-1, 3).astype(np.uint32)
+        self.positions, self.normals, self.uvs = self.positions[used], self.normals[used], self.uvs[used]
+        if self.colors is not None:
+            self.colors = self.colors[used]
+        if self.skinned:
+            self.boneIndices, self.boneWeights = self.boneIndices[used], self.boneWeights[used]
 
     def skin(self, palette):
         """palette: (bones, 4, 4) row-vector skinning matrices."""
