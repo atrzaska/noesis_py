@@ -42,8 +42,11 @@ class NoesisViewer:
         pts = np.concatenate(pts)
         lo, hi = pts.min(axis=0), pts.max(axis=0)
         center = (lo + hi) / 2
-        extent = float(max(hi - lo))
-        return (center[0], center[1]), max(1.0, extent * 0.8)
+        width, height, depth = (float(x) for x in hi - lo)
+        # distance at which the bounds fit the 60 degree vertical field of view, with a margin
+        tanHalf = math.tan(math.radians(30.0))
+        fit = max(height / 2 / tanHalf, width / 2 / (tanHalf * WIDTH / float(HEIGHT)))
+        return (center[0], center[1]), max(1.0, fit * 1.1 + depth / 2)
 
     def caption(self):
         parts = []
