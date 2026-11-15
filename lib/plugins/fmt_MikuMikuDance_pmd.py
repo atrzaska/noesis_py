@@ -68,7 +68,7 @@ class MikuMikuDance_PMD(SanaeObject):
             toon_tex = self.inFile.readUByte()
             toon_edge = self.inFile.readUByte()
             numIdx = self.inFile.readUInt()
-            texName = self.read_name(20)
+            texName = self.read_name(20).decode('shift_jis', 'replace')
             texNames = texName.split('*')
             spa = ''
 
