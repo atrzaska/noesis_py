@@ -19,6 +19,8 @@ def noepyLoadModel(data, mdlList):
     '''Load the model'''
 
     ctx = rapi.rpgCreateContext()
+    # MMD is left-handed (models face -Z): negate Z so the model faces +Z
+    rapi.rpgSetTransform(NoeMat43((NoeVec3((1.0, 0.0, 0.0)), NoeVec3((0.0, 1.0, 0.0)), NoeVec3((0.0, 0.0, -1.0)), NoeVec3((0.0, 0.0, 0.0)))))
     parser = MikuMikuDance_PMD(data)
     parser.parse_file()
     mdl = rapi.rpgConstructModel()

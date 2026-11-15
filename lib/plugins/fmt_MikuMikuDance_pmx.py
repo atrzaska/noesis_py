@@ -88,6 +88,8 @@ class PmxLoader:
 
     def load(self):
         ctx = rapi.rpgCreateContext()
+        # MMD is left-handed (models face -Z): negate Z so the model faces +Z
+        rapi.rpgSetTransform(NoeMat43((NoeVec3((1.0, 0.0, 0.0)), NoeVec3((0.0, 1.0, 0.0)), NoeVec3((0.0, 0.0, -1.0)), NoeVec3((0.0, 0.0, 0.0)))))
 
         self.loadModel()
 
