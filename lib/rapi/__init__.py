@@ -635,8 +635,10 @@ def rpgSetPosScaleBias(*args):
 def rpgSetStripEnder(*args):
     logNotImplementedMethod('rpgSetStripEnder', locals())
 
-def rpgSetTransform(*args):
-    logNotImplementedMethod('rpgSetTransform', locals())
+def rpgSetTransform(transform):
+    # NoeMat43 applied to positions (as points) and normals (rotated, renormalized) of the
+    # following commits; None clears it
+    this.context.setTransform(transform)
 
 def rpgSetTriWinding(*args):
     logNotImplementedMethod('rpgSetTriWinding', locals())

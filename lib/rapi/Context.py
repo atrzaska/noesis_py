@@ -48,6 +48,8 @@ class Context:
         self.lightMap = None # 0  # TODO: not used yet
         self.boneMap = [] # TODO: not used yet
         self.uvScaleBias = None # TODO: not used yet
+        self.transform = None  # (3x3 rotation/scale, translation) numpy arrays
+        self.transformed = {}  # (buffer id, kind) -> transformed copy, for the current transform
         self.clearBuffers()
 
     # def commit(self, faceBuffer, type, numIdx, shape, usePlotMap):
@@ -81,8 +83,8 @@ class Context:
             mesh.__dict__.pop(name, None)
         mesh.__dict__[ARRAYS] = {
             "indices": faceBuffer,
-            "positions": self.vertexBuffer,
-            "normals": self.normalBuffer,
+            "positions": self.transformedBuffer(self.vertexBuffer, "points"),
+            "normals": self.transformedBuffer(self.normalBuffer, "normals"),
             "uvs": self.uvBuffer,
             "lmUVs": self.uv2Buffer,
             "weights": self.boneWeightBuffer,
@@ -99,6 +101,33 @@ class Context:
         mesh.shape = shape
         mesh.usePlotMap = usePlotMap
         self.meshes.append(mesh)
+
+    def setTransform(self, transform):
+        import numpy as np
+        self.transformed = {}
+        if transform is None:
+            self.transform = None
+            return
+        m = np.array([[float(transform[r][c]) for c in range(3)] for r in range(4)])
+        self.transform = (m[:3], m[3])
+
+    def transformedBuffer(self, buffer, kind):
+        """A bound position/normal buffer with the current transform applied (row vectors,
+        like NoeMat43.transformPoint / transformNormal)."""
+        import numpy as np
+        if self.transform is None or not hasattr(buffer, "shape") or not len(buffer):
+            return buffer
+        key = (id(buffer), kind)
+        if key not in self.transformed:
+            rotation, translation = self.transform
+            v = buffer.astype(np.float64) @ rotation
+            if kind == "points":
+                v += translation
+            else:
+                length = np.linalg.norm(v, axis=1, keepdims=True)
+                v = np.divide(v, length, out=np.zeros_like(v), where=length > 0)
+            self.transformed[key] = (buffer, v.astype(buffer.dtype if buffer.dtype.kind == "f" else np.float32))
+        return self.transformed[key][1]
 
     def clearBuffers(self):
         self.vertexBuffer = []
