@@ -156,6 +156,25 @@ class NoesisLoader:
         for buf in self.buffers:
             self.textureIds[id(buf)] = self.materialTexture(buf.material) if self.loadTextures else None
             buf.alphaTest, buf.blend = self.materialBlend(buf.material)
+            buf.translucent = buf.blend is not None and self.explicitBlend(buf.material)
+            buf.diffuse = self.materialDiffuse(buf.material)
+
+    def material(self, materialName):
+        if not materialName or not self.modelMats:
+            return None
+        return next((x for x in self.modelMats.matList if x.name == materialName), None)
+
+    def explicitBlend(self, materialName):
+        """True when the material sets its own blend mode: only those are drawn as
+        translucent (after the rest, without depth writes). Default alpha blending keeps
+        depth writes, like Noesis."""
+        material = self.material(materialName)
+        return bool(material is not None and getattr(material, "blendSrc", None) and getattr(material, "blendDst", None))
+
+    def materialDiffuse(self, materialName):
+        """The material's diffuse colour (white by default), multiplied with its texture."""
+        color = getattr(self.material(materialName), "diffuseColor", None)
+        return tuple(float(c) for c in color) if color is not None else (1.0, 1.0, 1.0, 1.0)
 
     def materialBlend(self, materialName):
         """(alpha test threshold or None, (src, dst) GL blend factors or None for opaque)."""
@@ -200,21 +219,25 @@ class NoesisLoader:
         glEnableClientState(GL_TEXTURE_COORD_ARRAY)
         # opaque meshes first, then translucent ones without depth writes, so transparent
         # texels never hide what's behind them
-        order = [b for b in self.buffers if getattr(b, "blend", None) is None] + \
-                [b for b in self.buffers if getattr(b, "blend", None) is not None]
+        order = [b for b in self.buffers if not getattr(b, "translucent", False)] + \
+                [b for b in self.buffers if getattr(b, "translucent", False)]
         for buf in order:
             if not len(buf.triangles):
                 continue
             if getattr(buf, "blend", None) is not None:
                 glEnable(GL_BLEND)
                 glBlendFunc(*buf.blend)
-                glDepthMask(GL_FALSE)
+                glDepthMask(GL_FALSE if buf.translucent else GL_TRUE)
             else:
                 glDisable(GL_BLEND)
                 glDepthMask(GL_TRUE)
             if getattr(buf, "alphaTest", None):
                 glEnable(GL_ALPHA_TEST)
                 glAlphaFunc(GL_GREATER, buf.alphaTest)
+            elif getattr(buf, "blend", None) is not None and not buf.translucent:
+                # default blending writes depth: keep fully transparent texels out of it
+                glEnable(GL_ALPHA_TEST)
+                glAlphaFunc(GL_GREATER, 0.0)
             else:
                 glDisable(GL_ALPHA_TEST)
             tex = self.textureIds.get(id(buf))
@@ -228,7 +251,7 @@ class NoesisLoader:
                 glColorPointer(4, GL_FLOAT, 0, buf.colors)
             else:
                 glDisableClientState(GL_COLOR_ARRAY)
-                glColor4f(1.0, 1.0, 1.0, 1.0)
+                glColor4f(*getattr(buf, "diffuse", (1.0, 1.0, 1.0, 1.0)))
             glVertexPointer(3, GL_FLOAT, 0, buf.drawPositions)
             glNormalPointer(GL_FLOAT, 0, buf.drawNormals)
             glTexCoordPointer(2, GL_FLOAT, 0, buf.uvs)
