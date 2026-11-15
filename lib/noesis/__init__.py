@@ -647,8 +647,8 @@ def mat43Add(noeMat43, other):
     ))
 
 def mat43FromBytes(data, bigEnd):
-    logNotImplementedMethod('mat43FromBytes', locals())
-    return inc_noesis.NoeMat43()
+    v = unpackFloats(data, 12, bigEnd)
+    return inc_noesis.NoeMat43(tuple(inc_noesis.NoeVec3(v[i:i + 3]) for i in range(0, 12, 3)))
 
 def mat43Inverse(noeMat43):
     # Noesis' fast affine inverse: each inverse row is column i of the 3x3 part
@@ -886,8 +886,8 @@ def mat44Add(noeMat44, other):
     ))
 
 def mat44FromBytes(data, bigEnd):
-    logNotImplementedMethod('mat44FromBytes', locals())
-    return inc_noesis.NoeMat44()
+    v = unpackFloats(data, 16, bigEnd)
+    return inc_noesis.NoeMat44(tuple(inc_noesis.NoeVec4(v[i:i + 4]) for i in range(0, 16, 4)))
 
 def mat44Inverse(mtx):
     m00 = mtx[0][0]
@@ -1100,8 +1100,7 @@ def planeFromPoints(*args):
     logNotImplementedMethod('planeFromPoints', locals())
 
 def quat3FromBytes(data, bigEnd):
-    logNotImplementedMethod('quat3FromBytes', locals())
-    return inc_noesis.NoeQuat3()
+    return inc_noesis.NoeQuat3(unpackFloats(data, 3, bigEnd))
 
 def quat3ToBytes(noeQuat3):
     return bytearray(struct.pack('<fff', noeQuat3[0], noeQuat3[1], noeQuat3[2]))
@@ -1126,8 +1125,7 @@ def quatAdd(noeQuat, other):
     return inc_noesis.NoeQuat((x, y, z, w))
 
 def quatFromBytes(data, bigEnd):
-    logNotImplementedMethod('quatFromBytes', locals())
-    return inc_noesis.NoeQuat()
+    return inc_noesis.NoeQuat(unpackFloats(data, 4, bigEnd))
 
 def quatLen(noeQuat):
     x, y, z, w = noeQuat[0], noeQuat[1], noeQuat[2], noeQuat[3]
@@ -1339,9 +1337,12 @@ def vec3Div(noeVec3, other):
     z = cDiv(noeVec3[2], other[2])
     return inc_noesis.NoeVec3((x, y, z))
 
+def unpackFloats(data, count, bigEnd):
+    """`count` 32-bit floats from the start of `data` (NOE_BIGENDIAN or NOE_LITTLEENDIAN)."""
+    return struct.unpack(('>' if bigEnd else '<') + 'f' * count, bytes(data[:4 * count]))
+
 def vec3FromBytes(data, bigEnd):
-    logNotImplementedMethod('vec3FromBytes', locals())
-    return inc_noesis.NoeVec3()
+    return inc_noesis.NoeVec3(unpackFloats(data, 3, bigEnd))
 
 def vec3Len(noeVec3):
     return toFloat32(math.sqrt(vec3LenSq(noeVec3)))
@@ -1430,8 +1431,7 @@ def vec4Dot(noeVec4, other):
     return toFloat32(noeVec4[0] * other[0] + noeVec4[1] * other[1] + noeVec4[2] * other[2] + noeVec4[3] * other[3])
 
 def vec4FromBytes(bytes, bigEnd):
-    logNotImplementedMethod('vec4FromBytes', locals())
-    return inc_noesis.NoeVec4()
+    return inc_noesis.NoeVec4(unpackFloats(bytes, 4, bigEnd))
 
 def vec4Len(noeVec4):
     return toFloat32(math.sqrt(vec4LenSq(noeVec4)))
