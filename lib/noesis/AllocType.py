@@ -11,7 +11,7 @@ class AllocType:
     def __init__(self, name, data):
         self.name = name
         self.data = io.BytesIO(data or '')
-        self.readData = [0] * len(data or '')
+        self.readSpans = []  # (offset, length) of every read, for bsDumpMask
         self.bsSetEndian(NOE_LITTLEENDIAN)
         self.flags = 0
 
@@ -168,9 +168,20 @@ class AllocType:
         data = self.read(readLength)
         return struct.unpack(fmt, data)
 
+    @property
+    def readData(self):
+        """How many times each byte was read."""
+        counts = [0] * self.bsGetSize()
+        for offset, length in self.readSpans:
+            for i in range(offset, offset + length):
+                counts[i] += 1
+        return counts
+
     def read(self, length):
-        if self.bsGetOfs() + length > self.bsGetSize():
+        offset = self.data.tell()
+        data = self.data.read(length)
+        if len(data) < length:
+            self.data.seek(offset)
             raise OverflowError('Buffer error: tried to read ' + str(length) +' bytes from buffer at offset ' + str(self.bsGetSize()))
-        for i in range(length):
-            self.readData[self.bsGetOfs() + i] += 1
-        return self.data.read(length)
+        self.readSpans.append((offset, length))
+        return data
