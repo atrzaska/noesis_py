@@ -1,5 +1,5 @@
 import sys
-import PIL.Image
+import numpy as np
 import io
 from bitstring import ConstBitStream
 
@@ -25,19 +25,17 @@ MOD_SCALE = 2
 
 def decode(pvrData, width, height, bpp):
     mip = 1
-    image_width = width/4/2**(mip)
-    image_height = height/4/2**(mip)
+    image_width = width // 4 // 2**(mip)
+    image_height = height // 4 // 2**(mip)
 
     bit_stream = ConstBitStream(bytes=pvrData)
 
-    img_a = PIL.Image.new('RGBA', (width / IMG_SCALE, height / IMG_SCALE))
-    img_a_data = img_a.load()
-    img_b = PIL.Image.new('RGBA', (width / IMG_SCALE, height / IMG_SCALE))
-    img_b_data = img_b.load()
-    img_mod = PIL.Image.new('RGBA', (width / MOD_SCALE, height / MOD_SCALE))
-    img_mod_data = img_mod.load()
+    # RGBA pixel buffers indexed [y, x]
+    img_a = np.zeros((height // IMG_SCALE, width // IMG_SCALE, 4), dtype=np.uint8)
+    img_b = np.zeros((height // IMG_SCALE, width // IMG_SCALE, 4), dtype=np.uint8)
+    img_mod = np.zeros((height // MOD_SCALE, width // MOD_SCALE, 4), dtype=np.uint8)
 
-    for i in xrange(image_width * image_height):
+    for i in range(image_width * image_height):
         pixel, row = decodeMorton(i)
         modulation_data = bit_stream.read('bits:32')
 
@@ -64,7 +62,7 @@ def decode(pvrData, width, height, bpp):
             r = scaleTo255(r, 4)
             g = scaleTo255(g, 4)
             b = scaleTo255(b, 4)
-        img_b_data[row, pixel] = (r, g, b, a)
+        img_b[pixel, row] = (r, g, b, a)
 
         color_mode = byte1.read('bool')
 
@@ -87,12 +85,12 @@ def decode(pvrData, width, height, bpp):
             g = scaleTo255(g, 4)
             b = scaleTo255(b, 3)
 
-        img_a_data[row, pixel] = (r, g, b, a)
+        img_a[pixel, row] = (r, g, b, a)
 
         mode = byte0.read('bool')
 
-        for r in xrange(4):
-            for c in xrange(4):
+        for r in range(4):
+            for c in range(4):
                 first = modulation_data.read('uint:1')
                 last = modulation_data.read('uint:1')
                 value = 0
@@ -106,9 +104,6 @@ def decode(pvrData, width, height, bpp):
                     value = 8
                 texel_row = 3 - r + row*4
                 texel_col = 3 - c + pixel*4
-                img_mod_data[texel_row, texel_col] = (0, 0, 0, int(float(value)/8*255))
+                img_mod[texel_col, texel_row] = (0, 0, 0, int(float(value)/8*255))
 
-    img_a = img_a.convert("RGBA").tobytes("raw", "RGBA")
-    # img_b = img_b.convert("RGBA").tobytes("raw", "RGBA")
-    # img_mod = img_mod.convert("RGBA").tobytes("raw", "RGBA")
-    return img_a
+    return img_a.tobytes()

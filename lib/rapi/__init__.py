@@ -13,6 +13,7 @@ from util import logNotImplementedMethod
 this = sys.modules[__name__]
 this.context = None
 this.lastCheckedName = None
+this.previewOptions = {}
 
 UNPACK_TYPES = {
     noesis.RPGEODATA_BYTE: 'b',
@@ -164,15 +165,23 @@ def imageApplyPalette(data, width, height, palette, numberOfPaletteEntries):
 def imageBlit32(destinationData, destinationWidth, destinationHeight, destinationXOffset, destinationYOffset, sourceData, sourceEidth, sourceHeight, sourceXOoffset, sourceYOffset, destStride = 0, sourceStride = 0):
     logNotImplementedMethod('imageBlit32', locals())
 
-def imageDecodeDXT(data, width, height, format):
-    logNotImplementedMethod('imageDecodeDXT', locals())
+def imageDecodeDXT(data, width, height, format, *args):
+    import rapi.image
+    result = rapi.image.decodeDXT(data, width, height, format)
+    if result is None:
+        logNotImplementedMethod('imageDecodeDXT', locals())
+    return result
 
 def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
     # TODO: not working fully yet
     return pvr.decode(data, width, height, bitsPerPixel)
 
-def imageDecodeRaw(data, width, height, paletteFormat):
-    logNotImplementedMethod('imageDecodeRaw', locals())
+def imageDecodeRaw(data, width, height, paletteFormat, *args):
+    import rapi.image
+    result = rapi.image.decodeRaw(data, width, height, paletteFormat)
+    if result is None:
+        logNotImplementedMethod('imageDecodeRaw', locals())
+    return result
 
 def imageDecodeRawPal(data, palette, width, height, unk8, paletteFormat):
     logNotImplementedMethod('imageDecodeRawPal', locals())
@@ -187,7 +196,8 @@ def imageEncodeRaw(data, width, height, paletteFormat):
     logNotImplementedMethod('imageEncodeRaw', locals())
 
 def imageFlipRGBA32(data, width, height, horizontalFlip, verticalFlip):
-    logNotImplementedMethod('imageFlipRGBA32', locals())
+    import rapi.image
+    return rapi.image.flipRGBA32(data, width, height, horizontalFlip, verticalFlip)
 
 def imageFromMortonOrder(data, width, height, dxtBlockBytes):
     logNotImplementedMethod('imageFromMortonOrder', locals())
@@ -486,8 +496,8 @@ def rpgBindColorBuffer(data, type, stride, count):
     return rpgBindColorBufferOfs(data, type, stride, 0, count)
 
 def rpgBindColorBufferOfs(data, type, stride, offset, count):
-    if count >= 1 and count <= 4:
-        doException('rpgBindColorBufferOfs, count argument must be one of 1, 2, 3, 4')
+    if not 1 <= count <= 4:
+        noesis.doException('rpgBindColorBufferOfs, count argument must be one of 1, 2, 3, 4')
 
     unpackedBuffer = unpackBuffer(data, type, stride, offset, count)
     this.context.colorBuffer = unpackedBuffer
@@ -662,7 +672,12 @@ def setDeferredAnims(anims):
     logNotImplementedMethod('setDeferredAnims', locals())
 
 def setPreviewOption(key, value):
-    logNotImplementedMethod('setPreviewOption', locals())
+    # Stored for the viewer (e.g. "setAnimSpeed" -> frames per second).
+    this.previewOptions[key] = value
+
+def getPreviewOption(key, default=None):
+    # noesis_py only: lets the viewer read options set by the loading plugin
+    return this.previewOptions.get(key, default)
 
 def simulateDragAndDrop(fileName):
     logNotImplementedMethod('simulateDragAndDrop', locals())

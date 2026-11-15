@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
+# Installs dependencies into ./pip (on PYTHONPATH via .envrc) for this machine's python3.
 
+set -e
+rm -rf pip
 pip3 install -r requirements.txt -t pip
-patch pip/OpenGL/GL/images.py patches/pyopengl_texture_compress.patch
+# Old PyOpenGL (< 3.1.7) breaks glCompressedTexImage2D; newer versions include the fix.
+if patch --dry-run -N -s pip/OpenGL/GL/images.py patches/pyopengl_texture_compress.patch >/dev/null 2>&1; then
+  patch -N pip/OpenGL/GL/images.py patches/pyopengl_texture_compress.patch
+fi

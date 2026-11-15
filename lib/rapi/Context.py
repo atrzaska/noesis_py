@@ -42,7 +42,7 @@ class Context:
         mesh.uvs = self.uvBuffer
         mesh.lmUVs = self.uv2Buffer
         mesh.weights = self.boneWeightBuffer
-        mesh.setColors(self.colorBuffer)
+        mesh.colors = self.colorBuffer  # raw tuples, like positions/normals (setColors wants NoeVec4)
         mesh.setName(self.name)
         mesh.setMaterial(self.material)
         mesh.setLightmap(self.lightMap)

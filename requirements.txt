@@ -1,6 +1,4 @@
-pygame==2.0.1
-PyOpenGL==3.1.5
-image==1.5.33
+pygame-ce>=2.5  # drop-in pygame fork; ships wheels with image support for current Python
+PyOpenGL>=3.1.7
+numpy>=1.26
 bitstring==3.1.7
-Cython==0.29.22
-pymeshio==3.0.1
