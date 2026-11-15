@@ -25,7 +25,10 @@ def _noeMeshGetattr(self, name):
     return value
 
 
-inc_noesis.NoeMesh.__getattr__ = _noeMeshGetattr
+def installHook():
+    # at first commit rather than import time: inc_noesis imports rapi before defining NoeMesh
+    if getattr(inc_noesis.NoeMesh, "__getattr__", None) is not _noeMeshGetattr:
+        inc_noesis.NoeMesh.__getattr__ = _noeMeshGetattr
 
 
 def meshArray(mesh, name):
@@ -72,6 +75,7 @@ class Context:
         # unpackedUVBuffer = map(lambda x: inc_noesis.NoeVec3((x[0], x[1], 0)), unpackedBuffer)
 
     def commit(self, faceBuffer, type, numIdx, shape, usePlotMap):
+        installHook()
         mesh = inc_noesis.NoeMesh([], [])
         for name in LAZY:
             mesh.__dict__.pop(name, None)
