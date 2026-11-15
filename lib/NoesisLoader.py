@@ -348,6 +348,7 @@ class NoesisLoader:
         for i, target in enumerate(CUBE_FACES):
             face = bytes(data[i * size:(i + 1) * size])
             if internalType in (GL_RGB, GL_RGBA):
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
                 glTexImage2D(target, 0, internalType, width, height, 0, internalType, GL_UNSIGNED_BYTE, face)
             else:
                 glCompressedTexImage2D(target, 0, internalType, width, height, 0, face)
@@ -369,6 +370,7 @@ class NoesisLoader:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
 
         if internalType == GL_RGB or internalType == GL_RGBA:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1)  # rows are tightly packed (GL expects 4-byte rows)
             glTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, internalType, GL_UNSIGNED_BYTE, data)
         else:
             glCompressedTexImage2D(GL_TEXTURE_2D, 0, internalType, width, height, 0, data)
