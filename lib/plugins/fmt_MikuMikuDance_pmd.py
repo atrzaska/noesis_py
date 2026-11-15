@@ -75,6 +75,9 @@ class MikuMikuDance_PMD(SanaeObject):
             if len(texNames) > 1:
                 texName = texNames[0]
                 spa = texNames[1]
+            elif texName.lower().endswith(('.sph', '.spa')):
+                # a sphere map on its own: the material has no diffuse texture
+                texName, spa = '', texName
 
             matName = "material%d" %i
             material = NoeMaterial(matName, "")
