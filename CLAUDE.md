@@ -110,8 +110,8 @@ loader/viewer.
   builds the usual lists of tuples only when a plugin reads `mesh.positions` etc.; the viewer reads
   the arrays with `rapi.Context.meshArray`. Plugin-side parsing through `NoeBitStream` is still
   pure Python and is what's slow now.
-- Face-buffer break value `0xFFFF` (65535) starts a new primitive strip in the loader; other break
-  encodings are not handled yet (`TODO`).
+- Strips restart on `0xFFFF` / `0xFFFFFFFF` in the loader; `rpgSetStripEnder` is still a stub
+  (`TODO`).
 - The PyOpenGL patch in `patches/` fixes a compressed-texture call (`ArrayType` → `ArrayDatatype`)
   and is applied by `setup`; a fresh `pip/` needs it re-applied.
 

@@ -1,22 +1,13 @@
-mikitm008 displays skirt weirdly
-implement #rapi.setPreviewOption("setAngOfs", "0 180 0") to have default rotation
-handle different face breaks 0xFFFF
-fromBytes methods don't have @staticmethod in inc_noesis
-TODO: noesis module methods have missing arguments, review arguments!
-for example noesis.setToolVisibleCallback has no args defined but should have 2
+Known gaps (checked 2026-11-16 against master; signatures against NoesisPython.dll via
+noesis_rs' spec/api.json):
 
-pmd:
-self.flipX = False
-self.flipY = False
-self.flipZ = True
-self.flipU = False
-self.flipV = False
-self.scale = 1
-
-dt:
-self.flipX = False
-self.flipY = False
-self.flipZ = False
-self.flipU = False
-self.flipV = False
-self.scale = 3
+- API signatures: 128 stubs still take *args, 176 functions of the current API don't exist,
+  and 9 take fewer arguments than the DLL allows: rapi.swapEndianArray, imageDecodeRawPal,
+  imageNormalMapFromHeightMap, imageFromMortonOrder, imageKernelProcess, decryptAES,
+  loadTexByHandler, rpgSetUVScaleBias, rpgBindUserDataBuffer.
+- rapi.setPreviewOption("setAngOfs", "0 180 0") (default preview rotation) is stored but the
+  viewer only applies setAnimSpeed.
+- rpgSetStripEnder is a stub: strips restart only on 0xFFFF / 0xFFFFFFFF.
+- rpgSetUVScaleBias is stored on the meshes but not applied.
+- imageDecodePVRTC: the first row of blocks of every texture differs from Noesis (the
+  wrap-around at the top edge); the rest matches noesis_rs' engine port.

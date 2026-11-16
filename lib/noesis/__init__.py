@@ -1219,7 +1219,7 @@ def quatValidate(noeQuat):
     noeQuat.quat = tuple(toFloat32(v) for v in quat)
 
 def register(name, fileType):
-    # TODO: fileType can be semicolon separated '.obj;.obc'
+    # fileType may list several extensions ('.obj;.obc'); NoesisApplication splits it
     handler = Handler(name, fileType)
     this.plugins.append(handler)
     return handler
