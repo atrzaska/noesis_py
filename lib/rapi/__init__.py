@@ -162,7 +162,7 @@ def imageDecodeDXT(data, width, height, format, *args):
     return result
 
 def imageDecodePVRTC(data, width, height, bitsPerPixel, decodeFlags = 0):
-    # TODO: the first row of blocks differs from Noesis (top edge wrap-around); the rest matches
+    # TODO: not a real decode yet: returns a 1/8-size image of the blocks' colour A (see TODO)
     return pvr.decode(data, width, height, bitsPerPixel)
 
 def imageDecodeRaw(data, width, height, paletteFormat, *args):

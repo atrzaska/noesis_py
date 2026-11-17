@@ -9,5 +9,6 @@ noesis_rs' spec/api.json):
   viewer only applies setAnimSpeed.
 - rpgSetStripEnder is a stub: strips restart only on 0xFFFF / 0xFFFFFFFF.
 - rpgSetUVScaleBias is stored on the meshes but not applied.
-- imageDecodePVRTC: the first row of blocks of every texture differs from Noesis (the
-  wrap-around at the top edge); the rest matches noesis_rs' engine port.
+- imageDecodePVRTC (rapi/pvr.py) doesn't really decode: it returns colour A of each 8x8 area
+  as an image 1/8 the width and height. noesis_rs has a port of Noesis' own decoder
+  (crates/noesis-core/src/image_codecs/pvrtc.rs) to follow if this is ever needed.
