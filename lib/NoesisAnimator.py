@@ -4,21 +4,25 @@ import rapi
 
 # Skeleton + animation playback for the viewer.
 #
-# Noesis matrices (NoeMat43) are row-vector: rows 0..2 are the bone's X/Y/Z
-# axes and row 3 its origin, a point transforms as p' = p * M and
-# world = local * parentWorld. Bone matrices given to setBones are model-space
-# (world) bind poses; animation keys are local (parent-space) transforms.
+# The engine applies a NoeMat43 to a point as Math_TransformPointByMatrix does:
+# p'[r] = dot(m[r], p) + m[3][r] (and NoeMat43 a * b applies a first, then b). Here
+# matrices are kept as 4x4 row-vector matrices, p' = p * M with M = [[m[0..2]^T, 0], [m[3], 1]],
+# so world = local * parentWorld. Bone matrices given to setBones are model-space (world)
+# bind poses; animation keys are local (parent-space) transforms. Keyframe quaternions are
+# therefore the conjugate of the textbook (x, y, z, w) of a rotation, as in real Noesis
+# (Rich's fmt_ue4.py converts with NoeQuat((-x, -y, -z, w))).
 
 
 def mat43ToNp(m):
     out = np.identity(4)
-    for r in range(4):
-        out[r, :3] = (m[r][0], m[r][1], m[r][2])
+    for r in range(3):
+        out[:3, r] = (m[r][0], m[r][1], m[r][2])
+    out[3, :3] = (m[3][0], m[3][1], m[3][2])
     return out
 
 
 def quatToNp(q):
-    # Same convention as noesis.quatToMat43 (row-vector rotation).
+    # noesis.quatToMat43(q) (transposed = 0), as a row-vector rotation.
     x, y, z, w = q[0], q[1], q[2], q[3]
     xx, yy, zz = x * x, y * y, z * z
     xy, xz, yz = x * y, x * z, y * z
@@ -27,7 +31,7 @@ def quatToNp(q):
         (1.0 - 2.0 * (yy + zz), 2.0 * (xy + wz), 2.0 * (xz - wy)),
         (2.0 * (xy - wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz + wx)),
         (2.0 * (xz + wy), 2.0 * (yz - wx), 1.0 - 2.0 * (xx + yy)),
-    ])
+    ]).T
 
 
 def nlerp(a, b, t):
