@@ -1,5 +1,5 @@
 Known gaps (checked 2026-11-16 against master; signatures against NoesisPython.dll via
-noesis_rs' spec/api.json):
+openoesis' spec/api.json):
 
 - API signatures: 128 stubs still take *args, 176 functions of the current API don't exist,
   and 9 take fewer arguments than the DLL allows: rapi.swapEndianArray, imageDecodeRawPal,
@@ -10,5 +10,5 @@ noesis_rs' spec/api.json):
 - rpgSetStripEnder is a stub: strips restart only on 0xFFFF / 0xFFFFFFFF.
 - rpgSetUVScaleBias is stored on the meshes but not applied.
 - imageDecodePVRTC (rapi/pvr.py) doesn't really decode: it returns colour A of each 8x8 area
-  as an image 1/8 the width and height. noesis_rs has a port of Noesis' own decoder
-  (crates/noesis-core/src/image_codecs/pvrtc.rs) to follow if this is ever needed.
+  as an image 1/8 the width and height. openoesis (formerly noesis_rs) has a port of Noesis'
+  own decoder (crates/openoesis-core/src/image_codecs/pvrtc.rs) to follow if this is ever needed.
