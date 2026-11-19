@@ -179,7 +179,7 @@ class PmxLoader:
             position = bs.readBytes(12)
             normal = bs.readBytes(12)
             uv = bs.readBytes(8)
-            appendixUV = bs.readBytes(4 * self.appendixUVSize)
+            appendixUV = bs.readBytes(16 * self.appendixUVSize) # each additional UV is a float4
             weightTypeId = bs.readByte()
 
             # 0 = BDEF1, 1 = BDEF2, 2 = BDEF4, 4 = SDEF
