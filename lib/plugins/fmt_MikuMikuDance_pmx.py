@@ -3,6 +3,7 @@
 # TODO: implement pmx 2.1 softBodies
 
 from inc_noesis import *
+import struct
 import noesis
 import rapi
 
@@ -173,6 +174,9 @@ class PmxLoader:
         normals = b''
         uvs = b''
 
+        weightIndices = bytearray()
+        weightValues = bytearray()
+
         vertexCount = bs.readInt()
 
         for i in range(vertexCount):
@@ -182,45 +186,29 @@ class PmxLoader:
             appendixUV = bs.readBytes(16 * self.appendixUVSize) # each additional UV is a float4
             weightTypeId = bs.readByte()
 
-            # 0 = BDEF1, 1 = BDEF2, 2 = BDEF4, 4 = SDEF
-            # 0 = BDEF1, 1 = BDEF2, 2 = BDEF4, 3 = SDEF, 4 = QDEF
-            # bone index -1 should means null
+            # 0 = BDEF1, 1 = BDEF2, 2 = BDEF4, 3 = SDEF, 4 = QDEF (2.1)
+            # bone index -1 means none; SDEF is skinned as BDEF2, QDEF as BDEF4
             if weightTypeId == 0:
-                bone1Index = self.readBoneIndex()
-                boneWeight = 1.0
-            elif weightTypeId == 1:
-                bone1Index = self.readBoneIndex()
-                bone2Index = self.readBoneIndex()
-                bone1Weight = bs.readFloat()
-                bone2Weight = 1 - bone1Weight
-            elif weightTypeId == 2:
-                bone1Index = self.readBoneIndex()
-                bone2Index = self.readBoneIndex()
-                bone3Index = self.readBoneIndex()
-                bone4Index = self.readBoneIndex()
-                bone1Weight = bs.readFloat()
-                bone2Weight = bs.readFloat()
-                bone3Weight = bs.readFloat()
-                bone4Weight = bs.readFloat()
-            elif weightTypeId == 3:
-                bone1Index = self.readBoneIndex()
-                bone2Index = self.readBoneIndex()
-                bone1Weight = bs.readFloat()
-                bone2Weight = 1 - bone1Weight
-                c = bs.read('3f')
-                r0 = bs.read('3f')
-                r1 = bs.read('3f')
-            elif weightTypeId == 4:
-                bone1Index = self.readBoneIndex()
-                bone2Index = self.readBoneIndex()
-                bone3Index = self.readBoneIndex()
-                bone4Index = self.readBoneIndex()
-                bone1Weight = bs.readFloat()
-                bone2Weight = bs.readFloat()
-                bone3Weight = bs.readFloat()
-                bone4Weight = bs.readFloat()
+                boneIndices = [self.readBoneIndex()]
+                boneWeights = [1.0]
+            elif weightTypeId in (1, 3):
+                boneIndices = [self.readBoneIndex(), self.readBoneIndex()]
+                weight = bs.readFloat()
+                boneWeights = [weight, 1.0 - weight]
+                if weightTypeId == 3:
+                    bs.readBytes(36) # SDEF C, R0, R1
+            elif weightTypeId in (2, 4):
+                boneIndices = [self.readBoneIndex() for j in range(4)]
+                boneWeights = [bs.readFloat() for j in range(4)]
             else:
                 noesis.doException("unknown weight type id: " + str(weightTypeId))
+            boneIndices += [-1] * (4 - len(boneIndices))
+            boneWeights += [0.0] * (4 - len(boneWeights))
+            for j in range(4):
+                if boneIndices[j] < 0:
+                    boneIndices[j], boneWeights[j] = 0, 0.0
+            weightIndices += struct.pack('<4i', *boneIndices)
+            weightValues += struct.pack('<4f', *boneWeights)
 
             edgeScale = bs.readFloat()
 
@@ -274,6 +262,8 @@ class PmxLoader:
             rapi.rpgBindPositionBufferOfs(vertices, noesis.RPGEODATA_FLOAT, 12, 0)
             rapi.rpgBindNormalBufferOfs(normals, noesis.RPGEODATA_FLOAT, 12, 0)
             rapi.rpgBindUV1BufferOfs(uvs, noesis.RPGEODATA_FLOAT, 8, 0)
+            rapi.rpgBindBoneIndexBufferOfs(bytes(weightIndices), noesis.RPGEODATA_INT, 16, 0, 4)
+            rapi.rpgBindBoneWeightBufferOfs(bytes(weightValues), noesis.RPGEODATA_FLOAT, 16, 0, 4)
             rapi.rpgSetMaterial(name)
             rapi.rpgCommitTriangles(currentFaces, INDICES_TYPES[self.vertexIndexSize], matFaceCount, noesis.RPGEO_TRIANGLE, 1)
             startOffset += self.vertexIndexSize * matFaceCount
@@ -285,6 +275,10 @@ class PmxLoader:
             boneEnglishName = self.readText()
             position = self.readVec3()
             parentBoneIndex = self.readBoneIndex()
+            # model space position, Z negated like the geometry (rpgSetTransform); no rotation
+            boneMat = NoeMat43()
+            boneMat[3] = NoeVec3((position[0], position[1], -position[2]))
+            self.boneList.append(NoeBone(i, boneName, boneMat, None, parentBoneIndex))
             layer = bs.readInt()
             flags = bs.readShort()
 
