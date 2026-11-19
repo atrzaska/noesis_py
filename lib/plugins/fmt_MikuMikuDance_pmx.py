@@ -96,6 +96,9 @@ class PmxLoader:
         ctx = rapi.rpgCreateContext()
         # MMD is left-handed (models face -Z): negate Z so the model faces +Z
         rapi.rpgSetTransform(NoeMat43((NoeVec3((1.0, 0.0, 0.0)), NoeVec3((0.0, 1.0, 0.0)), NoeVec3((0.0, 0.0, -1.0)), NoeVec3((0.0, 0.0, 0.0)))))
+        # the mirror turns MMD's clockwise front faces counter-clockwise the wrong way round:
+        # wind them backward so front faces stay front faces (face culling)
+        rapi.rpgSetOption(noesis.RPGOPT_TRIWINDBACKWARD, 1)
 
         self.loadModel()
         self.loadMotion()
@@ -287,6 +290,9 @@ class PmxLoader:
             matFaceCount = bs.readInt()
 
             material = NoeMaterial(name, textures[textureIndex])
+            if drawingModeFlag & 0x01:
+                # MMD's "double-sided" drawing flag
+                material.flags |= noesis.NMATFLAG_TWOSIDED
             self.matList.append(material)
             dataSize = self.vertexIndexSize * matFaceCount
             endOffset = startOffset + dataSize
